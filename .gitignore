@@ -37,3 +37,7 @@ id_ed25519.*
 
 logs/
 *.log
+
+django/assets/
+django/media/
+django/db.sqlite3
