@@ -1,0 +1,93 @@
+{% extends "web/home/base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+
+
+  <!-- contact section -->
+
+
+
+ 
+       <!--Main Content Start-->
+       <div class="main-content">
+          <!--Contact Us Start-->
+          <div class="contact-details  p80 pagebg2">
+             <div class="container">
+                <div class="row">
+                   <div class="col-md-12">
+                      <h3 class="stitle">Contact Information</h3>
+                   </div>
+                   <div class="col-md-6 col-sm-6">
+                      <div class="add-box">
+                         <h5>Our Registration Office</h5>
+                         <ul>
+                            <li><i class="fas fa-building"></i>Amrutha Building, 2nd Floor, High School Jn,
+                              Kalanjoor, pincode: 689 694, Pathanamthitta,
+                              Kerala, India</li>
+                         </ul>
+                      </div>
+                   </div>
+                   <div class="col-md-6 col-sm-6">
+                      <div class="add-box">
+                         <h5>Contact</h5>
+                         <ul>
+                            <li><i class="fas fa-phone"></i> <strong>Phone:</strong> +91 8547418316 / +91 8547928317</li>
+                            <li><i class="fas fa-clock"></i> <strong>Timing</strong> 
+                              9:00 am to 6:00 [Monday to Saturday]
+                            </li>
+                            <li><i class="far fa-envelope"></i> <strong>Email:</strong> samatwaservicecenter[dot]gov[dot]in[at]gmail[dot]com
+                            </li>
+                         </ul>
+                      </div>
+                   </div>
+
+                </div>
+             </div>
+          </div>
+          <!--Contact Us Start--> 
+          <!-- Google Map with Contact Form -->
+          <div class="map-form p80">
+             <div class="container">
+                <div class="row">
+                   <!-- <div class="col-md-4 col-sm-5">
+                      <h3 class="stitle">Get in Touch</h3>
+                      <div class="contact-form">
+                        <form action="{% url 'web:contact' %}" method="post">
+                          {% csrf_token %}
+                            <ul>
+                               <li>
+                                  <input type="text" placeholder="Full Name" required>
+                               </li>
+                               <li>
+                                  <input type="text" placeholder="Enter Email" required>
+                               </li>
+                               <li>
+                                  <input type="text" placeholder="Subject">
+                               </li>
+                               <li>
+                                  <textarea placeholder="Write Message"></textarea>
+                               </li>
+                               <li>
+                                  <input type="submit" value="Send Message">
+                               </li>
+                            </ul>
+                         </form>
+                      </div>
+                   </div> -->
+                   <div class="col-md-12 col-sm-12">
+                      <div class="map">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3939.3537947783225!2d76.84918537502001!3d9.1224814909426!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zOcKwMDcnMjAuOSJOIDc2wrA1MScwNi4zIkU!5e0!3m2!1sen!2sin!4v1716961613512!5m2!1sen!2sin" width="1300" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                      </div>
+                   </div>
+                </div>
+             </div>
+          </div>
+          <!-- Google Map with Contact Form End --> 
+       </div>
+       <!--Main Content End--> 
+
+  
+{% endblock %}

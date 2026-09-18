@@ -1,0 +1,249 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+{% block content %}
+
+
+
+
+<link rel="stylesheet" href="{% static 'web/css/form3.css' %}">
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+
+
+<style>
+  #toast-container > .toast-success {
+      background-color: #51A351; /* Green background */
+      color: white; /* White text */
+      display: flex;
+      margin-top: 100%;
+      margin-left: -135%;
+  }
+  #toast-container > .toast {
+      border-radius: 8px; /* Rounded corners */
+      padding: 16px; /* Padding */
+      font-size: 12px; /* Font size */
+      text-align: center;
+      padding-left: 50px;
+     
+  }
+
+
+
+</style>
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+
+  <div
+    class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+
+      {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success-custom">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+      <div class="container">
+        <div class="title">Accounts Master</div>
+        <div class="content">
+          <form action="" method="post">
+            {% csrf_token %}
+
+          
+            <div class="user-details">
+              <div class="input-box">
+                <span class="details">Head</span>
+                <input style="background-color: rgb(185, 233, 246); text-transform: uppercase;" id="head" name="head" type="text"
+                  placeholder="{{userlist.head}}" readonly>
+              </div>
+              <div class="input-box2">
+                <span class="details">Account Group</span>
+                <input name="group" id="group" type="text" placeholder="{{ userlist.group }}" readonly>
+              </div>
+
+              <div class="input-box">
+                <span class="details">GST No</span>
+                <input style="text-transform: uppercase;" name="gstno" id="gstno" type="text" placeholder="{{userlist.gstno}}" readonly>
+              </div>
+
+              <div class="input-box2">
+                <span class="details">Category</span>
+                <input name="category" id="category" type="text" placeholder="{{ userlist.category }}" readonly>
+              </div>
+     
+
+              <div class="input-box">
+                <span class="details">Address 1</span>
+                <input name="address1" id="address1" type="text" placeholder="{{userlist.address1}}" readonly>
+              </div>
+              <div class="input-box2">
+                <span class="details">State</span>
+                <input name="state" id="state" type="text" placeholder="{{userlist.state}}" readonly>
+              </div>
+              <div class="input-box">
+                <span class="details">Address 2</span>
+                <input name="address2" id="address2" type="text" placeholder="{{userlist.address2}}" readonly>
+              </div>
+              <div class="input-box2">
+                <span class="details">State Code</span>
+                <input name="statecode" id="statecode" type="text" placeholder="{{userlist.statecode}}" readonly>
+              </div>
+              <div class="input-box">
+                <span class="details">Address 3</span>
+                <input name="address3" id="address3" type="text" placeholder="{{userlist.address3}}" readonly>
+              </div>
+              <div class="input-box2">
+                <span class="details">PAN No</span>
+                <input name="panno" id="panno" type="text" placeholder="{{userlist.panno}}" readonly>
+              </div>
+              <div class="input-box">
+                <span class="details">District</span>
+                <input name="district" id="district" type="text" placeholder="{{userlist.district}}" readonly>
+              </div>
+              <div class="input-box2">
+                <span class="details">Credit Limit</span>
+                <input name="creditlimit" id="creditlimit" type="text" placeholder="{{userlist.creditlimit}}" readonly>
+              </div>
+              <div class="input-box">
+                <span class="details">E-Mail</span>
+                <input name="email" id="email" type="text" placeholder="{{userlist.email}}" readonly>
+              </div>
+              <div class="input-box2">
+                <span class="details">Credit Days</span>
+                <input name="creditdays" id="creditdays" type="text" placeholder="{{userlist.creditdays}}" readonly>
+              </div>
+              <div class="input-box">
+                <span class="details">Telephone Number</span>
+                <input name="telno" id="telno" type="text" placeholder="{{userlist.telno}}" readonly>
+              </div>
+              <div class="input-box2">
+                <span class="details">price Group</span>
+                <input name="pricegroup" id="group" type="text" placeholder="{{userlist.pricegroup}}" readonly>
+              </div>
+
+              <div class="input-box">
+                <span class="details">Mobile</span>
+                <input name="mobile" id="mobile" type="text" placeholder="{{userlist.mobile}}" readonly>
+              </div>
+              <div class="input-box2">
+                <span class="details">Opening Balance</span>
+                <input name="opbalance" id="opbalance" type="text" placeholder="{{userlist.opbalance}}" readonly>
+              </div>
+              <div class="input-box">
+                <span class="details">WhatsApp Number</span>
+                <input name="whattsapp" id="whattsapp" type="text" placeholder="{{userlist.whattsapp}}" readonly>
+              </div>
+              <div class="input-box2">
+                <span class="details">Debit/Credit</span>
+                <input name="debitcredit" id="debitcredit" type="text" placeholder="{{userlist.debitcredit}}" readonly>
+              </div>
+              <br>
+              <div class="input-box2">
+                <span class="details">Current Balance</span>
+                <input style="font-size: 15px;" name="currentbalance" id="currentbalance" type="text" placeholder="{{userlist.opbalance}}"
+                readonly>
+              </div>
+
+
+            </div>
+
+
+
+            <div class="button">
+            <!-- <button class="all-button" type="submit"><a href="{% url 'web:acc_master_list' %}">Save</a></button> -->
+            <a href="{% url 'web:acc_master_list' %}"><button class="text-orange-500 bg-white border-orange-500 btn hover:text-white hover:bg-orange-600 hover:border-orange-600 focus:text-white focus:bg-orange-600 focus:border-orange-600 focus:ring focus:ring-orange-100 active:text-white active:bg-orange-600 active:border-orange-600 active:ring active:ring-orange-100 dark:bg-zink-700 dark:hover:bg-orange-500 dark:ring-orange-400/20 dark:focus:bg-orange-500" type="button"> Search</button></a>
+            <a href="{% url 'web:acc_master' %}"><button class="text-orange-500 bg-white border-orange-500 btn hover:text-white hover:bg-orange-600 hover:border-orange-600 focus:text-white focus:bg-orange-600 focus:border-orange-600 focus:ring focus:ring-orange-100 active:text-white active:bg-orange-600 active:border-orange-600 active:ring active:ring-orange-100 dark:bg-zink-700 dark:hover:bg-orange-500 dark:ring-orange-400/20 dark:focus:bg-orange-500" type="button">Cancel</button></a>
+            <a href="{% url 'web:edit_acc_master_list' userlist.slug %}">
+              <button class="text-orange-500 bg-white border-orange-500 btn hover:text-white hover:bg-orange-600 hover:border-orange-600 focus:text-white focus:bg-orange-600 focus:border-orange-600 focus:ring focus:ring-orange-100 active:text-white active:bg-orange-600 active:border-orange-600 active:ring active:ring-orange-100 dark:bg-zink-700 dark:hover:bg-orange-500 dark:ring-orange-400/20 dark:focus:bg-orange-500" type="button">Edit</button>
+          </a>
+
+      <button id="btnOpenDialog" type="button" class="text-red-500 bg-white border-red-500 btn hover:text-white hover:bg-red-600 hover:border-red-600 focus:text-white focus:bg-red-600 focus:border-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:border-red-600 active:ring active:ring-red-100 dark:bg-zink-700 dark:hover:bg-red-500 dark:ring-red-400/20 dark:focus:bg-red-500">
+        Delete
+    </button>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          var btnOpenDialog = document.getElementById('btnOpenDialog');
+      
+          btnOpenDialog.addEventListener('click', function() {
+              Swal.fire({
+                  title: 'Are you sure?',
+                  text: 'Do you want to delete head "{{ userlist.head }}"?',
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Yes, delete it!',
+                  cancelButtonText: 'No, cancel'
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      fetch("{% url 'web:delete_acc_master_list' userlist.pk %}", {
+                          method: 'DELETE',
+                          headers: {
+                              'X-CSRFToken': '{{ csrf_token }}',
+                              'Content-Type': 'application/json'
+                          }
+                      }).then(response => {
+                          if (response.ok) {
+                              Swal.fire('Deleted!', 'The account "{{ userlist.head }}" has been deleted.', 'success').then(() => {
+                                  window.location.href = "{% url 'web:acc_master' %}";
+                              });
+                          }
+                            else {
+                               Swal.fire('Error', 'There was an issue deleting the item.', 'error');
+                           }
+                      })
+                       .catch(error => {
+                           Swal.fire('Error', 'There was an issue deleting the item.', 'error');
+                       });
+                  }
+              });
+          });
+      });
+      </script>
+            
+          </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  
+  
+
+<script>
+  $(document).ready(function() {
+      {% if messages %}
+          {% for message in messages %}
+              toastr.success("{{ message }}");
+          {% endfor %}
+      {% endif %}
+  });
+</script>
+
+
+
+
+
+
+
+{% endblock %}

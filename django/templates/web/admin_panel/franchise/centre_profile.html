@@ -1,0 +1,307 @@
+    {% extends "web/admin_panel/base.html" %}
+
+    {% load static %}
+
+    {% block content %}
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="{% static 'web/css/admin-centre-profile.css' %}">
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet">
+
+    
+    <div class="group-data-[sidebar-size=sm]:min-h-sm group-data-[sidebar-size=sm]:relative">
+        <div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+        <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+            <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+                <div class="mt-1 -ml-3 -mr-3 rounded-none card">
+                    <div class="card-body !px-2.5">
+                        <iframe style="float: right;" src="{{ centreusers.location }}" width="350" height="250" style="border:0; margin: 10px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        <div class="grid grid-cols-1 gap-5 lg:grid-cols-12 2xl:grid-cols-12">
+                            <div class="lg:col-span-2 2xl:col-span-1">
+                                <div class="relative inline-block rounded-full shadow-md size-20 bg-slate-100 profile-user xl:size-28">
+                                    {% if centreusers.photo %}
+                                    <img src="{{ centreusers.photo.url }}" alt="" class="object-cover border-0 rounded-full img-thumbnail user-profile-image">
+                                    {% else %}
+                                    <img src="{% static 'web/images/noimage.jpg' %}" alt="" class="object-cover border-0 rounded-full img-thumbnail user-profile-image">
+                                    {% endif %}
+                                </div>
+                            </div><!--end col-->
+                            <div class="lg:col-span-10 2xl:col-span-9" style="margin-left:20px;">
+                                <h5 class="mb-1">{{ centreusers.owner_centre }} <i data-lucide="badge-check" class="inline-block size-4 text-sky-500 fill-sky-100 dark:fill-custom-500/20"></i></h5>
+                                <h6 class="mb-1">Centre ID : <span class="text-red-500">{{ centreusers.formatted_id }}</span></h6>
+                                <div class="flex gap-3 mb-4">
+                                    <p class="text-slate-500 dark:text-zink-200"><i data-lucide="user-circle" class="inline-block size-4 ltr:mr-1 rtl:ml-1 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-500"></i> Centre User</p>
+                                    <p class="text-slate-500 dark:text-zink-200"><i data-lucide="map-pin" class="inline-block size-4 ltr:mr-1 rtl:ml-1 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-500"></i>{{ centreusers.state }}, {{ centreusers.district }}, {{ centreusers.taluk }}</p>
+                                </div>
+                                <p class="upper"><strong class="smallc">Created By:</strong> {{ object.created_by.username }}</p>
+                                {% if centreusers.last_login %}
+                                <p class="upper"><strong class="smallc">Today Login Time:</strong> {{ centreusers.last_login|date:"d M Y, H:i:s" }}</p>
+                                {% else %}
+                                <p class="upper"><strong class="smallc">Today Login Time:</strong> Today Not Login</p>
+                                {% endif %}
+                                <div class="flex gap-2 mt-4">
+                                    <a href="mailto:{{ centreusers.email }}" class="flex items-center justify-center transition-all duration-200 ease-linear rounded size-9 text-sky-500 bg-sky-100 hover:bg-sky-200 dark:bg-sky-500/20 dark:hover:bg-sky-500/30">
+                                        <i data-lucide="mail" class="size-4"></i>
+                                    </a>
+                                    <a href="tel:{{ centreusers.mobile }}" class="flex items-center justify-center text-pink-500 transition-all duration-200 ease-linear bg-pink-100 rounded size-9 hover:bg-pink-200 dark:bg-pink-500/20 dark:hover:bg-pink-500/30">
+                                        <i data-lucide="phone" class="size-4"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div><!--end grid-->
+                    </div>
+                    
+                    <br>  
+                    <div class="card-body !px-2.5 !py-0" style="margin-top: -100px ;">
+                        <ul class="flex flex-wrap w-full text-sm font-medium text-center nav-tabs">
+                            <div class="flex flex-wrap gap-2">
+                                <a href="#"><button type="button" class="text-custom-500 btn bg-custom-100 hover:text-white hover:bg-custom-600 focus:text-white focus:bg-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:ring active:ring-custom-100 dark:bg-custom-500/20 dark:text-custom-500 dark:hover:bg-custom-500 dark:hover:text-white dark:focus:bg-custom-500 dark:focus:text-white dark:active:bg-custom-500 dark:active:text-white dark:ring-custom-400/20"><i class='bx bx-street-view'></i> Overview</button></a>
+                                <a href="{% url 'web:admin_edit_centre' pk=centreusers.pk %}" class="edit-link">
+                                    <button type="button" class="text-green-500 bg-green-100 btn hover:text-white hover:bg-green-600 focus:text-white focus:bg-green-600 focus:ring focus:ring-green-100 active:text-white active:bg-green-600 active:ring active:ring-green-100 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500 dark:hover:text-white dark:focus:bg-green-500 dark:focus:text-white dark:active:bg-green-500 dark:active:text-white dark:ring-green-400/20 edit-button">
+                                        <i class='bx bxs-edit'></i> Edit Centre Profile
+                                    </button>
+                                </a>
+                                <a href="{% url 'web:admin_delete_centre' centreusers.id %}" class="delete-link">
+                                    <button type="button" class="text-red-500 bg-red-100 btn hover:text-white hover:bg-red-600 focus:text-white focus:bg-red-600 focus:ring focus:ring-red-100 active:text-white active:bg-red-600 active:ring active:ring-red-100 dark:bg-red-500/20 dark:text-red-500 dark:hover:bg-red-500 dark:hover:text-white dark:focus:bg-red-500 dark:focus:text-white dark:active:bg-red-500 dark:active:text-white dark:ring-red-400/20 delete-button">
+                                        <i class='bx bxs-trash'></i> Delete Centre
+                                    </button>
+                                </a>
+                            </div>
+                        </ul>
+                    </div>
+                </div><!--end card-->
+            
+                <div class="tab-content" style="border: 1px solid #333; background: antiquewhite;">
+                    <div class="block tab-pane" id="overviewTabs">
+                        <div class="grid grid-cols-1 2xl:grid-cols-2 gap-x-6">
+                            <div class="container">
+                                <div class="table-container">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th colspan="2">Personal Details</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Name</td>
+                                                <td>{{ centreusers.owner_centre }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>VLC Number</td>
+                                                <td>{{ centreusers.user }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Phone No</td>
+                                                <td>{{ centreusers.mobile }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Alternative mobile No</td>
+                                                <td>{{ centreusers.alternative_mobile }}</td>
+                                            </tr>   
+                                            <tr>
+                                                <td>Email</td>
+                                                <td>{{ centreusers.email }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Aadhaar number</td>
+                                                <td>{{ centreusers.aadhaar_number }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Pan card number</td>
+                                                <td>{{ centreusers.pan_card_number }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Address</td>
+                                                <td>{{ centreusers.centre_owner_address }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="block tab-pane" id="overviewTabs">
+                                <div class="grid grid-cols-1 2xl:grid-cols-2 gap-x-6">
+                                    <div class="container">
+                                <div class="table-container">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th colspan="2">Centre Details</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Center name</td>
+                                                <td>{{ centreusers.centre_name }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Centre Phone No</td>
+                                                <td>{{ centreusers.centre_phone_number }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>State</td>
+                                                <td>{{ centreusers.state }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>District</td>
+                                                <td>{{ centreusers.district }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Taluk</td>
+                                                <td>{{ centreusers.taluk }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Pin Code</td>
+                                                <td>{{ centreusers.pin_code }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Address</td>
+                                                <td>{{ centreusers.address }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="mb-4 text-15">All Documents</h6>
+                                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+                                        <div class="relative overflow-hidden rounded-md group/gallery">
+                                            <div class="overflow-hidden download relative">
+                                                {% if centreusers.aadhaar_front_side_uploading %}
+                                                    <img src="{{ centreusers.aadhaar_front_side_uploading.url }}" alt="" class="transition-all duration-300 ease-linear">
+                                                    <a href="{{ centreusers.aadhaar_front_side_uploading.url }}" download class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 ease-linear group-hover:opacity-100 w-full h-full">
+                                                        <i class="bx bx-download text-white text-4xl"></i>
+                                                    </a>
+                                                {% else %}
+                                                    <p style="color:red;">Aadhaar Front Side not Upload</p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="pt-3">
+                                                <h5 class="mb-1 text-16"><a class="transition-all duration-300 ease-linear">Aadhaar Front Side</a></h5>
+                                            </div>
+                                        </div>
+                                        <div class="relative overflow-hidden rounded-md group/gallery">
+                                            <div class="overflow-hidden download relative">
+                                                {% if centreusers.aadhaar_back_side_uploading %}
+                                                    <img src="{{ centreusers.aadhaar_back_side_uploading.url }}" alt="" class="transition-all duration-300 ease-linear">
+                                                    <a href="{{ centreusers.aadhaar_back_side_uploading.url }}" download class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 ease-linear group-hover:opacity-100 w-full h-full">
+                                                        <i class="bx bx-download text-white text-4xl"></i>
+                                                    </a>
+                                                {% else %}
+                                                    <p style="color:red;">Aadhaar Back Side not Upload</p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="pt-3">
+                                                <h5 class="mb-1 text-16"><a class="transition-all duration-300 ease-linear">Aadhaar Back Side</a></h5>
+                                            </div>
+                                        </div>
+
+                                        <div class="relative overflow-hidden rounded-md group/gallery">
+                                            <div class="overflow-hidden download relative">
+                                                {% if centreusers.pan_card_uploading %}
+                                                    <img src="{{ centreusers.pan_card_uploading.url }}" alt="" class="transition-all duration-300 ease-linear">
+                                                    <a href="{{ centreusers.pan_card_uploading.url }}" download class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 ease-linear group-hover:opacity-100 w-full h-full">
+                                                        <i class="bx bx-download text-white text-4xl"></i>
+                                                    </a>
+                                                {% else %}
+                                                    <p style="color:red;">Pan Card not Upload</p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="pt-3">
+                                                <h5 class="mb-1 text-16"><a class="transition-all duration-300 ease-linear">Pan Card</a></h5>
+                                            </div>
+                                        </div>
+                                        <div class="relative overflow-hidden rounded-md group/gallery">
+                                            <div class="overflow-hidden download relative">
+                                                {% if centreusers.sign_uploading %}
+                                                    <img src="{{ centreusers.sign_uploading.url }}" alt="" class="transition-all duration-300 ease-linear">
+                                                    <a href="{{ centreusers.sign_uploading.url }}" download class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 ease-linear group-hover:opacity-100 w-full h-full">
+                                                        <i class="bx bx-download text-white text-4xl"></i>
+                                                    </a>
+                                                {% else %}
+                                                    <p style="color:red;">Sign not Upload</p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="pt-3">
+                                                <h5 class="mb-1 text-16"><a class="transition-all duration-300 ease-linear">Sign</a></h5>
+                                            </div>
+                                        </div>
+                                        <div class="relative overflow-hidden rounded-md group/gallery">
+                                            <div class="overflow-hidden download relative">
+                                                {% if centreusers.another_document %}
+                                                    <img src="{{ centreusers.another_document.url }}" alt="" class="transition-all duration-300 ease-linear">
+                                                    <a href="{{ centreusers.another_document.url }}" download class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 ease-linear group-hover:opacity-100 w-full h-full">
+                                                        <i class="bx bx-download text-white text-4xl"></i>
+                                                    </a>
+                                                {% else %}
+                                                    <p style="color:red;">Another document not Upload</p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="pt-3">
+                                                <h5 class="mb-1 text-16"><a class="transition-all duration-300 ease-linear">Another document</a></h5>
+                                            </div>
+                                        </div>
+                                    </div><!--end grid-->
+                                </div>
+                            </div><!--end card-->
+                        </div><!--end grid-->
+                    </div><!--end tab pane-->
+                </div><!--end tab content-->
+            </div><!-- container-fluid -->
+        </div><!-- End Page-content -->
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Handle delete button click
+            document.querySelectorAll(".delete-link").forEach(function (link) {
+                link.addEventListener("click", function (event) {
+                    event.preventDefault(); // Prevent the default link behavior
+                    const url = this.getAttribute("href"); // Get the URL from the link
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = url; // Redirect to the URL
+                        }
+                    });
+                });
+            });
+
+            // Handle edit button click
+            document.querySelectorAll(".edit-link").forEach(function (link) {
+                link.addEventListener("click", function (event) {
+                    event.preventDefault(); // Prevent the default link behavior
+                    const url = this.getAttribute("href"); // Get the URL from the link
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You will be redirected to edit the profile!",
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, edit it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = url; // Redirect to the URL
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    {% endblock %}

@@ -1,0 +1,96 @@
+
+#error-message, #human-detection, #head-rotation-error, #speech-error {
+    font-weight: bold;
+}
+#thanks-message {
+    color: green;
+    font-weight: bold;
+}
+h2 {
+    font-weight: bold;
+    text-align: center;
+    font-size: 40px;
+    padding-top: 50px;
+}
+#video {
+    border: 1px solid black;
+    float: right;
+}
+.question {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+}
+.question  input{
+    float: right;
+    width: 20px !important;
+    height: 20px;
+}
+button {
+    padding: 8px;
+    background-color: #007A9B;
+    color: white;
+    border: none;
+    border-radius: 6px;
+}
+video {
+    position: fixed;
+    right: 0;
+    top: 0;
+    margin-top: 10px;
+    margin-right: 10px;
+    width: 250px;
+    height: 200px;
+}
+.timer {
+    font-size: 30px;
+    font-weight: bold;
+    color: brown;
+}
+.span-time {
+    color: #333;
+    font-size: 25px;
+    font-weight: 700;
+}
+ol li {
+    font-size: 20px;
+    font-weight: 600;
+}
+ul li {
+    font-size: 17px;
+}
+.error {
+    padding: 10px;
+    font-size: 20px;
+}
+.message-box {
+    border-radius: 6px;
+    margin: 20px auto;
+    width: 65%;
+    z-index: -1;
+    padding: auto 0;
+    position: relative;
+    display: flex;
+}
+.message-text {
+    vertical-align: middle;
+    display: flex;
+    margin-top: 13px;
+    font-size: 20px;
+}
+.message-box-warn {
+    background-color: #F8F4D5;
+    border:  #e9dd7e 2px solid;
+    color: #96722E;
+}
+.message-box-error {
+    background-color: #ECC8C5;
+    border:  #d37f78 2px solid;
+    color: #B83C37;
+}
+.message-box-success {
+    background-color: #DDF3D5;
+    border: #9ddc86 2px solid;
+    color: #597151;
+}

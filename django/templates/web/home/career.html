@@ -1,0 +1,170 @@
+{% extends "web/home/base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+
+
+
+<!-- PAGE HERO SECTION
+			============================================= -->
+<section class="page-hero-section">
+	<div class="page-hero-section-overlay bg--01 bg--scroll">
+		<div class="container">
+
+			<div class="row d-flex align-items-center">
+				<!-- TEXT BLOCK -->
+				<div class="col-md-6">
+					<div class="txt-block left-column color--white wow fadeInRight" style="text-align: center; align-items: center;">
+						<!-- Title -->
+						<h2 class="s-56 w-700" style="margin-top: 115px;">Job Vacancies</h2>
+						<!-- Text -->
+						<p class="p-lg w-400" style="color: rgba(0, 0, 0, 0.474);">Finding the perfect job shouldn't feel like a full-time job itself. At SSC, we believe that every individual 
+							deserves a career that aligns with their skills, passions, and aspirations. Our diverse range of job opportunities ensures there's 
+							something for everyone whether 
+							you're an experienced professional seeking growth or a fresh graduate eager to kickstart your journey.
+							We are committed to fostering an inclusive and dynamic work environment where innovation thrives, and talent flourishes.
+							 By joining SSC, you'll become part of a team that values creativity, collaboration, and personal development.	
+							Explore our open roles below and take the first step towards a rewarding career where your potential is truly recognized and nurtured.
+							 Your dream job might be just a click away!
+						</p>
+
+					</div>
+				</div> <!-- END TEXT BLOCK -->
+
+
+				<!-- IMAGE BLOCK -->
+				<div class="col-md-6">
+					<div class="img-block right-column wow fadeInLeft">
+						<img class="img-fluid" src="{% static 'web/images/pip.jpg' %}" alt="content-image"
+							style="width: 400px; border-radius: 5px; margin-top: 30px;">
+					</div>
+				</div>
+
+
+			</div> <!-- End row -->
+		</div> <!-- End container -->
+	</div> <!-- End Page Hero Section Overlay -->
+
+	<!-- WAVE SHAPE BOTTOM -->
+	<div class="wave-shape-bottom">
+	</div>
+
+
+</section> <!-- END PAGE HERO SECTION -->
+
+<section>
+	<div>
+		<marquee>
+			<h1 style="font-weight: bold; color: black;">Samatwa Service Centre E-Governance LTD | 
+				<span style="color: red;">Samatwa Service Centre E-Governance LTD |</span> 
+				Samatwa Service Centre E-Governance LTD | 
+				<span style="color: red;">Samatwa Service Centre E-Governance LTD |</span> 
+				Samatwa Service Centre E-Governance LTD |
+			</h1>
+		</marquee> 
+	</div>
+</section>
+<!-- DIVIDER LINE -->
+<hr class="divider">
+<!-- CAREERS-1
+			============================================= -->
+<section id="careers-1" class="pt-100 pb-60 careers-section">
+	<div class="container">
+
+
+		<!-- SECTION TITLE -->
+		<div class="row justify-content-center">
+			<div class="col-md-10 col-lg-9">
+				<div class="section-title mb-70">
+
+					<!-- Title -->
+					<h2 class="s-52 w-700">Open Roles at SSC</h2>
+
+					<!-- Text -->
+					<p class="p-lg">Discover Your Dream Career with SSC </p>
+
+				</div>
+			</div>
+		</div>
+
+		<div  class="mt-1 mb-1 h-75">
+			<img src="{% static 'web/images/career-page-bottom-image.jpg' %}" alt="" style="margin-bottom: 30px;">
+		</div>
+
+
+		<!-- OPEN ROLES -->
+		<div class="row row-cols-1 row-cols-md-1">
+
+
+			<!-- OPEN ROLE #1 -->
+			<div class="col">
+				<div class="role-box bg--white-300">
+					
+						
+						
+
+					<!-- PRICING COMPARE -->
+					<div class="comp-table wow fadeInUp">
+						<div class="row">
+							<div class="col">
+
+
+								<!-- Table -->	
+	   							<div class="table-responsive mb-50">
+	     							<table class="table text-center">
+
+	        							<thead>
+									        <tr>
+									            <th style="width: 34%;">Name of Host</th>
+									            <th style="width: 22%;">experience</th>
+									            <th style="width: 22%;">qualification</th>
+									            <th style="width: 22%;">Salary</th>
+									            <th style="width: 22%;">Apply</th>
+									       	</tr>
+								        </thead>
+
+								        <tbody>
+
+											{% for c in career %}
+									       	<tr>
+									            <th scope="row" class="text-start">{{ c.name_of_host }}</th>
+									            <td class="color--black">{{ c.experience }}</td>
+									            <td class="color--black">{{ c.qualification }}</td>
+									            <td class="color--black">{{ c.salary }}</td>
+									            <td class="color--black"><a href="" style="background-color: rgb(0, 145, 255); color: whitesmoke; padding: 5px;">Apply</a></td>
+									        </tr>
+											{% endfor %}
+
+
+								        </tbody>
+
+	      							</table>
+	   							</div>	<!-- End Table -->	
+
+							</div>
+						</div>
+					</div>	<!-- END PRICING COMPARE -->
+
+
+						
+					
+				</div>
+			</div>
+
+		</div>
+
+
+	</div> <!-- End container -->
+</section> <!-- END CAREERS-1 -->
+
+<hr class="divider">
+
+
+
+
+
+
+{% endblock %}

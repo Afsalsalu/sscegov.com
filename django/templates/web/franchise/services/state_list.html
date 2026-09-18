@@ -1,0 +1,68 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'web/css/non.css' %}" />
+     
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm" style="background-color:aliceblue">
+    <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">        
+        <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto" >
+            <h4 class="py-4"></h4>
+            <h2 class="mb-4">States</h2>
+            <input 
+            id="searchInput"  
+            style="width: 205px;"
+            type="text"
+            class="ltr:pl-8 rtl:pr-8 search form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200"
+            placeholder="Search for state name..."
+            autocomplete="off"
+        />
+        <h4 class="py-1"></h4>
+            <div class="grid grid-cols-12 2xl:grid-cols-12 gap-x-5">
+                {% for state in states %}
+                <div class="col-span-12 card md:col-span-6 lg:col-span-3 2xl:col-span-2">
+                    <a href="{% url 'web:state_detail' slug=state.slug %}">
+                        <div  class="card service-category">
+                            <div class="card-body text-center">
+                                <div class="flex items-center justify-center mx-auto rounded-full size-14 bg-custom-100 text-custom-500 dark:bg-custom-500/20">
+                                    <img class"mb-3" style="width:115px;" src="{{ state.logo.url }}" alt="{{ state.state_name }} Logo">
+                                </div>
+                                <h5 class="title-5 py-3">{{ state.state_name }}</h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchBar = document.getElementById("searchInput");  <!-- Fixed the id here -->
+        const serviceCards = document.querySelectorAll(".card");
+
+        searchBar.addEventListener("input", function () {
+            const query = searchBar.value.toLowerCase().trim();
+            serviceCards.forEach(card => {
+                const serviceName = card.querySelector("h5").textContent.toLowerCase();
+                if (serviceName.includes(query)) {
+                    card.style.display = ""; // Show matching service
+                } else {
+                    card.style.display = "none"; // Hide non-matching service
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+
+{% endblock %}

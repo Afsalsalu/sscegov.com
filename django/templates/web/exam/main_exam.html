@@ -1,0 +1,412 @@
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Main Exam SSC</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="{% static 'web/css/exam.css' %}">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .exam-area {
+            padding: 40px 0;
+        }
+
+        .section-title {
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 13px;
+            justify-content: center;
+            margin-bottom: 20px;
+            width: 30%;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            float: left;
+        }
+
+        .question-nav-item {
+            background: #007a9b;
+            color: #fff;
+            text-decoration: none;
+            padding: 5px 10px 5px;
+            text-align: center;
+            flex: 1 0 16%;
+            max-width: 35px;
+            font-size: 0.9rem;
+            height: 30px;
+            font-family: monospace;
+        }
+
+        @media (max-width: 600px) {
+            .question-nav-item {
+                flex: 1 0 30%;
+            }
+        }
+
+        .question-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+            /* Hide all questions by default */
+        }
+
+        .question-card.active {
+            display: block;
+            /* Show the active question */
+            width: 75%;
+        }
+
+        .question-card legend {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .question-card input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .question-card label {
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .question-nav-item.active {
+            background-color: aqua;
+            color: black;
+            font-family: fantasy;
+        }
+
+        .question-nav-item.answered {
+            background-color: #ffc107;
+        }
+
+        .question-nav-item.unanswered {
+            background-color: #dc3545;
+        }
+
+        #submit-btn {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+
+        .alert {
+            margin-top: 20px;
+        }
+
+        #video-preview {
+            display: block;
+            margin: 20px auto;
+        }
+
+        .question-nav-item.answered {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .error-messages p {
+            color: rgb(0, 0, 0)(61, 61, 61);
+            list-style-type: none;
+        }
+
+        .error-messages p::before {
+            content: "* ";
+            color: red;
+        }
+
+        #video-preview-container {
+            position: absolute;
+            top: 5%;
+            right: 10px;
+            transform: translateY(-50%);
+        }
+
+        .camera-error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="initialDiv" style="padding-top: 10%; text-align: center; position: relative; top: 0px;">
+        <h1>{{ exam_category.name }}</h1>
+        <br>
+        <button id="startButton" class="btn btn-primary" style="width: 200px; height: 50px; font-weight: bold;">Start
+            Exam</button>
+        <br><br>
+        <h4 style="margin-top: 0px; margin-bottom: 0px;">Total 60 minutes Exam Time</h4>
+        <div style="float: left; text-align: justify; margin-left: 11px; margin-top: 30px;" class="error-messages">
+            <h3>Important Guidelines: Please Avoid the Following Actions</h3>
+            <p>Total Questions: The exam consists of 50 multiple-choice questions, covering various topics related to
+                the TEC certification.</p>
+            <p>Passing Criteria: You must score at least 50% (25 correct answers out of 50) to successfully pass the
+                exam and receive your certification.</p>
+            <p>Exam Attempts: Each candidate is allowed only 2 attempts to clear the exam; failing both attempts will
+                require re-registration.</p>
+            <p>Warnings & Disqualification: You are allowed a maximum of 3 warnings per attempt for violations such as
+                looking away from the screen, switching tabs, minimizing the exam window, or engaging in any suspicious
+                activity. Exceeding this limit will immediately end your attempt and mark it as failed.</p>
+            <p>Submit Exam Only After Attempting All Questions: The "Submit Exam" button will only be enabled after you
+                have attempted all 50 questions. You must answer every question before submitting the exam.</p>
+            <p>Browser & Tab Restrictions: Once the exam starts, you must not change, switch, minimize, or open new
+                browser tabs or windows. Doing so will trigger a warning, and repeated violations will result in
+                automatic disqualification.</p>
+            <p>Time Limit: The exam must be completed within 1 hour (60 minutes). Any unanswered questions at the end of
+                the time limit will not be counted, and the exam will be automatically submitted.</p>
+            <p>Stable Internet: Ensure that you have a stable internet connection before starting the exam, as repeated
+                disconnections or technical failures may lead to automatic disqualification.</p>
+            <p>No External Help: The use of books, notes, external devices, or assistance from others during the exam is
+                strictly prohibited, and any violation will result in immediate disqualification.</p>
+            <p>Face Visibility: Ensure that your face remains clearly visible to the camera throughout the entire exam;
+                any attempt to hide, move away, or obstruct the camera may result in warnings or disqualification.</p>
+            <p>Face Visibility: Ensure that your face remains clearly visible to the camera throughout the entire exam.
+                Any attempt to hide, move away, or obstruct the camera may result in warnings or disqualification. Only
+                one person should be visible on the camera; the presence of multiple people will lead to immediate
+                disqualification.</p>
+        </div>
+    </div>
+
+    <div id="malpractice-warning" style="color: red; font-size: 18px; font-weight: bold;">
+        {% if num_faces > 1 %}
+        Warning: {{ num_faces }} people detected! Ensure only one person is in front of the camera.
+        {% endif %}
+    </div>
+    <div id="video-preview-container">
+        <video id="video-preview" width="320" height="240" autoplay muted></video>
+    </div>
+    <div id="recording-status">Camera is initializing...</div>
+
+    <!-- Camera Permission Error Message -->
+    <div id="camera-error-message" class="camera-error-message" style="position: absolute; top: 10%;">
+        <p>Camera access denied. You cannot proceed without enabling the camera. Please click "OK" to retry.</p>
+        <button id="retry-camera-btn" class="btn btn-danger">Retry Camera Access</button>
+    </div>
+    <div id="camera-error-message" style="display: none; color: red; font-weight: bold;"></div>
+
+    <section class="exam-area section-padding" id="examSection" style="display: none;">
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <div style="display: flex; justify-content: center; flex-direction: column-reverse;">
+                            <div>
+                                <p style="font-size: 30px; margin-bottom: 0px; margin-top: 0px; margin-left: 4px;"
+                                    class="timer">Time End In - 59:99</p>
+                            </div>
+                            <div>
+                                <h2 style="padding-top: 0px; margin-top: 0px; margin-bottom: 0px;"
+                                    class="section-title">
+                                    Main Exam</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-12">
+                            <div class="question-nav">
+                                {% for question in questions %}
+                                <a href="#" class="question-nav-item" data-id="{{ question.id }}"
+                                    data-target="#question_{{ question.id }}" title="Question {{ forloop.counter }}">
+                                    {{ forloop.counter }}
+                                </a>
+                                {% endfor %}
+                            </div>
+                            <div class="question-cards">
+                                {% for question in questions %}
+                                <div class="question-card" id="question_{{ question.id }}">
+                                    <fieldset>
+                                        <legend>{{ question.question_text }}</legend>
+                                        {% for option in question.options.all %}
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio"
+                                                name="question_{{ question.id }}" value="{{ option.id }}"
+                                                id="option_{{ option.id }}">
+                                            <label class="form-check-label" for="option_{{ option.id }}">{{option.option }}</label>
+
+                                        </div>
+                                        {% endfor %}
+                                    </fieldset>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="button-parent" style="display: flex; gap: 5px; float: left; margin-left: 5px;">
+                                <button type="submit" id="submit-btn">Submit Main Exam</button>
+
+                                <div id="video-preview-container" style="display:none;">
+                                    <video id="video-preview" width="320" height="240" autoplay muted></video>
+                                </div>
+
+                                <div id="recording-status"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+
+
+
+
+    <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+
+    <script src="{% static 'web/dashboard/assets/js/main-exam.js' %}"></script>
+    <!-- Add FaceAPI.js Library -->
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+
+
+
+
+    <script>
+        let noFaceDetectedCount = 0;  // Counter for missed face detections
+        const MAX_NO_FACE_TIME = 10;   // Maximum allowed seconds without a face
+        const CHECK_INTERVAL = 10000;  // Check every 10 seconds (10000 ms)
+        const MIN_DETECTION_CONFIDENCE = 0.5; // Confidence threshold to prevent false detections
+
+        async function loadFaceAPI() {
+            const MODEL_URL = "/static/models/";  // Ensure models exist in this directory
+
+            try {
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+                ]);
+                console.log("Face detection models loaded successfully!");
+            } catch (error) {
+                console.error("Error loading face detection models:", error);
+            }
+        }
+
+        async function startFaceDetection() {
+            const video = document.getElementById("video-preview");
+            const statusElement = document.getElementById("recording-status");
+            const submitButton = document.getElementById("submit-btn");
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                console.log("Camera is working!");
+            } catch (error) {
+                console.error("Camera access error:", error);
+                statusElement.innerText = "Camera access denied!";
+                return;
+            }
+
+            setInterval(async () => {
+                const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
+
+                if (detections.length === 0) {
+                    noFaceDetectedCount++;
+                    statusElement.innerText = `No face detected! (${noFaceDetectedCount * 10} sec without a face)`;
+
+                    if (noFaceDetectedCount >= MAX_NO_FACE_TIME / 10) {
+                        alert("No face detected for too long! Exam is blocked.");
+                        submitButton.disabled = false;
+                        statusElement.innerText = "Exam blocked due to no face detection!";
+                    }
+                } else {
+                    noFaceDetectedCount = 0;  // Reset counter when a face is detected
+                    statusElement.innerText = `Faces detected: ${detections.length}`;
+                }
+
+                if (detections.length > 1) {
+                    alert("More than one person detected! Exam is blocked.");
+                    submitButton.disabled = false;
+                    statusElement.innerText = "Exam blocked due to multiple people detected!";
+                }
+            }, CHECK_INTERVAL);
+        }
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            await loadFaceAPI();
+            setTimeout(startFaceDetection, 1000);  // Ensures models are ready before detection
+        });
+    </script>
+
+
+<script>
+    if ('webkitSpeechRecognition' in window) {
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = function () {
+        console.log("Speech detection started.");
+    };
+
+    recognition.onresult = function (event) {
+        console.log("Speech detected!", event);
+        alert("Speaking detected! Exam is blocked.");
+        document.getElementById("submit-btn").disabled = false;
+        document.getElementById("recording-status").innerText = "Exam blocked due to speech detection!";
+    };
+
+    recognition.onerror = function (event) {
+        console.error("Speech recognition error:", event);
+    };
+
+    recognition.onend = function () {
+        console.log("Speech detection stopped, restarting...");
+        setTimeout(() => recognition.start(), 1000); // Restart after a short delay
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(() => recognition.start(), 2000); // Start listening after page load
+    });
+} else {
+    console.error("Speech recognition is not supported in this browser.");
+}
+
+</script>
+
+</body>
+
+</html>

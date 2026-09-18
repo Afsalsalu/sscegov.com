@@ -1,0 +1,67 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="group-data-[sidebar-size=sm]:min-h-sm group-data-[sidebar-size=sm]:relative">
+    <div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+        <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+            <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+                <div class="flex flex-col gap-2 py-4 md:flex-row md:items-center print:hidden">
+
+                </div>
+                <form action="#!" class="mb-5">
+                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
+                        <div class="lg:col-span-3 lg:col-start-10">
+                            <div class="flex gap-2 lg:justify-end">
+                                <a href="{% url 'web:add_kerala_subcentre' %}">
+                                <button data-modal-target="addUserModal" type="button" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20"><i data-lucide="plus" class="inline-block size-4"></i> <span class="align-middle">Request sub centre</span></button>
+                            </a>
+                            </div>
+                        </div><!--end col-->
+                    </div><!--end grid-->
+                </form>
+                <div class="grid grid-cols-1 gap-x-5 md:grid-cols-2 xl:grid-cols-4">
+                    {% for sub in keralasubcentre %}
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="relative flex items-center justify-center mx-auto text-lg rounded-full size-16 bg-slate-100 dark:bg-zink-600">
+                                {% if sub.photo %}
+                                <img src="{{ sub.photo.url }}" alt="" class="rounded-full size-16">
+                                {% else %}
+                                <!-- Placeholder image or default image if profile_picture is not set -->
+                                <img src="{% static 'web/images/noimage.jpg' %}" alt="" class="rounded-full size-16">
+                                {% endif %}
+                                <span class="absolute bg-green-400 border-2 border-white rounded-full size-3 dark:border-zink-700 bottom-1 ltr:right-1 rtl:left-1"></span>
+                            </div>
+                            <div class="mt-4 text-center">
+                                <h5 class="mb-1 text-16"><a href="pages-account.html">{{ sub.get_salutation_display }}{{ sub.name }}</a></h5>
+                                <p class="mb-3 text-slate-500 dark:text-zink-200">{{ sub.centre_name }}</p>
+                                <p class="text-slate-500 dark:text-zink-200">{{ sub.state }}, {{ sub.district }}, {{ sub.taluk }}, {{ sub.pin_code }}</p>
+                            </div>
+                            <div class="flex gap-2 mt-5">
+                                <a href="{% url 'web:keralacentre_profile' pk=sub.pk %}" class="bg-white text-custom-500 btn border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:bg-zink-700 dark:hover:bg-custom-500 dark:ring-custom-400/20 dark:focus:bg-custom-500 grow"><i data-lucide="messages-square" class="inline-block size-4 ltr:mr-1 rtl:ml-1"></i> <span class="align-middle">View</span></a>
+                                <div class="relative dropdown">
+                                    <button type="button" id="userGridDropdown12" data-bs-toggle="dropdown" class="dropdown-toggle flex items-center justify-center size-[37.5px] p-0 text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20"><i data-lucide="more-horizontal" class="size-4"></i></button>
+                                    <ul class="absolute z-50 hidden py-2 mt-1 ltr:text-left rtl:text-right list-none bg-white rounded-md shadow-md dropdown-menu min-w-[10rem] dark:bg-zink-600" aria-labelledby="userGridDropdown12">
+                                        <li>
+                                            <a data-modal-target="addUserModal" class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="{% url 'web:edit_kerala_centre' sub.id %}"><i data-lucide="file-edit" class="inline-block size-3 ltr:mr-1 rtl:ml-1"></i> <span class="align-middle">Edit</span></a>
+                                        </li>
+                                        <li>
+                                            <a data-modal-target="deleteModal" class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="{% url 'web:delete_kerala_centre' sub.id %}"><i data-lucide="trash-2" class="inline-block size-3 ltr:mr-1 rtl:ml-1"></i> <span class="align-middle">Delete</span></a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!--end col & card-->
+                    {% endfor %}
+                </div><!--end grid-->
+            </div>
+            <!-- container-fluid -->
+        </div>
+        <!-- End Page-content -->
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,247 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wallet</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== RESET ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ===== BODY ===== */
+        body {
+            font-family: 'Sora', sans-serif;
+            background: skyblue;
+            min-height: 100vh;
+        }
+
+        /* ===== PAGE WRAPPER (FIXED) ===== */
+        .page-wrapper {
+            margin-left: 260px;   /* 🔥 FIX: avoid sidebar overlap */
+            min-height: calc(100vh - 60px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 100px 20px 40px;  /* space for topbar */
+        }
+
+        /* ===== CARD ===== */
+        .box {
+            background: #ffffff;
+            box-shadow: 0 8px 40px rgba(10, 22, 40, 0.18);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 900px;
+            padding: 40px;
+
+            margin: auto;  /* center inside */
+        }
+
+        /* ===== HEADER ===== */
+        h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0a1628;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #7a90aa;
+            margin-bottom: 20px;
+        }
+
+        /* ===== BALANCE ===== */
+        .balance-box {
+            background: linear-gradient(135deg, #0a1628, #1a3158);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 16px rgba(10, 22, 40, 0.25);
+        }
+
+        /* ===== TABLE ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        thead {
+            background: #f0f3f8;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #7a90aa;
+        }
+
+        td {
+            padding: 14px 12px;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f3f8;
+        }
+
+        tr:hover {
+            background: #f9fbff;
+        }
+
+        /* ===== COLORS ===== */
+        .credit {
+            color: #16a34a;
+            font-weight: 600;
+        }
+
+        .debit {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #7a90aa;
+        }
+
+        /* ===== BUTTON ===== */
+        .btn-group {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: #f0f3f8;
+            color: #1a2a3a;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        /* ===== MOBILE ===== */
+        @media(max-width:768px) {
+
+            .page-wrapper {
+                margin-left: 0;   /* 🔥 remove sidebar spacing */
+                padding: 90px 15px 30px;
+            }
+
+            .box {
+                padding: 25px;
+                border-radius: 16px;
+            }
+
+            table {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Dynamic Topbar -->
+
+    {% if request.user.role == 'admin' %}
+    {% include 'partials/admin_topbar.html' %}
+    {% elif request.user.role == 'state' %}
+    {% include 'partials/state_topbar.html' %}
+    {% elif request.user.role == 'district' %}
+    {% include 'partials/district_topbar.html' %}
+    {% else %}
+    {% include 'partials/retailer_topbar.html' %}
+    {% endif %}
+
+    <div class="page-wrapper">
+
+        <div class="box">
+
+            <h2>My Wallet Transactions</h2>
+            <p class="subtitle">Transaction history & current balance</p>
+
+            <div class="balance-box">
+                Current Balance: ₹{{ wallet.balance }}
+            </div>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Credit</th>
+                        <th>Debit</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for t in transactions %}
+
+                    <tr>
+
+                        <td>{{ t.created_at|date:"Y-m-d H:i" }}</td>
+
+                        <td>{{ t.description }}</td>
+
+                        <td>
+                            {% if t.txn_type == 'credit' %}
+                            <span class="credit">₹{{ t.amount }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if t.txn_type == 'debit' %}
+                            <span class="debit">₹{{ t.amount }}</span>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="4" class="no-data">No Transactions Found</td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            <div class="btn-group">
+                <a href="javascript:history.back()" class="btn btn-secondary">← Back</a>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

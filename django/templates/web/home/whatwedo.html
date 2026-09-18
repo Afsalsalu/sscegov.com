@@ -1,0 +1,171 @@
+{% extends "web/home/base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+			<!-- BLOG POSTS LISTING
+			============================================= -->
+			<section id="blog-page" class="pb-60 inner-page-hero blog-page-section">
+				<div class="container">
+
+
+					<!-- WIDE BLOG POST -->
+					<div class="blog-post wide-post wow fadeInUp">
+	 					<div class="row d-flex align-items-center">
+
+									
+							<!-- BLOG POST IMAGE -->
+				 			<div class="col-md-6">
+				 				<div class="blog-post-img">
+									<img class="img-fluid r-16" src="{% static 'web/assets/img/u.jpg' %}" alt="blog-post-image">
+								</div>	
+							</div>
+
+
+							<!-- BLOG POST TEXT -->
+							<div class="col-md-6">
+								<div class="blog-post-txt">
+
+									<!-- Post Link -->
+									<h3 class="s-38 w-700">
+										<a href="{% url 'web:about' %}" style="color: brown;">Welcome to Samatwa Service Centre <br> E-Governance LTD!
+										</a>
+									</h3>
+
+									<!-- Text -->
+									<p>At Samatwa Service Centre, we pride ourselves on providing cutting-edge 
+                                        software solutions tailored to meet your unique requirements. 
+                                        Whether you're a government agency, a private enterprise, or an 
+                                        individual user, our comprehensive range of software
+                                         products ensures that you have the tools you need to succeed.
+									</p>
+
+								</div>
+							</div>	<!-- END BLOG POST TEXT -->
+
+
+						</div>   <!-- End row -->
+				 	</div>	<!-- END WIDE BLOG POST -->
+
+                     <div class="container">
+                        <div class="row justify-content-center">	
+                            <div class="col-xl-10">
+    
+    
+                                <!-- INNER PAGE TITLE -->
+                                <div class="inner-page-title">
+                                    <h2 class="s-52 w-700" style="color: brown;">Our Software Offerings</h2>
+                                </div>
+    
+    
+                                <!-- TEXT BLOCK -->	
+                                <div class="txt-block legal-info">
+    
+                                    <!-- Title -->
+    								<h5 class="s-30 w-700">Government Service Solutions </h5>
+
+                                    <!-- Text -->
+                                    <p>
+                                        Empower government agencies with our suite of software Services 
+                                        designed to streamline processes, enhance efficiency, and improve 
+                                        service delivery to citizens.
+                                    </p>
+
+                                    <h5 class="s-30 w-700">Private Service Solutions </h5>
+
+                                    <!-- Text -->
+                                    <p>
+                                        Equip private enterprises with robust software Services to optimize operations, boost 
+                                        productivity, and drive growth in today's competitive landscape.
+                                    </p>
+
+                                    <h5 class="s-30 w-700">Online Class Platforms </h5>
+
+                                    <!-- Text -->
+                                    <p>
+                                        Deliver engaging and interactive online learning experiences with our user-friendly 
+                                        software platforms, facilitating seamless education delivery anytime, anywhere.
+                                    </p>
+
+                                    <h5 class="s-30 w-700">Secure Payment Systems </h5>
+
+                                    <!-- Text -->
+                                    <p>
+                                        Safeguard financial transactions with our state-of-the-art payment processing software, 
+                                        ensuring the security and integrity of every transaction.
+                                    </p>
+
+                                    <h5 class="s-30 w-700">24/7 Technical Support </h5>
+
+                                    <!-- Text -->
+                                    <p>
+                                        Count on our dedicated technical support team to provide round-the-clock assistance, 
+                                        ensuring smooth operations and peace of mind for our clients.
+                                    </p>
+                                    <br>
+                                    </div>
+                            </div>
+                        </div>
+                                    <div class="row justify-content-center">	
+                                        <div class="col-xl-10">
+                
+                                <!-- INNER PAGE TITLE -->
+                                <div class="inner-page-title">
+                                    <h2 class="s-52 w-700" style="color: brown;">Why Choose Samatwa Service Centre?</h2>
+                                </div>
+    
+    
+                                <!-- TEXT BLOCK -->	
+                                <div class="txt-block legal-info">
+    
+                                    <h5 class="s-30 w-700">Reliable Performance</h5>
+                                    <p>
+                                        Our software Services are built to deliver consistent, reliable performance, 
+                                        meeting the needs of our clients today and into the future.
+                                    </p>
+
+                                    <h5 class="s-30 w-700">Customized Solutions</h5>
+                                    <p>
+                                        We understand that every client is unique, which is why we offer customizable software
+                                        Services tailored to your specific requirements.
+                                    </p>
+
+                                    <h5 class="s-30 w-700">Scalability</h5>
+                                    <p>
+                                        Whether you're a small startup or a large enterprise, our software Services are designed 
+                                        to scale with your business, ensuring continued success as you grow.
+                                    </p>
+
+                                    <h5 class="s-30 w-700">User-Friendly Interfaces</h5>
+                                    <p>
+                                        Our intuitive user interfaces make our software Services easy to use for both administrators and end-users, 
+                                        minimizing training time and maximizing efficiency.
+                                    </p>
+                                    <br>
+                                </div>
+                                <div class="inner-page-title">
+                                    <h2 class="s-52 w-700"><a href="{% url 'web:contact' %}" style="color: brown;">Get in Touch</a></h2>
+                                </div>
+                                <div class="txt-block legal-info">
+
+                                <p>
+                                    Ready to experience the power of our software solutions? 
+                                    Contact us today to learn more about how Samatwa Service 
+                                    Centre can help you achieve your goals. Our team looks forward to 
+                                    partnering with you to 
+                                    drive success through innovative software solutions!
+                                </p>
+
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                     
+
+				</div>	   <!-- End container -->	
+			</section>	<!-- END BLOG POSTS LISTING -->
+
+
+
+{% endblock %}

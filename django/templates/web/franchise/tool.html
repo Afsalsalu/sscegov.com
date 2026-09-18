@@ -1,0 +1,57 @@
+{% extends "web/franchise/base.html" %} {% load static %} {% block content %}
+<!-- Content wrapper -->
+<link
+  href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+  rel="stylesheet"
+/>
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+  <div
+    class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]"
+  >
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+      <h4 class="py-5"></h4>
+
+      <div class="grid grid-cols-12 2xl:grid-cols-12 gap-x-5">
+        <div
+          class="col-span-12 card md:col-span-6 lg:col-span-3 2xl:col-span-2 cos12"
+        >
+          <a href="{% url 'service:manipulate_pdf' %}">
+            <div class="text-center card-body">
+              <div
+                class="flex items-center justify-center mx-auto rounded-full size-14 bg-custom-100 text-custom-500 dark:bg-custom-500/20"
+              >
+                <i class="bx bxs-file-pdf"></i>
+              </div>
+
+              <h5 class="mt-4 mb-2"></h5>
+
+              <p class="text-slate-500 dark:text-zink-200">Image To PDF</p>
+            </div>
+          </a>
+        </div>
+        <!--end col-->
+        <div
+          class="col-span-12 card md:col-span-6 lg:col-span-3 2xl:col-span-2 cos12"
+        >
+          <a href="{% url 'service:convert_pdf_to_image' %}">
+            <div class="text-center card-body">
+              <div
+                class="flex items-center justify-center mx-auto rounded-full size-14 bg-custom-100 text-custom-500 dark:bg-custom-500/20"
+              >
+                <i class="bx bxs-file-pdf"></i>
+              </div>
+
+              <h5 class="mt-4 mb-2"></h5>
+
+              <p class="text-slate-500 dark:text-zink-200">PDF To Image</p>
+            </div>
+          </a>
+        </div>
+        <!--end col-->
+      </div>
+      <!--end grid-->
+    </div>
+  </div>
+</div>
+{% endblock %}

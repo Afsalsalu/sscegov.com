@@ -1,0 +1,91 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+{% block content %}
+
+
+<link rel="stylesheet" href="{% static 'web/css/form2.css' %}">
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+
+  <div
+    class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+
+      <div class="container">
+        <div class="title">Accounts Child</div>
+        <div class="content">
+          <form action="{% url 'web:acc_master' %}" method="post">
+            {% csrf_token %}
+            <div class="user-details">
+              <div class="input-box">
+                <span class="details">Account Code</span>
+                <input style="background-color: rgb(185, 233, 246); text-transform: uppercase;" id="head" name="head" type="text"
+                  placeholder="Enter your Head " required>
+              </div>
+              <div class="input-box2">
+                <span class="details">Opening Blanace</span>
+                <input name="gstno" id="gstno" type="text" placeholder="Enter your GST No" required>
+              </div>
+              <div class="input-box">
+                <span class="details">Current Balance</span>
+                <input name="address1" id="address1" type="text" placeholder="Enter your Address1" required>
+              </div>
+
+              <div class="input-box2">
+                <span class="details">Debit/Credit</span>
+                <select style="width: 145%; height: 25px; background-color: #ffffff;" name="debitcredit"
+                  id="debitcredit">
+                  <option value="" selected disabled>Select Debit/Credit</option>
+                  <option value="accounts">Debit</option>
+                  <option value="cashbook">Credit</option>
+                </select>
+              </div>
+
+              <div class="input-box">
+                <span class="details">Coid</span>
+                <input name="address2" id="address2" type="text" placeholder="Enter your Address2" required>
+              </div>
+
+              <div class="input-box2">
+                <span class="details">Disp</span>
+                <input name="state" id="state" type="text" placeholder="Enter your State" required>
+              </div>
+
+              <div class="input-box">
+                <span class="details">FYC Code</span>
+                <input name="address3" id="address3" type="text" placeholder="Enter your Address3" required>
+              </div>
+              <div class="input-box2">
+                <span class="details">Br Id </span>
+                <input name="statecode" id="statecode" type="text" placeholder="Enter your State Code" required>
+              </div>
+
+
+
+
+            </div>
+
+
+            <div class="button">
+              <button style="background-color: #ff7700; width: 100px; height: 45px; color: #ffffff; border-radius: 5px;"
+                type="submit">Save</button>
+                <button style="background-color: #ff7700; width: 100px; height: 45px; color: #ffffff; border-radius: 5px;"
+                type="submit"><a href="{% url 'web:acc_master_list' %}"> Search</a></button>
+              <button style="background-color: #ff7700; width: 100px; height: 45px; color: #ffffff; border-radius: 5px;"
+              type="submit"><a href="{% url 'web:acc_master_list' %}"> Edit</a></button>
+              <button style="background-color: #ff7700; width: 100px; height: 45px; color: #ffffff; border-radius: 5px;"
+              type="submit"><a href="{% url 'web:acc_master_list' %}">Cancel</a></button>
+              <button style="background-color: #d70505; width: 100px; height: 45px; color: #ffffff; border-radius: 5px;"
+              type="submit"><a href="{% url 'web:acc_master_list' %}">Delete</a></button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

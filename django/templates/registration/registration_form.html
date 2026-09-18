@@ -1,0 +1,45 @@
+{% extends "registration/registration_base.html" %}
+{% load i18n %}
+{% load static %}
+{% block title %}{% trans "Register for an account" %}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'web/css/custom.css' %}" />
+<div class="grid">
+    <div class="order__left centered">
+       <div class="form">
+          <div class="logo">
+            <img class="img" style="width:300px;" src="{% static 'web/images/ssc.jpg' %}" alt="picture">
+          </div>
+
+          <h4>Samatwa Service Centre E-Governance Limited</h4>
+
+
+          <form method="post" action="">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" class="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm" value="{% trans 'Submit' %}" />
+        </form>
+        
+        
+                    
+       </div>
+    </div><!-- order__left centered -->
+    
+    <div class="order__right centered no__overflow">
+       <img class="img" src="{% static 'web/images/modi1.jpg' %}" alt="picture">
+    </div><!-- order__right centered no__overflow -->
+
+ </div><!-- end grid -->
+ {% endblock %}
+{% comment %}
+**registration/registration_form.html**
+Used to show the form users will fill out to register. By default, has
+the following context:
+
+``form``
+    The registration form. This will be an instance of some subclass
+    of ``django.forms.Form``; consult `Django's forms documentation
+    <http://docs.djangoproject.com/en/dev/topics/forms/>`_ for
+    information on how to display this in a template.
+{% endcomment %}

@@ -1,0 +1,95 @@
+{% extends "web/admin_panel/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="group-data-[sidebar-size=sm]:min-h-sm group-data-[sidebar-size=sm]:relative">
+    <div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+        <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+            <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+                <div class="flex flex-col gap-2 py-4 md:flex-row md:items-center print:hidden">
+                </div>
+                <form action="#!" class="mb-5">
+                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
+                        <div class="relative lg:col-span-4 xl:col-span-3">
+                            <input type="text" class="ltr:pl-8 rtl:pr-8 search form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Search for name, email, phone number etc..." autocomplete="off">
+                            <i data-lucide="search" class="inline-block size-4 absolute ltr:left-2.5 rtl:right-2.5 top-2.5 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-600"></i>
+                        </div><!--end col-->
+                        <div class="lg:col-span-3 lg:col-start-10">
+                            <div class="flex gap-2 lg:justify-end">
+                          
+                            </div>
+                        </div><!--end col-->
+                    </div><!--end grid-->
+                </form>
+                <div class="col-span-12 md:order-8 2xl:col-span-9 card" >
+                    <div class="card-body">
+                        <div class="grid items-center grid-cols-1 gap-3 mb-5 xl:grid-cols-12">
+                           
+                        </div><!--end grid-->
+                        <div class="-mx-5 overflow-x-auto">
+                            <table class="w-full whitespace-nowrap" style="background: white;">
+                                <thead class="ltr:text-left rtl:text-right bg-slate-100 text-slate-500 dark:text-zink-200 dark:bg-zink-600" style="background: #007A9B; color:white;">
+                                    <tr>
+                                        <th class="px-3.5 py-2.5 first:pl-5 last:pr-5 font-semibold border-y border-slate-200 dark:border-zink-500">&nbsp;&nbsp; ID</th>
+                                        <th class="px-3.5 py-2.5 first:pl-5 last:pr-5 font-semibold border-y border-slate-200 dark:border-zink-500">Name</th>
+                                        <th class="px-3.5 py-2.5 first:pl-5 last:pr-5 font-semibold border-y border-slate-200 dark:border-zink-500">State</th>
+                                        <th class="px-3.5 py-2.5 first:pl-5 last:pr-5 font-semibold border-y border-slate-200 dark:border-zink-500">District</th>
+                                        <th class="px-3.5 py-2.5 first:pl-5 last:pr-5 font-semibold border-y border-slate-200 dark:border-zink-500">Status</th>
+                                        <th class="px-3.5 py-2.5 first:pl-5 last:pr-5 font-semibold border-y border-slate-200 dark:border-zink-500">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for centre in non_active_centres %}
+                                    <tr>
+                                        <td class="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500 text-red-500">
+                                            <a href="#">{{ centre.formatted_id }}</a>
+                                        </td>
+                                        <td class="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500">
+                                            <div class="flex gap-2">
+                                                <div class="bg-green-100 rounded-full size-10 dark:bg-green-500/20 shrink-0">
+                                                    <img src="{% static 'web/images/noimage.jpg' %}" alt="" class="h-10 rounded-full">
+                                                </div>
+                                                <div class="grow">
+                                                    <h6>{{ centre.centre_owner_name }}</h6>
+                                                    <p class="text-slate-500 dark:text-zink-200">{{ centre.email }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500">{{ centre.district }}</td>
+                                        <td class="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500 text-blue-500">{{ centre.state }}</td>
+                                        <td class="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded border bg-red-100 border-transparent text-red-500 dark:bg-red-500/20 dark:border-transparent">
+                                                <i data-lucide="x-circle" class="size-3 ltr:mr-1 rtl:ml-1"></i> Inactive
+                                            </span>
+                                        </td>
+                                        <td class="px-3.5 py-2.5 first:pl-5 last:pr-5 border-y border-slate-200 dark:border-zink-500">
+                                            <div class="flex gap-2">
+                                                <a href="{% url 'web:admin_edit_centre' centre.id %}" class="flex items-center justify-center transition-all duration-200 ease-linear rounded-md size-8 bg-slate-100 dark:bg-zink-600 dark:text-zink-200 text-slate-500 hover:text-custom-500 dark:hover:text-custom-500 hover:bg-custom-100 dark:hover:bg-custom-500/20">
+                                                    <i data-lucide="pencil" class="size-4"></i>
+                                                </a>
+                                                <a href="{% url 'web:admin_delete_centre' centre.id %}" class="flex items-center justify-center transition-all duration-200 ease-linear rounded-md size-8 bg-slate-100 dark:bg-zink-600 dark:text-zink-200 text-slate-500 hover:text-red-500 dark:hover:text-red-500 hover:bg-red-100 dark:hover:bg-red-500/20">
+                                                    <i data-lucide="trash-2" class="size-4"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">
+                                            No inactive centres found.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                       
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

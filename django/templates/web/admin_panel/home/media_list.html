@@ -1,0 +1,107 @@
+{% extends "web/admin_panel/base.html" %}
+
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'web/css/media_list.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+  <div
+    class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+      <h4 class="py-5"></h4>
+
+      <form id="searchForm" action="{% url 'web:media_list' %}" method="get" class="mb-5">
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
+            <div class="relative lg:col-span-4 xl:col-span-3">
+              <select name="title" class="form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" onchange="this.form.submit()">
+                <option value="">Select Title</option>
+                {% for title in titles %}
+                  <option value="{{ title }}" {% if request.GET.title == title %}selected{% endif %}>{{ title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          <div class="lg:col-span-3 lg:col-start-10">
+            <div class="flex gap-2 lg:justify-end">
+              <a href="{% url 'web:add_media' %}">
+                <button data-modal-target="addUserModal" type="button"
+                  class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20"><i
+                    data-lucide="plus" class="inline-block size-4"></i> <span class="align-middle">Add
+                    Media</span></button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </form>
+ 
+      <div class="container">
+        {% for m in media %}
+        <div class="box">
+          <img src="{{ m.image.url }}" alt="{{ m.title }}">
+          <div class="content">
+            <h2>{{ m.title }}</h2>
+            <p class="date">{{ m.today_date }}</p>
+            <p>{{ m.content }}</p>
+            <div class="py-3"></div>
+            <a href="#" class="as edit-link" data-edit-url="{% url 'web:edit_media' m.id %}">Edit</a>
+            <a href="#" class="as delete-link" data-delete-url="{% url 'web:delete_media' m.id %}">Delete</a>
+          </div>
+          <div class="py-2"></div>
+        </div>
+        {% endfor %}
+        <div class="py-2"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Handle delete confirmation
+    const deleteLinks = document.querySelectorAll(".delete-link");
+    deleteLinks.forEach(link => {
+        link.addEventListener("click", function(e) {
+            e.preventDefault();
+            const deleteUrl = this.dataset.deleteUrl;
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = deleteUrl;
+                }
+            });
+        });
+    });
+
+    // Handle edit confirmation
+    const editLinks = document.querySelectorAll(".edit-link");
+    editLinks.forEach(link => {
+        link.addEventListener("click", function(e) {
+            e.preventDefault();
+            const editUrl = this.dataset.editUrl;
+
+            Swal.fire({
+                title: 'Do you want to edit this entry?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Edit',
+                cancelButtonText: 'Back'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = editUrl;
+                }
+            });
+        });
+    });
+  });
+</script>
+{% endblock %}

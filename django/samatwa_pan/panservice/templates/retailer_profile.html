@@ -1,0 +1,240 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retailer Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: skyblue;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .page-wrapper {
+            margin-left: 260px;
+            min-height: calc(100vh - 62px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .box {
+            background: #ffffff;
+            border: none;
+            box-shadow: 0 8px 40px rgba(10, 22, 40, 0.18);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 480px;
+            padding: 40px 36px 36px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0a1628;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #7a90aa;
+            margin-bottom: 24px;
+        }
+
+        .divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin-bottom: 24px;
+        }
+
+        /* ── PROFILE ROWS ── */
+        .profile-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 11px 0;
+            border-bottom: 1px solid #f0f3f8;
+            gap: 16px;
+        }
+
+        .profile-row:last-of-type { border-bottom: none; }
+
+        .row-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #7a90aa;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            flex-shrink: 0;
+            min-width: 100px;
+            padding-top: 1px;
+        }
+
+        .row-value {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #1a2a3a;
+            text-align: right;
+            word-break: break-word;
+        }
+
+        /* ── BUTTONS ── */
+        .btn-group {
+            margin-top: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border-radius: 12px;
+            font-family: 'Sora', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0a1628, #1a3158);
+            color: white;
+            box-shadow: 0 4px 16px rgba(10, 22, 40, 0.25);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #112240, #1e3d6e);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(10, 22, 40, 0.35);
+        }
+
+        .btn-secondary {
+            background: #f0f3f8;
+            color: #1a2a3a;
+            border: 1.5px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        /* ── TOPBAR FIX ── */
+        .topbar { margin-left: 260px; }
+        .mobile-drawer { margin-left: 260px; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .page-wrapper {
+                margin-left: 0;
+                min-height: 100vh;
+                padding: 80px 20px 40px;
+                align-items: flex-start;
+                justify-content: center;
+            }
+            .box { max-width: 100%; }
+            .topbar { margin-left: 0; padding-left: 60px; }
+            .mobile-drawer { margin-left: 0; }
+        }
+
+        @media (max-width: 480px) {
+            .page-wrapper { padding: 76px 14px 32px; }
+            .box { padding: 24px 18px 22px; border-radius: 16px; }
+            h2 { font-size: 18px; }
+            .row-label { min-width: 80px; font-size: 10.5px; }
+            .row-value { font-size: 13px; }
+        }
+
+        @media (max-width: 360px) {
+            .page-wrapper { padding: 72px 10px 24px; }
+            .box { padding: 20px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'partials/retailer_topbar.html' %}
+    {% include 'partials/retailer_sidebar.html' %}
+
+    <div class="page-wrapper">
+    <div class="box">
+
+        <h2>{{ user.username }}</h2>
+        <p class="subtitle">Retailer Profile</p>
+
+        <div class="divider"></div>
+
+        <div class="profile-row">
+            <span class="row-label">Password</span>
+            <span class="row-value">{{ profile.raw_password }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="row-label">Full Name</span>
+            <span class="row-value">{{ profile.name }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="row-label">Mobile</span>
+            <span class="row-value">{{ user.mobile }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="row-label">State</span>
+            <span class="row-value">{{ profile.state }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="row-label">District</span>
+            <span class="row-value">{{ profile.district }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="row-label">DOB</span>
+            <span class="row-value">{{ profile.dob }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="row-label">Gender</span>
+            <span class="row-value">{{ profile.gender }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="row-label">Aadhar</span>
+            <span class="row-value">{{ profile.aadhar }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="row-label">PAN</span>
+            <span class="row-value">{{ profile.pan }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="row-label">Company</span>
+            <span class="row-value">{{ profile.company }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="row-label">Address</span>
+            <span class="row-value">{{ profile.address }}</span>
+        </div>
+        <div class="profile-row">
+            <span class="row-label">PIN Code</span>
+            <span class="row-value">{{ profile.pin_code }}</span>
+        </div>
+
+        <div class="btn-group">
+            <a href="{% url 'edit_contact' %}" class="btn btn-primary">Edit Contact Info</a>
+            <a href="javascript:history.back()" class="btn btn-secondary">← Back</a>
+        </div>
+
+    </div>
+    </div>
+
+</body>
+</html>

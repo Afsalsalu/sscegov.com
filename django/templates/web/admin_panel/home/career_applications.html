@@ -1,0 +1,137 @@
+{% extends "web/admin_panel/base.html" %}
+
+{% load static %}
+
+{% block content %} 
+
+<link rel="stylesheet" href="{% static 'web/css/non.css' %}" />
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+  <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">        
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+        <h4 class="py-5"></h4>
+        <form action="#!" class="mb-5">
+            <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
+              <div class="relative lg:col-span-4 xl:col-span-3">
+                <input type="text" class="ltr:pl-8 rtl:pr-8 search form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Search for name, email, phone number etc..." autocomplete="off">
+                <i data-lucide="search" class="inline-block size-4 absolute ltr:left-2.5 rtl:right-2.5 top-2.5 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-600"></i>
+              </div>
+              <div class="lg:col-span-3 lg:col-start-10">
+                <div class="flex gap-2 lg:justify-end">
+                  {% comment %} <a href="{% url 'web:add_career' %}">
+                    <button data-modal-target="addUserModal" type="button" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20"><i data-lucide="plus" class="inline-block size-4"></i> <span class="align-middle">Add</span></button>
+                  </a> {% endcomment %}
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <div class="grid grid-cols-1 gap-x-5 xl:grid-cols-1">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="mb-4 text-15">Applications Table</h6>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="ltr:text-left rtl:text-right">
+                                <tr>
+                                  <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">Job title</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">Full Name</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">Phone number</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">Email</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">Ex_yrs</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">Qualification</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">Age</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">Current role</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">CV</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for application in applications %}
+                                <tr>
+                                    <td  style="color: rgb(153, 2, 2);padding: 5px; cursor: pointer; font-weight: 700;" class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ application.job_title }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">{{ application.first_name }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">{{ application.phone_number }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500  text-center">{{ application.email }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">{{ application.experience_years }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500  text-center">{{ application.qualification }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500  text-center">{{ application.age }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">{{ application.current_role }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">
+                                      <a href="{{ application.resume.url }}" download>
+                                        <i data-lucide="download" class="inline-block size-7" style="color: rgb(2, 40, 153);"></i>
+                                    </a>  
+                                  </td>   
+                                  <td style="color: rgb(153, 2, 2);padding: 5px; cursor: pointer; font-weight: 700;" class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">
+                                    <a href="{% url 'web:delete_career_applications' application.id %}" class="delete-career-app">
+                                      <i data-lucide="trash" class="inline-block size-7"></i>
+                                  </a>
+                                  
+                                </td>
+                                
+                                
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div><!--end card-->
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.delete-career-app').forEach(link => {
+          link.addEventListener('click', function(e) {
+              e.preventDefault();
+              const url = this.href;
+              Swal.fire({
+                  title: 'Are you sure?',
+                  text: "You won't be able to revert this!",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Yes, delete it!'
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      fetch(url, {
+                          method: 'DELETE',
+                          headers: {
+                              'X-Requested-With': 'XMLHttpRequest',
+                              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                          }
+                      }).then(response => response.json()).then(data => {
+                          if (data.success) {
+                              Swal.fire('Deleted!', 'The application has been deleted.', 'success').then(() => {
+                                  window.location.reload(); // Reload to update the table
+                              });
+                          } else {
+                              Swal.fire('Error!', 'There was a problem deleting the application.', 'error');
+                          }
+                      }).catch(error => {
+                          Swal.fire('Error!', 'There was a problem deleting the application.', 'error');
+                      });
+                  }
+              });
+          });
+      });
+  });
+  </script>
+  
+
+
+
+
+
+{% endblock %}

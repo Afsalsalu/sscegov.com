@@ -1,0 +1,66 @@
+[2024-09-25 13:06:40 +0530] [21109] [INFO] Starting gunicorn 23.0.0
+[2024-09-25 13:06:40 +0530] [21109] [INFO] Listening at: unix:/home/ssce/sscegov.com/django/gunicorn.sock (21109)
+[2024-09-25 13:06:40 +0530] [21109] [INFO] Using worker: sync
+[2024-09-25 13:06:40 +0530] [21112] [INFO] Booting worker with pid: 21112
+[2024-09-25 13:06:40 +0530] [21112] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    worker.init_process()
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/util.py", line 370, in import_app
+    mod = importlib.import_module(module)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 992, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'projectname'
+[2024-09-25 13:06:40 +0530] [21112] [INFO] Worker exiting (pid: 21112)
+[2024-09-25 13:06:40 +0530] [21113] [INFO] Booting worker with pid: 21113
+[2024-09-25 13:06:40 +0530] [21113] [ERROR] Exception in worker process
+Traceback (most recent call last):
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+    worker.init_process()
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/workers/base.py", line 135, in init_process
+    self.load_wsgi()
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+    self.wsgi = self.app.wsgi()
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/app/base.py", line 66, in wsgi
+    self.callable = self.load()
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+    return self.load_wsgiapp()
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+    return util.import_app(self.app_uri)
+  File "/home/ssce/sscegov.com/django/venv/lib/python3.10/site-packages/gunicorn/util.py", line 370, in import_app
+    mod = importlib.import_module(module)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 992, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1004, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'projectname'
+[2024-09-25 13:06:40 +0530] [21113] [INFO] Worker exiting (pid: 21113)
+[2024-09-25 13:06:40 +0530] [21109] [ERROR] Worker (pid:21112) exited with code 3
+[2024-09-25 13:06:40 +0530] [21109] [ERROR] Worker (pid:21113) was sent SIGTERM!
+[2024-09-25 13:06:40 +0530] [21109] [ERROR] Shutting down: Master
+[2024-09-25 13:06:40 +0530] [21109] [ERROR] Reason: Worker failed to boot.
+gunicorn.service: Failed to execute /home/sscentrepreneur/sscentrepreneur.com/django/venv/bin/gunicorn: No such file or directory
+gunicorn.service: Failed to execute /home/sscentrepreneur/sscentrepreneur.com/django/venv/bin/gunicorn: No such file or directory
+gunicorn.service: Failed to execute /home/sscentrepreneur/sscentrepreneur.com/django/venv/bin/gunicorn: No such file or directory

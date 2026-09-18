@@ -1,0 +1,265 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700,900&display=swap');
+
+body{
+  background: whitesmoke;
+  width: 100%;
+  height: 100%;
+  font-size: 18px;
+  line-height: 1.5;
+  font-family: 'Roboto', sans-serif;
+  color: #222;
+}
+.container{
+  max-width: 1230px;
+  width: 100%;
+}
+
+h1{
+  font-weight: 700;
+  font-size: 45px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.header{
+  margin-bottom: 80px;
+}
+#description{
+  font-size: 24px;
+}
+
+.form-wrap{
+  background: rgba(255,255,255,1);
+  width: 100%;
+  max-width: 850px;
+  padding: 50px;
+  margin: 0 auto;
+  position: relative;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.15);
+}
+
+.form-group{
+  margin-bottom: 25px;
+}
+.form-group > label{
+  display: block;
+  font-size: 18px;  
+  color: #000;
+}
+.custom-control-label{
+  color: #000;
+  font-size: 16px;
+}
+.form-control{
+  height: 50px;
+  background: #ecf0f4;
+  border-color: transparent;
+  padding: 0 15px;
+  font-size: 16px;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+.form-control:focus{
+  border-color: #00bcd9;
+  -webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+  -moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+}
+textarea.form-control{
+  height: 160px;
+  padding-top: 15px;
+  resize: none;
+}
+
+.btn{
+  padding: .657rem .75rem;
+  font-size: 18px;
+  letter-spacing: 0.050em;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #00bcd9;
+  border-color: #00bcd9;
+}
+
+.btn-primary:hover {
+  color: #00bcd9;
+  background-color: #ffffff;
+  border-color: #00bcd9;
+  -webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+  -moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+}
+
+.btn-primary:focus, .btn-primary.focus {
+  color: #00bcd9;
+  background-color: #ffffff;
+  border-color: #00bcd9;
+  -webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+  -moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+}
+
+.btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active,
+.show > .btn-primary.dropdown-toggle {
+  color: #00bcd9;
+  background-color: #ffffff;
+  border-color: #00bcd9;
+}
+
+.btn-primary:not(:disabled):not(.disabled):active:focus, .btn-primary:not(:disabled):not(.disabled).active:focus,
+.show > .btn-primary.dropdown-toggle:focus {
+  -webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+  -moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+}
+
+
+
+
+.form-wrap {
+  position: relative;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.form-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("{% static 'web/file/images/logoSSC-blue.png' %}");
+  background-size: 300px;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.1; /* Lower the opacity for a more transparent image */
+  z-index: -1;
+}
+
+.form-wrap h4 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #284478;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-size: 16px;
+  font-weight: 700;
+  color: #555;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  height: 40px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+  margin-top: 8px;
+  background-color: transparent;
+}
+
+.form-group input:focus, .form-group select:focus {
+  border-color: #284478;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.form-group .error {
+  font-size: 12px;
+  color: red;
+  margin-top: 5px;
+}
+
+.form-group select {
+  height: 45px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 30px;
+}
+
+.form-group select:focus {
+  border-color: #284478;
+}
+
+.form-group button {
+  background-color: #284478;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.form-group button:hover {
+  background-color: #1d3a6c;
+}
+
+.form-group .has-error input, .form-group .has-error select {
+  border-color: red;
+}
+
+.form-group .has-error label {
+  color: red;
+}
+
+/* .container {
+  background-color: #284478;
+  padding: 50px 15px;
+} */
+
+.py-5 {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.login-link {
+  color: #284478;
+  font-weight: bold;
+}
+
+.login-link:hover {
+  color: #1d3a6c;
+}
+
+#rzp-button {
+  background-color: #284478;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 18px;
+  border-radius: 5px;
+  margin-top: 20px;
+  width: 100%;
+  cursor: pointer;
+}
+
+#rzp-button:hover {
+  background-color: #041678;
+}
+
+.labal-star{
+  color: red;
+}

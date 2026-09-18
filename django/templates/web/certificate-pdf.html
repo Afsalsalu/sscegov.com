@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <title> certificate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body, embed, html {
+            height: 100%;
+            margin: 0;
+            width: 100%;
+        }
+        p{
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .card {
+            width: 1954px;
+			height: 990px;
+            max-width: 100%;
+            min-height: 100%;
+            position: relative;
+            padding: 0 !important;
+            margin: 0 !important;
+            background-image: url({{image_url}});
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+            font-family: "Poppins-Regular";
+        }
+    
+        .content {
+            position: absolute;
+            top: 39%;
+            left: 30%;
+            font-size: 42px;
+            color: #0000009c;
+            font-optical-sizing: auto;
+            font-weight: 700;
+            font-style: normal;
+            width: 850px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="content">
+            <p> {{content}}</p>
+        </div>      
+    </div>
+</body>
+</html>

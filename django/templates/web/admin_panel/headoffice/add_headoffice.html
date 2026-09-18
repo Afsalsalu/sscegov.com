@@ -1,0 +1,100 @@
+{% extends "web/admin_panel/base.html" %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'web/css/form.css' %}">
+<style>
+    /* Hide the default checkbox */
+    input[type="checkbox"] {
+        appearance: none; /* Removes default checkbox styling */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 20px;
+        height: 20px;
+        background-color: #f2f2f2;
+        border: 2px solid black;
+        border-radius: 3px;
+        position: relative;
+        cursor: pointer;
+    }
+
+    /* Customize the checked state */
+    input[type="checkbox"]:checked {
+        background-color: #4CAF50; /* Background color when checked */
+        border-color: #4CAF50;
+    }
+
+    /* Adding a checkmark */
+    input[type="checkbox"]:checked::after {
+        content: '';
+        position: absolute;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+        top: 3px;
+        left: 7px;
+    }
+    .input-group-append .btn {
+        border: none;
+        background: transparent;
+    }
+</style>
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">        
+<div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+    <h4 class="py-5"></h4>
+    <div class="card">
+        <div class="card-body">
+            <h4 class="py-5" style="text-align:center; color:#007A9B; font-size:30px;">Create Headoffice User</h4>
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              
+              <div class="form-row">
+                  <div class="form-group">
+                      {{ form.name.label_tag }}
+                      {{ form.name }}
+                      {% if form.name.errors %}
+                          <span class="error">{{ form.name.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+                  <div class="form-group{% if form.photo.errors %} has-error{% endif %}">
+                      {{ form.photo.label_tag }}
+                      {{ form.photo }}
+                      {% if form.photo.errors %}
+                          <span class="error">{{ form.photo.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+              </div>
+          
+              <div class="form-row">
+                  <div class="form-group{% if form.phone_number.errors %} has-error{% endif %}">
+                      {{ form.phone_number.label_tag }}
+                      {{ form.phone_number }}
+                      {% if form.phone_number.errors %}
+                          <span class="error">{{ form.phone_number.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+                  <div class="form-group{% if form.email.errors %} has-error{% endif %}">
+                      {{ form.email.label_tag }}
+                      {{ form.email }}
+                      {% if form.email.errors %}
+                          <span class="error">{{ form.email.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+              </div>
+          
+              <div class="buttons"> 
+                  <button type="submit" class="buttonF"><i class='bx bx-plus-medical'></i> Submit</button>
+                  <a href="{% url 'web:franchise_list' %}"><button type="button" class="buttonN"><i class='bx bx-arrow-back'></i> Cancel</button></a>
+                  <a href=""><button type="button" class="buttonN"><i class='bx bx-refresh'></i> Clear Form</button></a>
+              </div>
+          </form>
+          
+        </div>
+    </div>
+</div>
+
+</div>
+
+{% endblock %}

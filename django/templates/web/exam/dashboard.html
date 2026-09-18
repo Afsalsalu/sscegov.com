@@ -1,0 +1,321 @@
+{% extends "web/exam/base.html" %}
+{% load static %}
+{% block content %}  
+
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<style>
+ .tooltip-text {
+    visibility: hidden;
+    opacity: 0;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 8px;
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-1%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    white-space: nowrap;
+    font-size: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.complaint-icon:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(-1%) translateX(-170px);
+}
+
+
+  .complaint-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #ffffff;  /* White background */
+    color: #006668;  /* Main color for icon */
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.complaint-icon:hover {
+    background-color: #006668;  /* Main color background on hover */
+}
+
+.complaint-icon i {
+    font-size: 24px;
+    color: #006668;  /* Main color for icon */
+    transition: all 0.3s ease;
+}
+
+.complaint-icon:hover i {
+    color: #ffffff;  /* White icon on hover */
+}
+
+  .blue{
+    color:blue;
+  }
+  .red{
+    color:red;
+  }
+</style>        <!-- Page Sidebar Ends-->
+        <div class="page-body">
+          <div class="container-fluid">
+            <div class="page-title">
+              <div class="row">
+                <div class="col-6">
+                  <h4> DASHBOARD</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Container-fluid starts-->
+          <div class="container-fluid">
+            <div class="row size-column"> 
+              <div class="col-xxl-9 box-col-12">
+                <div class="row"> 
+                  <div class="col-xl-3 col-sm-6">
+                    <div class="card o-hidden small-widget">
+                      <div class="card-body total-project border-b-primary border-2"><span class="f-light f-w-500 f-14">USERNAME</span>
+                        <div class="project-details"> 
+                          <div class="project-counter"> 
+                            {% if profile %}
+                            <h5 class="f-w-600">{{ profile.user.username }}</h5><span class="f-12 f-w-400">(This month)</span>
+                            {% endif %}
+                          </div>
+                          <div class="product-sub bg-primary-light">
+                            <i class='bx bx-user'></i>
+                          </div>
+                        </div>
+                        <ul class="bubbles">
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-3 col-sm-6">
+                    <div class="card o-hidden small-widget">
+                      <div class="card-body total-Progress border-b-warning border-2"> <span class="f-light f-w-500 f-14">GENDER  </span>
+                        <div class="project-details">
+                          <div class="project-counter">
+                            <h5 class="f-w-600">{{ profile.gender }}
+                            </h5><span class="f-12 f-w-400">(This month) </span>
+                          </div>
+                          <div class="product-sub bg-warning-light"> 
+                            <i class='bx bxs-user-detail' ></i>
+                          </div>
+                        </div>
+                        <ul class="bubbles">
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-3 col-sm-6">
+                    <div class="card o-hidden small-widget">
+                      <div class="card-body total-Complete border-b-secondary border-2"><span class="f-light f-w-500 f-14">CREATED ON</span>
+                        <div class="project-details">
+                          <div class="project-counter">
+                            <h5 class="f-w-600">{{ profile.registration_date }}</h5><span class="f-12 f-w-400">(This month) </span>
+                          </div>
+                          <div class="product-sub bg-secondary-light"> 
+                            <i class='bx bx-timer' ></i>
+                          </div>
+                        </div>
+                        <ul class="bubbles"> 
+                          <li class="bubble"> </li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"> </li>
+                          <li class="bubble"></li>
+                          <li class="bubble"> </li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"> </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-3 col-sm-6">
+                    <div class="card o-hidden small-widget">
+                      <div class="card-body total-upcoming"><span class="f-light f-w-500 f-14">LANGAUGE
+                    </span>
+                        <div class="project-details"> 
+                          <div class="project-counter">
+                            <h4 class="f-w-600">English</h4><span class="f-12 f-w-400">(This month) </span>
+                          </div>
+                          <div class="product-sub bg-light-light"> 
+                            <i class='bx bxs-user-voice' ></i>
+                          </div>
+                        </div>
+                        <ul class="bubbles"> 
+                          <li class="bubble"> </li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                          <li class="bubble"></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row">
+                    <marquee behavior="" direction="">
+                        <p>Note:- The Candidates will get 5 attempts to appear for the final online examination.Those candidates who clear the final online exam successfully, will be eligible to do New SSC registration on <a href="https://entrepreneur.sscegov.com/">https://entrepreneur.sscegov.com/</a>  सूचना:- उम्मीदवारों को अंतिम ऑनलाइन परीक्षा में शामिल होने के लिए 5 मौके मिलेंगे। वे उम्मीदवार जो अंतिम ऑनलाइन परीक्षा सफलतापूर्वक उत्तीर्ण करते हैं, वे <a href="https://entrepreneur.sscegov.com/">https://entrepreneur.sscegov.com/</a> पर नया सीएससी पंजीकरण करने के पात्र होंगे।</p>
+                    </marquee>
+                  <!-- HTML (DOM) sourced data  Starts-->
+                  <div class="col-sm-12">
+                    <div class="card">
+                      <div class="card-header pb-0 card-no-border">
+                        <h4 class="mb-3">For General queries - Click Here</h4>
+                      </div>
+                      <div class="card-body">
+                        <div class="table-responsive custom-scrollbar">
+                          <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              {% if tec_certificate_status %}
+                                <tr>
+                                  <td>Download TEC Certificate</td>
+                                  <td>
+                                    <a href="{% url 'exam:certificate_view' %}" target="_blank">View Certificate</a>
+                                  </td>
+                                </tr>
+                                {% endif %}
+                                {% if progress %}
+                                    {% for entry in progress %}
+                                    <tr>
+                                        <td>Download Main Certificate</td>
+                                        <td>
+                                            {% if entry.status == 'Passed' %}
+                                                {% if profile.certificate_paid %}
+                                                <a href="{% url 'exam:main_certificate' %}" target="_blank">View Certificate</a>
+                                                {% else %}
+                                                    {% if profile.details_filled %}
+                                                      <p>Please complete your details to proceed.</p>
+                                                      <a href="{% url 'exam:details_entry' %}" class="btn btn-primary">
+                                                          Complete Your Details
+                                                      </a>
+                                                    {% else %}
+                                                      <p>You have successfully passed the SSC Main Exam! Your certificate will be available for download within 15 days.</p>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% elif entry.status == 'Failed Attempt 1' %}
+                                                <span class="blue">Your 1st attempt failed. You have only 1 chance remaining. Better luck on the 2nd attempt!</span>
+                                            {% elif entry.status == 'Failed Attempt 2' %}
+                                                <span class="red">You have failed the exam twice. The exam is frozen, and no more chances are available. Sorry!</span>
+                                            {% else %}
+                                                <span class="blue">Exam not attempted. Please complete the assessment to take the exam.</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="1">Exam not attempted. Please complete the assessment and take the exam.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                        
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+<div class="complaint-icon">
+  <a href="{% url 'exam:complaints' %}">
+      <i class='bx bxs-comment-detail'></i>
+      <span class="tooltip-text">Complaints</span>
+  </a>
+</div><!-- footer start-->
+<!-- Razorpay Payment Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+        document.getElementById("pay-for-certificate").onclick = function () {
+            var options = {
+                key: "{{ razorpay_key_id }}",
+                amount: "{{ amount }}", // Amount in paise
+                currency: "INR",
+                name: "Your Website",
+                description: "Certificate Payment",
+                order_id: "{{ razorpay_order_id }}",
+                handler: function (response) {
+                    fetch("{% url 'exam:certificate_payment' %}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}",
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: new URLSearchParams({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === "success") {
+                            alert("Payment Successful! You can now download your certificate.");
+                            window.location.reload();
+                        } else {
+                            alert("Payment Failed! Please try again.");
+                        }
+                    })
+                    .catch(error => console.error("Error:", error));
+                },
+                prefill: {
+                    name: "{{ profile.user.name }}",
+                    email: "{{ profile.user.email }}"
+                },
+                theme: {
+                    color: "#3399cc"
+                }
+            };
+            var rzp = new Razorpay(options);
+            rzp.open();
+        };
+</script>
+{% endblock %}

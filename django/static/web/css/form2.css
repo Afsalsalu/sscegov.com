@@ -1,0 +1,325 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+} */
+    
+body {
+  /* height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px; */
+  background: linear-gradient(135deg, #ececec, #d9d8d8);
+}
+
+.container {
+  max-width: 95%;
+  width: fit-content;
+  background-color: antiquewhite;
+  padding: 25px 30px;
+  border-radius: 5px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+  margin-top: 40px;
+  margin-bottom: 1.5%;
+}
+
+.container .title {
+  font-size: 25px;
+  font-weight: 500;
+  position: relative;
+}
+
+.container .title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 30px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #ff9500, #ff9500);
+}
+
+.content form .user-details {
+  display: flex;
+  flex-wrap: wrap;
+  /* justify-content: space-between; */
+  column-gap: 200px;
+  row-gap: 10px;
+  margin: 20px 0 12px 0;
+}
+
+form .user-details .input-box {
+  margin-bottom: 15px;
+  width: calc(100% / 2 - 20px);
+}
+
+form .input-box span.details {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+form .input-box2 span.details {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 5px  ;
+}
+
+.user-details .input-box input {
+  height: 25px;
+  width: 130%;
+  outline: none;
+  font-size: 12px;
+  border-radius: 5px;
+  padding-left: 15px;
+  border-bottom: 1px solid #ccc;
+  border-bottom-width: 2px;
+  transition: all 0.3s ease;
+}
+
+.user-details .input-box2 input {
+  height: 25px;
+  width: 120%;
+  outline: none;
+  font-size: 12px;
+  border-radius: 5px;
+  padding-left: 15px;
+  border-bottom: 1px solid #ccc;
+  border-bottom-width: 2px;
+  transition: all 0.3s ease;
+}
+
+.user-details .input-box input:focus,
+.user-details .input-box input:valid {
+  border-color: #ffae00;
+}
+
+.user-details .input-box2 input:focus,
+.user-details .input-box2 input:valid {
+  border-color: #ffae00;
+}
+
+form .gender-details .gender-title {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+form .category {
+  display: flex;
+  width: 80%;
+  margin: 14px 0;
+  justify-content: space-between;
+}
+
+form .category label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+form .category label .dot {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  margin-right: 10px;
+  background: #d9d9d9;
+  border: 5px solid transparent;
+  transition: all 0.3s ease;
+}
+
+#dot-1:checked~.category label .one,
+#dot-2:checked~.category label .two,
+#dot-3:checked~.category label .three {
+  background: #9b59b6;
+  border-color: #d9d9d9;
+}
+
+form input[type="radio"] {
+  display: none;
+}
+
+form .button {
+  height: 45px;
+  margin: 35px 0
+}
+
+form .button input {
+  height: 100%;
+  width: 10%;
+  border-radius: 5px;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #ff7700, #ff7700);
+}
+
+form .button input:hover {
+  /* transform: scale(0.99); */
+  background: linear-gradient(-135deg, #ff7700, #ff7700);
+}
+
+@media(max-width: 584px) {
+  .container {
+    max-width: 100%;
+  }
+
+  form .user-details .input-box {
+    margin-bottom: 15px;
+    width: 100%;
+  }
+
+  form .category {
+    width: 100%;
+  }
+
+  .content form .user-details {
+    max-height: 300px;
+    overflow-y: scroll;
+  }
+
+  .user-details::-webkit-scrollbar {
+    width: 5px;
+  }
+}
+
+@media(max-width: 459px) {
+  .container .content .category {
+    flex-direction: column;
+  }
+}
+
+.all-button {
+  background-color: transparent;
+  width: 100px;
+  height: 45px;
+  color: #000000;
+  border-radius: 5px;
+  border: 1px solid #ff7700;
+
+}
+
+.all-button:hover {
+  background-color: #ff7700;
+  color: white;
+}
+
+
+
+input[type=text], input[type=password], input[type=url], input[type=email] , input[type=number], input[type=file] {
+  width: 90%;
+  padding: 2px 10px;
+  margin: 3px 0;
+  display: block;
+  border-bottom: 1px solid #c8c3cf;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #F6F5F7;
+  font-size: 12px;
+  color: #4F4659;
+  outline: none !important;
+  /* transition: box-shadow 0.25s ease-in-out, background-image 0.25s !important; */
+  /* line-height: 160px; Adjust based on your font and design */
+  max-height: 3.2em !important; /* Approximately two lines of text */
+  overflow: hidden !important;
+  margin-bottom: 1px;
+  /* box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15); */
+  border-bottom: 1px solid #ccc;
+
+
+
+
+  }
+select {
+    width: 90%;
+    padding: 4px 10px;
+    margin: 3px 0;
+    display: block;
+    border-bottom: 1px solid #c8c3cf;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #F6F5F7;
+    font-size: 12px;
+    color: #4F4659;
+    outline: none !important;
+    /* transition:box-shadow 0.25s ease-in-out, background-image 0.25s !important; */
+    line-height: 1.6; /* Adjust based on your font and design */
+    max-height: 3.2em !important; 
+    overflow: hidden !important;
+    /* box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15); */
+    border-bottom: 1px solid #ccc;
+
+
+  
+    }
+  
+  
+p {
+  float: left;
+  width: 50%; 
+  padding: 10px;
+  box-sizing: border-box;
+  color: black;
+  /* height: 65px; */
+}
+
+/* label {
+  margin-top: 150px !important;
+} */
+
+.head-field {
+  /* Add your styling here */
+  /* For example: */
+  font-weight: bold;
+  color: blue;
+  font-size: 10px;
+}
+
+
+.title-h1 {
+  font-size: 24px;
+  font-weight: 500;
+  position: relative;
+}
+
+.title-h1::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 180px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #ff9500, #ff9500);
+}
+
+
+input[type=date] {
+  /* width: 90%; */
+  /* padding: 2px 10px; */
+  /* margin: 3px 0; */
+  /* display: block; */
+  /* border-bottom: 1px solid #c8c3cf; */
+  border-radius: 4px;
+  /* box-sizing: border-box; */
+  /* background-color: #F6F5F7; */
+  /* font-size: 12px; */
+  /* color: #4F4659; */
+  /* outline: none !important; */
+  /* transition: box-shadow 0.25s ease-in-out, background-image 0.25s !important; */
+  /* line-height: 160px; Adjust based on your font and design */
+  /* max-height: 3.2em !important;  */
+  /* overflow: hidden !important; */
+  margin-bottom: 1px;
+  /* box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15); */
+  /* border-bottom: 1px solid #ccc; */
+  margin-right: 10px;
+}

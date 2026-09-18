@@ -1,0 +1,55 @@
+{% extends "web/exam/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+<div class="page-body">
+    <div class="container-fluid">
+      <div class="page-title">
+        <div class="row">
+          <div class="col-6">
+            <h4>LEARNING</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+          <!-- HTML (DOM) sourced data  Starts-->
+          <div class="col-sm-12">
+            <div class="card">
+              <div class="card-header pb-0 card-no-border">
+                <h6 class="mb-4 mt-4">My Learning Modules
+                </h6>
+                <hr>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive custom-scrollbar">
+                  <table class="display" id="data-source-1" style="width:100%">
+                    <thead>
+                      <tr style="background-color: whitesmoke;">
+                        <th>S No</th>
+                        <th>Module Name</th>
+                        <th>Material</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for question in questions %}
+                      <tr>
+                        <td>{{ forloop.counter }} .</td>
+                        <td>{{ question.name }}</td>
+                        <td></td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends "web/admin_panel/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+  .news-management-page { padding: 1.5rem; color: #172033; }
+  .news-management-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+  .news-management-kicker { margin: 0 0 .35rem; color: #147d98; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .news-management-title { margin: 0; font-size: clamp(1.45rem, 2vw, 2rem); font-weight: 800; letter-spacing: -.02em; }
+  .news-management-subtitle { margin: .45rem 0 0; color: #718096; font-size: .9rem; }
+  .news-management-add { display: inline-flex; align-items: center; gap: .45rem; flex: 0 0 auto; border: 0; border-radius: .65rem; padding: .7rem 1rem; background: linear-gradient(135deg, #147d98, #2369a1); color: #fff; font-size: .84rem; font-weight: 700; text-decoration: none; box-shadow: 0 8px 18px #147d9826; transition: transform .18s ease, box-shadow .18s ease; }
+  .news-management-add:hover { color: #fff; transform: translateY(-1px); box-shadow: 0 10px 22px #147d9833; }
+  .news-management-add:focus-visible, .news-management-action:focus-visible, .news-management-search:focus-visible { outline: 3px solid #147d9855; outline-offset: 2px; }
+  .news-management-header-actions { display: flex; min-width: 0; align-items: center; justify-content: flex-end; gap: .75rem; }
+  .news-management-search-form { width: min(100%, 25rem); }
+  .news-management-count { color: #718096; font-size: .78rem; font-weight: 600; }
+  .news-management-results { margin-bottom: 1rem; }
+  .news-management-search-wrap { position: relative; width: 100%; }
+  .news-management-search-wrap i { position: absolute; top: 50%; left: .85rem; color: #8a99ab; transform: translateY(-50%); pointer-events: none; }
+  .news-management-search { width: 100%; border: 1px solid #dfe6ee; border-radius: .65rem; padding: .7rem .85rem .7rem 2.35rem; background: #fff; color: #172033; font-size: .84rem; box-shadow: 0 4px 14px #20304708; }
+  .news-management-search::placeholder { color: #9aa7b7; }
+  .news-management-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+  .news-management-card { display: flex; min-width: 0; flex-direction: column; overflow: hidden; border: 1px solid #e4eaf0; border-radius: .8rem; background: #fff; box-shadow: 0 6px 20px #2030470d; transition: transform .18s ease, box-shadow .18s ease; }
+  .news-management-card:hover { transform: translateY(-2px); box-shadow: 0 12px 26px #20304716; }
+  .news-management-card[hidden] { display: none; }
+  .news-management-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: linear-gradient(135deg, #e5f4f7, #d9e6f8); }
+  .news-management-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .news-management-media img[hidden], .news-management-placeholder[hidden] { display: none; }
+  .news-management-placeholder { display: flex; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; gap: .35rem; color: #147d98; }
+  .news-management-placeholder i { width: 1.65rem; height: 1.65rem; }
+  .news-management-placeholder span { color: #426276; font-size: .72rem; font-weight: 700; }
+  .news-management-body { display: flex; min-width: 0; flex: 1; flex-direction: column; padding: .9rem; }
+  .news-management-title-text { display: -webkit-box; margin: 0; overflow: hidden; color: #172033; font-size: .95rem; font-weight: 800; line-height: 1.35; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .news-management-description { display: -webkit-box; margin: .45rem 0 .8rem; overflow: hidden; color: #718096; font-size: .78rem; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .news-management-meta { margin-top: auto; color: #94a3b8; font-size: .7rem; font-weight: 600; }
+  .news-management-actions { display: flex; gap: .5rem; margin-top: .85rem; }
+  .news-management-action { display: inline-flex; align-items: center; justify-content: center; flex: 1; border: 1px solid #dfe6ee; border-radius: .5rem; padding: .5rem .65rem; color: #426276; font-size: .76rem; font-weight: 700; text-decoration: none; transition: background .18s ease, color .18s ease, border-color .18s ease; }
+  .news-management-action:hover { border-color: #147d98; background: #edf8fa; color: #147d98; }
+  .news-management-action.delete-link:hover { border-color: #ef9a9a; background: #fff3f3; color: #c24141; }
+  .news-management-empty { grid-column: 1 / -1; border: 1px dashed #cfd9e4; border-radius: .8rem; padding: 2.5rem 1rem; background: #fbfdff; color: #718096; text-align: center; }
+  .news-management-empty i { display: block; width: 2rem; height: 2rem; margin: 0 auto .6rem; color: #147d98; }
+  @media (max-width: 1150px) { .news-management-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 820px) { .news-management-page { padding: 1rem; } .news-management-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 760px) { .news-management-header { align-items: stretch; flex-direction: column; } .news-management-header-actions { align-items: stretch; justify-content: flex-start; } .news-management-search-form { flex: 1 1 auto; } .news-management-add { flex: 0 0 auto; } }
+  @media (max-width: 560px) { .news-management-header-actions { flex-direction: column; } .news-management-add, .news-management-search-form { width: 100%; } .news-management-grid { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+  <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:md:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:md:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:md:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0">
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+      <main class="news-management-page">
+        <header class="news-management-header">
+          <div>
+            <p class="news-management-kicker">Content management</p>
+            <h1 class="news-management-title">Latest News</h1>
+            <p class="news-management-subtitle">Create and manage news updates for franchise users</p>
+          </div>
+          <div class="news-management-header-actions">
+            <form id="news-management-search" class="news-management-search-form" onsubmit="return false;" role="search">
+              <label class="sr-only" for="news-management-search-input">Search latest news</label>
+              <div class="news-management-search-wrap">
+                <i data-lucide="search" class="size-4" aria-hidden="true"></i>
+                <input id="news-management-search-input" class="news-management-search" type="search" placeholder="Search news by title or description" autocomplete="off">
+              </div>
+            </form>
+            <a class="news-management-add" href="{% url 'web:latest_news_add' %}">
+              <i data-lucide="plus" class="size-4" aria-hidden="true"></i>
+              <span>Add latest news</span>
+            </a>
+          </div>
+        </header>
+
+        <div class="news-management-results">
+          <span class="news-management-count" id="news-management-count">{{ latest_news|length }} update{{ latest_news|length|pluralize }}</span>
+        </div>
+
+        <section class="news-management-grid" aria-live="polite">
+          {% for latestnews in latest_news %}
+          <article class="news-management-card" data-news-card>
+            <div class="news-management-media">
+              {% if latestnews.image %}
+              <img hidden src="{{ latestnews.image.url }}" alt="{{ latestnews.title }}" loading="lazy" onload="this.hidden=false;this.nextElementSibling.hidden=true" onerror="this.remove()">
+              {% endif %}
+              <div class="news-management-placeholder" aria-hidden="true">
+                <i data-lucide="newspaper"></i>
+                <span>News update · No image available</span>
+              </div>
+            </div>
+            <div class="news-management-body">
+              <h2 class="news-management-title-text" data-news-title>{{ latestnews.title }}</h2>
+              <p class="news-management-description" data-news-description>{{ latestnews.content }}</p>
+              <time class="news-management-meta" datetime="{{ latestnews.created_at|date:'c' }}">{{ latestnews.created_at|date:"M j, Y" }}</time>
+              <div class="news-management-actions">
+                <a href="#" class="news-management-action edit-link" data-edit-url="{% url 'web:latest_news_edit' latestnews.id %}">Edit</a>
+                <a href="#" class="news-management-action delete-link" data-delete-url="{% url 'web:latest_news_delete' latestnews.id %}">Delete</a>
+              </div>
+            </div>
+          </article>
+          {% empty %}
+          <div class="news-management-empty" data-news-empty>
+            <i data-lucide="newspaper" aria-hidden="true"></i>
+            <div>No latest news updates yet.</div>
+          </div>
+          {% endfor %}
+          {% if latest_news %}
+          <div class="news-management-empty" data-news-filter-empty hidden>
+            <i data-lucide="search-x" aria-hidden="true"></i>
+            <div>No news matches your search.</div>
+          </div>
+          {% endif %}
+        </section>
+      </main>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("news-management-search-input");
+    const cards = Array.from(document.querySelectorAll("[data-news-card]"));
+    const filterEmpty = document.querySelector("[data-news-filter-empty]");
+    const count = document.getElementById("news-management-count");
+
+    if (searchInput) {
+      searchInput.addEventListener("input", function () {
+        const query = this.value.trim().toLowerCase();
+        let visible = 0;
+        cards.forEach(function (card) {
+          const text = (card.querySelector("[data-news-title]")?.textContent + " " + card.querySelector("[data-news-description]")?.textContent).toLowerCase();
+          const matches = !query || text.includes(query);
+          card.hidden = !matches;
+          if (matches) visible += 1;
+        });
+        if (filterEmpty) filterEmpty.hidden = visible !== 0;
+        if (count) count.textContent = visible + " update" + (visible === 1 ? "" : "s");
+      });
+    }
+
+    document.querySelectorAll(".delete-link").forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        const deleteUrl = this.dataset.deleteUrl;
+        Swal.fire({ title: "Are you sure?", text: "You won't be able to revert this!", icon: "warning", showCancelButton: true, confirmButtonColor: "#3085d6", cancelButtonColor: "#d33", confirmButtonText: "Yes, delete it!" }).then(function (result) {
+          if (result.isConfirmed) window.location.href = deleteUrl;
+        });
+      });
+    });
+
+    document.querySelectorAll(".edit-link").forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        const editUrl = this.dataset.editUrl;
+        Swal.fire({ title: "Do you want to edit this entry?", icon: "question", showCancelButton: true, confirmButtonColor: "#3085d6", cancelButtonColor: "#d33", confirmButtonText: "Edit", cancelButtonText: "Back" }).then(function (result) {
+          if (result.isConfirmed) window.location.href = editUrl;
+        });
+      });
+    });
+  });
+</script>
+{% endblock %}

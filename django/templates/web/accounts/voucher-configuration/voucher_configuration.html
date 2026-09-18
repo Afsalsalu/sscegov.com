@@ -1,0 +1,116 @@
+{% extends "web/franchise/base.html" %}{% load static %}
+{% block content %}
+
+
+<link href="{% static 'web/css/voucherconfig.css' %}" rel='stylesheet'>
+<style>
+    #series {
+        text-transform: uppercase;
+    }
+</style>
+<div
+    class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+
+        <h4 class="py-5"></h4>
+        <div class="center">
+            <h2>VOUCHER CONFIGURATION</h2>
+            <div class="py-3"></div>
+            <form class="py-5" method="post" action="{% url 'web:voucher_configuration' %}">
+                {% csrf_token %}
+                <div class="box">
+                    <label for="category">Category :</label>
+                    <select name="category" id="category" required>
+                        <option value="" disabled selected>Select...</option>
+                        <option value="receipt">Receipt</option>
+                        <option value="payment">Payment</option>
+                        <option value="Debit Note">Debit Note</option>
+                        <option value="Credit Note">Credit Note</option>
+                        <option value="Contra Entry">Contra Entry</option>
+                        <option value="Journal Entry">Journal Entry</option>
+                    </select>
+                </div>
+                <div class="box">
+                    <label for="series">Series &nbsp;&nbsp;&nbsp;&nbsp; :</label>
+                    <input type="text" id="series" name="series" required><br>
+                </div>
+                <span id="series-error" style="color: red; display: none;">This combination of category and series already exists.</span>
+                <div class="box">
+                    <label for="serialNo">Serial No :</label>
+                    <input type="text" id="serialNo" name="serial_no" required>
+                </div>
+                <div class="box btns">
+                    <button type="submit" class="addbutton"><i class='bx bx-plus-medical'></i> Add</button>
+                    <a href="{% url 'web:voucher_search' %}"><button type="button" class="addbutton"><i class='bx bx-search-alt-2'></i> Search</button></a>
+                    <!--<button type="button" class="addbutton"><i class='bx bxs-edit'></i> Edit</button>-->
+                    <!--<button type="button" class="exitbutton"><i class='bx bx-trash'></i> Delete</button>-->
+                    <a href=""><button type="button" class="exitbutton"><i class='bx bx-exit'></i> Exit</button></a>
+                </div>
+            </form>
+            
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+
+        </div>
+
+    </div>
+    <!-- container-fluid -->
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $(document).ready(function() {
+        $('form').on('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to save this voucher configuration?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, save it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Use AJAX to submit the form
+                    $.ajax({
+                        url: $(this).attr('action'),
+                        type: 'POST',
+                        data: $(this).serialize(),
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire(
+                                    'Saved!',
+                                    'Your voucher configuration has been saved.',
+                                    'success'
+                                ).then(() => {
+                                    window.location.href = response.redirect_url;
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'There was an issue saving the voucher configuration.',
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function() {
+                            Swal.fire(
+                                'Error!',
+                                'An error occurred while submitting the form.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

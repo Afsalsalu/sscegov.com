@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Request Withdraw</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== BODY ===== */
+        body {
+            font-family: 'Sora', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+            margin: 0;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* ===== CARD ===== */
+        .form-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            animation: fadeUp 0.4s ease;
+        }
+
+        /* ANIMATION */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== TITLE ===== */
+        .form-card h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        /* ===== DJANGO FORM STYLING ===== */
+        form p {
+            margin-bottom: 15px;
+        }
+
+        /* LABEL */
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* INPUT / SELECT / TEXTAREA */
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        /* FOCUS EFFECT */
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14,165,233,0.15);
+        }
+
+        /* ERROR MESSAGE (Django) */
+        .errorlist {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 5px;
+            list-style: none;
+            padding: 0;
+        }
+
+        /* ===== BUTTON ===== */
+        .btn {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        /* HOVER */
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37,99,235,0.25);
+        }
+
+        /* ACTIVE CLICK */
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Only Admin & State Topbar -->
+
+    {% if request.user.role == 'admin' %}
+    {% include 'partials/admin_topbar.html' %}
+    {% elif request.user.role == 'state' %}
+    {% include 'partials/state_topbar.html' %}
+    {% endif %}
+
+    <div class="main-content">
+
+        <div class="form-card">
+
+            <h3>Request Withdraw</h3>
+
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <button class="btn">Submit</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

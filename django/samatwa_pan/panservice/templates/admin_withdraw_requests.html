@@ -1,0 +1,199 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw Requests - SAMATWA Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --navy: #0a1628;
+            --gold: #d4a843;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --green: #16a34a;
+            --red: #dc2626;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 80px 24px 40px;
+        }
+
+        .table-card {
+            background: var(--card-bg);
+            padding: 28px;
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            width: 100%;
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 24px;
+        }
+
+        /* Table */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            table-layout: fixed;
+            background: white;
+        }
+
+        th {
+            background: var(--navy);
+            color: white;
+            padding: 14px 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: rgba(212, 168, 67, 0.08);
+        }
+
+        /* Column Widths */
+        th:nth-child(1), td:nth-child(1) { width: 220px; }   /* User */
+        th:nth-child(2), td:nth-child(2) { width: 140px; }   /* Amount */
+        th:nth-child(3), td:nth-child(3) { width: 180px; }   /* Requested At */
+        th:nth-child(4), td:nth-child(4) { width: 160px; }   /* Action */
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 0 4px;
+            transition: all 0.3s;
+        }
+
+        .approve {
+            background: var(--green);
+            color: white;
+        }
+
+        .reject {
+            background: var(--red);
+            color: white;
+        }
+
+        .approve:hover,
+        .reject:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 80px 16px 30px;
+            }
+            .table-card {
+                padding: 20px;
+            }
+            table {
+                font-size: 13px;
+                min-width: 700px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+
+        <div class="table-card">
+
+            <h2>Pending Withdraw Requests</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Requested At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in pending %}
+                        <tr>
+                            <td>{{ r.user.username }}</td>
+                            <td>₹ {{ r.amount }}</td>
+                            <td>{{ r.created_at|date:"d M Y H:i" }}</td>
+                            <td>
+                                <a href="{% url 'approve_commission_withdraw' r.id %}" class="btn approve">
+                                    Approve
+                                </a>
+                                <a href="{% url 'reject_commission_withdraw' r.id %}" class="btn reject">
+                                    Reject
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="empty">
+                                No pending withdraw requests
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

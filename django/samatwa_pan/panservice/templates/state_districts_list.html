@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>District Distributors under {{ state_distributor.username }}</title>
+</head>
+<body>
+
+<h2>District Distributors under {{ state_distributor.username }}</h2>
+
+{% if districts %}
+<table border="1" cellpadding="8">
+<tr>
+    <th>Username</th>
+    <th>Password</th> <!-- NEW -->
+    <th>Name</th>
+    <th>Mobile</th>
+    <th>District</th>
+    <th>State</th>
+    <th>Aadhar</th>
+    <th>PAN</th>
+    <th>Gender</th>
+    <th>DOB</th>
+    <th>Company</th>
+    <th>Address</th>
+    <th>PIN</th>
+</tr>
+
+{% for d in districts %}
+<tr>
+    <td>{{ d.username }}</td>
+    <td>{{ d.profile.raw_password }}</td> <!-- NEW -->
+    <td>{{ d.profile.name }}</td>
+    <td>{{ d.mobile }}</td>
+    <td>{{ d.profile.district }}</td>
+    <td>{{ d.profile.state }}</td>
+    <td>{{ d.profile.aadhar }}</td>
+    <td>{{ d.profile.pan }}</td>
+    <td>{{ d.profile.gender }}</td>
+    <td>{{ d.profile.dob }}</td>
+    <td>{{ d.profile.company }}</td>
+    <td>{{ d.profile.address }}</td>
+    <td>{{ d.profile.pin_code }}</td>
+    <td>
+        <a href="{% url 'state_district_retailers' d.id %}">
+            View Retailers
+        </a>
+    </td>
+</tr>
+{% endfor %}
+
+
+
+</table>
+{% else %}
+<p style="color:red; font-weight:bold;">No District Distributors Found</p>
+{% endif %}
+
+<br>
+<a href="javascript:history.back()">⬅ Back</a>
+
+</body>
+</html>

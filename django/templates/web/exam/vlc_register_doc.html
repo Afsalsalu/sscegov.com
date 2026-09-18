@@ -1,0 +1,248 @@
+{% extends "web/home/base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fa;
+        /* padding: 2rem; */
+    }
+
+    .container {
+        max-width: 100%;
+        margin: auto;
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+        font-size: 26px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+        text-align: center;
+    }
+
+    .checklist {
+        border-left: 4px solid #455EB5;
+        padding-left: 15px;
+        margin-bottom: 20px;
+    }
+
+    .checklist li {
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .checklist i {
+        margin-right: 10px;
+        color: #1f8027;
+    }
+
+    .terms {
+        background: #eef2ff;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+        font-size: 16px;
+        color: #333;
+        background: #eef2ff;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .checkbox-container input {
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    .button-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .button-36 {
+        background: linear-gradient(92.88deg, #455EB5 9.16%, #5643CC 43.89%, #673FD7 64.72%);
+        border-radius: 8px;
+        border: none;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 500;
+        padding: 12px 24px;
+        cursor: not-allowed;
+        transition: all 0.3s;
+        opacity: 0.5;
+    }
+
+    .button-36:enabled {
+        opacity: 1;
+        cursor: pointer;
+    }
+
+
+    .container2 {
+        max-width: 100%;
+        /* margin: auto; */
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        height: fit-content;
+    }
+
+</style>
+<h4 class="py-5"></h4>
+
+<div style="display: flex; gap: 20px;">
+
+
+<div>
+    <div class="container">
+        <h2 class="header">Registration Requirements</h2>
+        
+        <ul class="checklist">
+            <li><i class='bx bx-check-circle'></i> Valid Aadhaar and PAN card (will be authenticated during registration).</li>
+            <li><i class='bx bx-check-circle'></i> Copies of the following documents:</li>
+        </ul>
+        
+        <ul class="checklist">
+            <li><i class='bx bxs-right-arrow' style='color:#6185d9'></i>Aadhar card (Front and Back side)</li>
+            <li><i class='bx bxs-right-arrow' style='color:#6185d9'></i> PAN Card</li>
+            <li><i class='bx bxs-right-arrow' style='color:#6185d9'></i>Applicant's Photo</li>
+            <li><i class='bx bxs-right-arrow' style='color:#6185d9'></i>Highest Qualification
+                document</li>        
+            <li><i class='bx bxs-right-arrow' style='color:#6185d9'></i> Highest Qualification Document</li>
+        </ul>
+    
+    
+        <ul class="checklist">
+            <li><i class='bx bx-check-circle'></i>If the applicant
+                belongs to general VLC group, he/she must have a Telecentre Entrepreneur Course(TEC)
+                Certificate and BC certificate by IIBF handy. Refer to
+                http://www.SSCentrepreneur.in/login for more details.</li>
+            <li><i class='bx bx-check-circle'></i>If the applicant
+                belongs to the whitelisted group (like SHG, FPO, FPS, RDD), please ensure your details
+                are whitelisted by your District Manager/State Head in the respective group.:</li>
+                <li><i class='bx bx-check-circle'></i>*Only
+                    .jpg/.png/.pdf file types are accepted, and the file should be less than 1MB in size.</li>
+                    <li><i class='bx bx-check-circle'></i>The SSC centre
+                        should be accessible.</li>
+        </ul>
+    
+        <div class="terms">
+            <strong>Terms & Conditions:</strong> <br>This Terms and Conditions agreement (the "Agreement") is a legal contract between
+            you (the User) and SSC E-Governance Services India Limited (SSC). By accessing or
+            using our services, you agree to comply with the terms outlined below. <br><br>
+            <ul class="checklist">
+                <li><i class='bx bxs-right-arrow' style='color:#000'></i>This Terms and Conditions
+                    agreement (the Agreement) is a legal contract between you (the User) and SSC
+                    E-Governance Services India Limited (SSC). By accessing or using our services, you
+                    agree to comply with the terms outlined below. SSC reserves the right to modify,
+                    add, or remove portions of these Terms and Conditions at any time without prior
+                    notice. Users are encouraged to periodically review this section to stay updated on
+                    any changes. By proceeding with our services, you acknowledge and consent to the
+                    authentication of your identity using the Aadhaar-based UID/VID system and
+                    voluntarily agree to provide your UID/VID and biometric details for verification.
+                    You also declare that the information provided in the form is accurate and complete
+                    to the best of your knowledge and accept full legal responsibility for any
+                    discrepancies or inaccuracies. By accepting these Terms and Conditions, you confirm
+                    your agreement with the policies outlined above.</li>
+            </ul>
+        </div>
+
+        <div class="terms">
+            <strong>Privacy Policy:</strong> <br>This Privacy Policy describes how SSC E-Governance Services India Limited ("SSC", "we", "us", or "our") collects, uses, and protects your information when you access or use our services. By using our services, you agree to the collection and use of information in accordance with this policy.<br><br>
+            <ul class="checklist">
+                <li><i class='bx bxs-right-arrow' style='color:#000'></i><strong>Information Collection:</strong> We may collect personal information, including but not limited to your name, contact details, Aadhaar UID/VID, and biometric data, as part of our service authentication process.</li>
+                <li><i class='bx bxs-right-arrow' style='color:#000'></i><strong>Use of Information:</strong> The information collected will be used solely for the purpose of providing, improving, and securing our services. We will not share your data with third parties without your consent, except as required by law.</li>
+                <li><i class='bx bxs-right-arrow' style='color:#000'></i><strong>Data Protection:</strong> We implement appropriate security measures to safeguard your personal information against unauthorized access, alteration, disclosure, or destruction.</li>
+                <li><i class='bx bxs-right-arrow' style='color:#000'></i><strong>Consent:</strong> By using our services, you consent to the collection, processing, and storage of your information in accordance with this policy.</li>
+                <li><i class='bx bxs-right-arrow' style='color:#000'></i><strong>Updates to Policy:</strong> We may update this Privacy Policy from time to time. Users are encouraged to periodically review this section for any changes.</li>
+            </ul>
+        </div>
+
+        <div class="refund-policy">
+            <strong>Refund Policy:</strong> <br>
+            Samatwa Service Centre (SSC) strives to ensure customer satisfaction. Our Refund Policy outlines
+            the conditions under which refunds may be issued. <br><br>
+        
+            <h4>Eligibility for Refund:</h4>
+            <ul class="checklist">
+                <li><i class='bx bxs-check-circle' style='color:#4CAF50'></i> Refund requests must be submitted within <strong>7 days</strong> of the transaction date.</li>
+                <li><i class='bx bxs-check-circle' style='color:#4CAF50'></i> Refunds are processed only if services were not provided or there was a technical issue.</li>
+                <li><i class='bx bxs-check-circle' style='color:#4CAF50'></i> Refunds are processed within <strong>14 business days</strong> after approval.</li>
+            </ul>
+        </div>
+    
+        <label class="checkbox-container">
+            <input type="checkbox" id="enableButton"> I have read and accept the terms & conditions.
+        </label>
+    
+        <div class="button-container">
+            <a href="{% url 'exam:entrepreneur_register' %}">
+                <button class="button-36" id="getStartedButton" disabled>Get Started</button>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container2" style="width: 200%;">
+    <h2 class="header">We're here to assist you every step of the way!</h2>
+
+    <ul class="checklist">
+        <li>Your Trusted Support Partner</li>
+
+
+      </ul>
+
+    <ul class="checklist">
+        <li><i class='bx bxs-down-arrow' style='color:#6185d9'></i>Call</li>
+        <li><i class='bx bxs-right-arrow' style='color:#6185d9'></i>+91 8547418316 </li>
+        <li><i class='bx bxs-right-arrow' style='color:#6185d9'></i>+91 8547928317 </li>
+
+      </ul> 
+      <ul class="checklist">
+        <li><i class='bx bxs-down-arrow' style='color:#6185d9'></i>Email</li>
+        <li><i class='bx bxs-right-arrow' style='color:#6185d9'></i>samatwaservicecenter.gov.in@gmail.com </li>
+
+      </ul> 
+
+      <ul class="checklist">
+
+        <li style="text-align: justify;"><i class='bx bxs-right-arrow' style='color:#6185d9'></i> Have a question or need assistance? Call our helpline at +91 8547418316 or +91 8547928317 for inquiries or to report an issue. Our support team is ready to assist you!</li>
+
+      </ul> 
+    <div class="button-container">
+        <a href="{% url 'web:contact' %}">
+            <button class="button-36"  >Contact Now</button>
+        </a>
+    </div>
+</div>
+</div>
+<script>
+    document.getElementById("enableButton").addEventListener("change", function () {
+        let button = document.getElementById("getStartedButton");
+        button.disabled = !this.checked;
+    });
+</script>
+
+{% endblock %}

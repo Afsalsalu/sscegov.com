@@ -1,0 +1,17 @@
+#search-results {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;  /* Initially hidden */
+}
+
+#search-results li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+#search-results li:hover {
+    background-color: #f0f0f0;
+}

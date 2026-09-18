@@ -1,0 +1,59 @@
+{% extends "web/admin_panel/base.html" %}
+
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'web/css/non.css' %}" />
+
+
+
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+
+    <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+        <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+            <h4 class="py-4"></h4>
+            <div class="flex flex-col gap-2 py-4 md:flex-row md:items-center print:hidden">
+                
+                 
+            </div>
+            <form action="#!" class="mb-5">
+                <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
+
+                    <div class="lg:col-span-3 lg:col-start-10">
+                        <div class="flex gap-2 lg:justify-end">
+                            <a href="{% url 'web:add_downloadform' %}">
+                            <button data-modal-target="addUserModal" type="button" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20"><i data-lucide="plus" class="inline-block size-4"></i> <span class="align-middle">Add Form</span></button>
+                        </a>
+                        </div>
+                    </div><!--end col-->
+                </div><!--end grid-->
+            </form>
+            <div class="grid grid-cols-12 2xl:grid-cols-12 gap-x-5">
+
+                {% for download_form in download_forms %}
+                <div class="col-span-12 card md:col-span-6 lg:col-span-3 2xl:col-span-2">
+                        <div class="" style="background-color: antiquewhite">
+                            <div class="card-body text-center">
+                                <div class="flex items-center justify-center mx-auto rounded-full size-14 bg-custom-100 text-custom-500 dark:bg-custom-500/20">
+                                    <img class"mb-3" src="{% static 'web/images/form.png' %}" alt="">
+                                </div>
+                                <h5 class="pt-2 hard">{{ download_form.title }}</h5>
+                            </div>
+                        </div>
+                          <h6 class="text-center pt-2 hard"> Created : {{ download_form.created_at }}</h6>
+                          <h6 class="text-center pt-2 hard"> Updated : {{ download_form.updated_at }}</h6>
+                          <h6 class="pt-2 hard"></h6>
+                          <div class="container text-center pt-2 mb-4">
+                            <a href="{% url 'web:download_file' pk=download_form.pk %}" style="color: green; border: 1px solid green; border-radius: 5px; padding: 5px;">Download</a>
+                          <a href="{% url 'web:edit_downloadform' download_form.id %}" style="color: blue; border: 1px solid blue; border-radius: 5px; padding: 5px;">Edit</a>
+                          <a href="{% url 'web:delete_downloadform' download_form.id %}" style="color: red; border: 1px solid red; border-radius: 5px; padding: 5px;"> Delete</a>
+                        </div>
+                      </div>
+                {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

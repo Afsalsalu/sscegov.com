@@ -1,0 +1,190 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+{% block content %}
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'web/css/acc-master-list.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+ <style>
+    .example {
+
+    float: left;
+    margin-left: 2%;
+    /* margin-top: 30px;   */
+    margin-bottom: 30px;
+    width: 200px;
+    display: flex;
+  }
+
+  .example input[type=text] {
+    padding: 10px;
+    font-size: 17px;
+    border: 1px solid #ccc;
+    float: left;
+    width: 80%;
+    background: #f1f1f1;
+    /* border-radius: 5px 0 0 5px; */
+  }
+
+  .example button {
+    /* float: left; */
+    width: 23%;
+    /* padding: 10px; */
+    background: #2196F3;
+    color: white;
+    font-size: 12px;
+    border: 1px solid #2196F3;
+    border-left: none;
+    cursor: pointer;
+    /* border-radius: 0 5px 5px 0; */
+  }
+
+  .example button:hover {
+    background: #0b7dda;
+  }
+
+  .example button i {
+    font-size: 13px;
+  }
+
+  .center {
+    margin: auto;
+    border: 3px solid #007a9b;
+    padding: 10px;
+    /* text-align: center; */
+    background-color: antiquewhite !important;
+    height: 76vh;
+    overflow: hidden;
+    overflow-y: scroll;
+    }
+
+ </style>
+
+
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+        <h4 class="py-5"></h4>
+    
+        <div class="center">
+
+            <div class="parant-div" style="margin-top: 30px;">
+                <form class="example" onsubmit="return false;"> <!-- Prevent form submission -->
+                    <input type="text" placeholder="Search Head.." name="search" id="search-input" value="{{ request.GET.search }}">
+                    <button style="width: 40px; background-color: #0d82fe;" type="submit"><i class="fa fa-search"></i></button>
+                </form>
+    
+                <div class="lg:col-span-3 lg:col-start-10">
+                    <div class="flex gap-2 lg:justify-end">
+                        <a href="{% url 'web:acc_master' %}">
+                            <button data-modal-target="addUserModal" type="button" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20"><i data-lucide="plus" class="inline-block size-4"></i> <span class="align-middle">Add</span></button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container1">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="main-box clearfix">
+                            <div class="table-responsive">
+                                <table class="table user-list" style="width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th><span>Account Code</span></th>
+                                            <th><span>Head</span></th>
+                                            <th class="text-center"><span>Group</span></th>
+                                            <th><span>Category</span></th>
+                                            <th><span>Phone Number</span></th>
+                                            <th>&nbsp;</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="results-body"> <!-- Add ID for easier manipulation -->
+                                        {% for userlist in userlists %}
+                                        <tr>
+                                            <td>
+                                                <img src="" alt="">
+                                                <a href="#" class="user-link">{{ userlist.account_code }}</a>
+                                            </td>
+                                            <td style="text-transform: capitalize; text-transform: uppercase;">{{ userlist.head }}</td>
+                                            <td class="text-left">
+                                                <span  class="label label-default">{{ userlist.group }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="label label-success">{{ userlist.category }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="label label-success">{{ userlist.mobile }}</span>
+                                            </td>
+                                            <td style="width: 2%;">
+                                                {% if userlist.slug %}
+                                                <a href="{{ userlist.get_absolute_url }}" class="table-link">
+                                                    <span class="fa-stack">
+                                                        <svg style="padding-top: 0px;" xmlns="http://www.w3.org/2000/svg" width="20" height="30"
+                                                            fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
+                                                            <path
+                                                                d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
+                                                        </svg>
+                                                    </span>
+                                                </a>
+                                                {% else %}
+                                                <span class="text-muted">No detail available</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="results-container"></div>
+        </div>
+    </div>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+    $('#search-input').on('keyup', function(){
+        var query = $(this).val();
+        $.ajax({
+            url: '{% url "web:acc_master_list" %}',  // URL for the view
+            data: {'search': query},  // Sending search query
+            dataType: 'json',  // Expecting JSON response
+            success: function(data){
+                // Clear existing results
+                $('.user-list tbody').empty();  
+                
+                // Append new results to the table
+                $.each(data.results, function(index, userlist){
+                    var row = '<tr>' +
+                        '<td><a href="#" class="user-link">' + userlist.account_code + '</a></td>' +
+                        '<td style="text-transform: capitalize; text-transform: uppercase;">' + userlist.head + '</td>' +
+                        '<td class="text-center"><span class="label label-default">' + userlist.group + '</span></td>' +
+                        '<td><span class="label label-success">' + userlist.category + '</span></td>' +
+                        '<td><span class="label label-success">' + userlist.mobile + '</span></td>' +
+                        '<td style="width: 2%;">' +
+                        (userlist.slug ? '<a href="' + userlist.get_absolute_url + '" class="table-link"><span class="fa-stack"><svg style="padding-top: 0px;" xmlns="http://www.w3.org/2000/svg" width="20" height="30" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" /><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" /></svg></span></a>' : '<span class="text-muted">No detail available</span>') +
+                        '</td></tr>';
+                    $('.user-list tbody').append(row);  // Append each row
+                });
+            },
+            error: function(xhr, status, error){
+                console.error('Search error:', error);  // Log error if occurs
+            }
+        });
+    });
+});
+
+</script>
+    
+    
+    
+    {% endblock %}

@@ -1,0 +1,288 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'web/css/non.css' %}" />
+<style>
+  .popular-services-heading{margin:20px 0 10px;color:#172033;font-size:19px;font-weight:700}
+  .popular-services-context{margin:0 0 12px;padding:8px 12px;border:1px solid #dfe5ff;border-radius:8px;background:#f5f7ff;color:#4653a8;font-size:12px}
+  .popular-services-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
+  .popular-service-card{display:flex;min-width:0;aspect-ratio:1/1;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:10px;border:1px solid #e5ebf0;border-radius:12px;background:linear-gradient(145deg,#fff,#f8fbfc);box-shadow:0 3px 12px #2030470b;color:#172033;text-decoration:none;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+  .popular-service-card:hover{border-color:#8bc5d3;box-shadow:0 8px 18px #147d9820;color:#172033;transform:translateY(-2px)}
+  .popular-service-card:focus-visible{outline:3px solid #147d9866;outline-offset:2px}
+  .popular-service-logo{position:relative;display:flex;width:52px;height:52px;flex:0 0 52px;align-items:center;justify-content:center;border-radius:50%;background:#edf8fa;color:#147d98}
+  .popular-service-logo img{display:block;width:38px;height:38px;object-fit:contain}
+  .popular-service-logo img[hidden]{display:none}
+  .popular-service-fallback{display:flex;align-items:center;justify-content:center;color:#147d98}
+  .popular-service-name{display:-webkit-box;width:100%;overflow:hidden;color:#253449;font-size:12px;font-weight:700;line-height:1.3;text-align:center;text-overflow:ellipsis;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+  .popular-services-divider{grid-column:1/-1;margin:5px 0 0;padding:7px 2px 0;border-top:1px solid #e5ebf0;color:#718096;font-size:13px;font-weight:700}
+  .popular-services-empty{grid-column:1/-1;margin:0;color:#718096;font-size:13px;text-align:center}
+  @media(min-width:640px){.popular-services-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media(min-width:768px){.popular-services-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+  @media(min-width:1024px){.popular-services-grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+  @media(min-width:1280px){.popular-services-grid{grid-template-columns:repeat(10,minmax(0,1fr));gap:9px}.popular-service-card{padding:8px;gap:6px}.popular-service-logo{width:44px;height:44px;flex-basis:44px}.popular-service-logo img{width:32px;height:32px}.popular-service-name{font-size:11px}}
+</style>
+<style>
+  .dashboard-news-heading{margin:18px 0 10px;color:#172033;font-size:17px;font-weight:800;letter-spacing:-.01em}
+  .dashboard-news-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;width:100%}
+  .dashboard-news-card{display:flex;min-width:0;flex-direction:column;overflow:hidden;border:1px solid #e4eaf0;border-radius:12px;background:#fff;box-shadow:0 5px 16px #2030470d;transition:transform .18s ease,box-shadow .18s ease}
+  .dashboard-news-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px #20304718}
+  .dashboard-news-media{position:relative;aspect-ratio:16/9;overflow:hidden;background:linear-gradient(135deg,#e5f4f7,#d9e6f8)}
+  .dashboard-news-media img{display:block;width:100%;height:100%;object-fit:cover}
+  .dashboard-news-media img[hidden],.dashboard-news-placeholder[hidden]{display:none}
+  .dashboard-news-placeholder{display:flex;width:100%;height:100%;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#147d98}
+  .dashboard-news-placeholder i{width:24px;height:24px}
+  .dashboard-news-placeholder span{font-size:10px;font-weight:700}
+  .dashboard-news-body{display:flex;min-width:0;min-height:118px;flex:1;flex-direction:column;padding:11px 13px}
+  .dashboard-news-title{display:-webkit-box;margin:0;overflow:hidden;color:#172033;font-size:13px;font-weight:800;line-height:1.35;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+  .dashboard-news-description{display:-webkit-box;margin:5px 0 8px;overflow:hidden;color:#718096;font-size:11px;line-height:1.45;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+  .dashboard-news-date{margin-top:auto;color:#94a3b8;font-size:10px;font-weight:600}
+  .dashboard-news-empty{grid-column:1/-1;border:1px dashed #cfd9e4;border-radius:10px;padding:18px;color:#718096;font-size:12px;text-align:center}
+  @media (max-width:1024px){.dashboard-news-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media (max-width:760px){.dashboard-news-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:480px){.dashboard-news-grid{grid-template-columns:minmax(0,1fr)}}
+</style>
+<style>.banner-carousel{position:relative;aspect-ratio:16/5;overflow:hidden;margin-bottom:1.25rem;background:#f1f5f9}.banner-slide{display:none;height:100%}.banner-slide.is-active{display:block}.banner-slide img{width:100%;height:100%;object-fit:cover}.banner-prev,.banner-next{position:absolute;top:45%;border:0;background:#0008;color:#fff;padding:.5rem 1rem}.banner-prev{left:.5rem}.banner-next{right:.5rem}.banner-dots{position:absolute;bottom:.5rem;left:0;right:0;text-align:center}.banner-dot{width:10px;height:10px;border:0;border-radius:50%;margin:0 3px;background:#fff8}.banner-dot.is-active{background:#fff}</style>
+
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+  
+  <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">        
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+
+      <div class="card">
+        <div class="card-body">
+        {% if banners %}<div class="banner-carousel" tabindex="0" aria-label="Banners"><div class="banner-slides">{% for banner in banners %}<div class="banner-slide{% if forloop.first %} is-active{% endif %}"><img src="{{ banner.image.url }}" alt="Banner {{ forloop.counter }}"></div>{% endfor %}</div>{% if banners|length > 1 %}<button type="button" class="banner-prev" aria-label="Previous banner">&#10094;</button><button type="button" class="banner-next" aria-label="Next banner">&#10095;</button><div class="banner-dots">{% for banner in banners %}<button type="button" aria-label="Show banner {{ forloop.counter }}" class="banner-dot{% if forloop.first %} is-active{% endif %}"></button>{% endfor %}</div>{% endif %}</div>{% endif %}
+        <h6 class="mb-4 text-15">Centre Dashboard</h6>
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+                <div class="px-3 py-6 text-center bg-green-100 border border-green-100 rounded-md dark:bg-green-900 dark:border-zink-800">
+                    <div class="flex items-center justify-center mx-auto mb-4 rounded-md size-12 bg-green-50 text-15 dark:bg-green-400/20"><i data-lucide="monitor" class="text-green-500 fill-green-200 dark:fill-green-500/20"></i></div>
+                    <h4 class="mb-1 text-white-500 fs-4xl"><span class="counter-value" data-target="{{ total_service }}">0</span></h4>
+                    <p class="mb-0 text-white-400">Total Services</p>
+                </div>
+                <div class="px-3 py-6 text-center bg-green-100 border border-green-100 rounded-md dark:bg-green-900 dark:border-zink-800">
+                    <div class="flex items-center justify-center mx-auto mb-4 rounded-md size-12 bg-green-50 text-15 dark:bg-green-400/20"><i data-lucide="wallet" class="text-green-500 fill-green-200 dark:fill-green-500/20"></i></div>
+                    <h4 class="mb-1 text-white-500 fs-4xl">₹<span class="counter-value" data-target="{{ wallet_total }}"></span></h4>
+                    <p class="mb-0 text-white-400">Wallet Amount </p>
+                </div>
+                <div class="px-3 py-6 text-center bg-green-100 border border-green-100 rounded-md dark:bg-green-900 dark:border-zink-800">
+                    <div class="flex items-center justify-center mx-auto mb-4 rounded-md size-12 bg-green-50 text-15 dark:bg-green-400/20"><i data-lucide="settings" class="text-green-500 fill-green-200 dark:fill-green-500/20"></i></div>
+                    <h4 class="mb-1 text-white-500 fs-4xl">{{ ip }}</h4>
+                    <p class="mb-0 text-white-400">IP Aadress </p>
+                </div>
+
+                <div class="px-3 py-6 text-center border rounded-md bg-sky-500 border-sky-500 dark:bg-sky-900 dark:border-zink-800">
+                    <div class="flex items-center justify-center mx-auto mb-4 rounded-md size-12 bg-white/90 text-15 dark:bg-sky-400/20"><i data-lucide="clock-4" class="text-sky-500 fill-sky-200 dark:fill-sky-500/20"></i></div>
+                    <h5 class="mb-1 text-white-50 fs-4xl" style="color: whitesmoke;">{{ last_login|date:"d M Y, H:i:s" }}</h5>
+                    <p class="mb-0 text-white-200" style="color: whitesmoke;">Login Time</p>
+                </div>
+            </div>
+        </div>
+    </div><!--end card-->
+
+            <div class="container marquee marquees">
+              <div class="marquee-title"><span class="title-tip"></span>Alerts & Updates</div>
+              
+              
+              <marquee behavior="" direction="" >
+                Be cautious of fraud attempts and never share your OTP or password with anyone. Protect your sensitive information by regularly updating your software to the latest version. This helps ensure you have the latest security features and protections in place. Stay vigilant and secure!
+              </marquee>
+            </div>
+            <h4 class="popular-services-heading">Popular Services</h4>
+
+            <div class="popular-services-grid">
+                {% if franchise_state %}
+                <div class="popular-services-context" style="grid-column:1/-1;">
+                    Showing priority content for <strong>{{ franchise_state.state_name }}</strong>
+                </div>
+                {% if priority_services %}
+                {% for service in priority_services %}
+                <a class="popular-service-card" href="{{ service.service_link }}" target="_blank" rel="noopener noreferrer" aria-label="Open {{ service.service_name }}">
+                    <span class="popular-service-logo">
+                        {% if service.service_logo %}<img hidden src="{{ service.service_logo.url }}" alt="{{ service.service_name }} logo" onload="this.hidden=false;this.nextElementSibling.hidden=true" onerror="this.remove()">{% endif %}
+                        <span class="popular-service-fallback" aria-hidden="true"><i data-lucide="briefcase-business" class="size-5"></i></span>
+                    </span>
+                    <span class="popular-service-name">{{ service.service_name }}</span>
+                </a>
+                {% endfor %}
+                {% endif %}
+                {% if priority_services and other_services %}
+                <div class="popular-services-divider">More Services</div>
+                {% endif %}
+                {% if other_services %}
+                {% for service in other_services %}
+                <a class="popular-service-card" href="{{ service.service_link }}" target="_blank" rel="noopener noreferrer" aria-label="Open {{ service.service_name }}">
+                    <span class="popular-service-logo">
+                        {% if service.service_logo %}<img hidden src="{{ service.service_logo.url }}" alt="{{ service.service_name }} logo" onload="this.hidden=false;this.nextElementSibling.hidden=true" onerror="this.remove()">{% endif %}
+                        <span class="popular-service-fallback" aria-hidden="true"><i data-lucide="briefcase-business" class="size-5"></i></span>
+                    </span>
+                    <span class="popular-service-name">{{ service.service_name }}</span>
+                </a>
+                {% endfor %}
+                {% endif %}
+                {% if not priority_services and not other_services %}
+                <p class="popular-services-empty">popular services not available</p>
+                {% endif %}
+                {% else %}
+                {% if popular_services %}
+                {% for service in popular_services %}
+                <a class="popular-service-card" href="{{ service.service_link }}" target="_blank" rel="noopener noreferrer" aria-label="Open {{ service.service_name }}">
+                    <span class="popular-service-logo">
+                        {% if service.service_logo %}<img hidden src="{{ service.service_logo.url }}" alt="{{ service.service_name }} logo" onload="this.hidden=false;this.nextElementSibling.hidden=true" onerror="this.remove()">{% endif %}
+                        <span class="popular-service-fallback" aria-hidden="true"><i data-lucide="briefcase-business" class="size-5"></i></span>
+                    </span>
+                    <span class="popular-service-name">{{ service.service_name }}</span>
+                </a>
+                {% endfor %}
+                {% else %}
+                <p class="popular-services-empty">popular services not available</p>
+                {% endif %}
+                {% endif %}
+            </div>
+          <!-- / Content -->
+          <h4 class="dashboard-news-heading">Latest News</h4>
+          <div class="dashboard-news-grid">
+            {% if latest_news %}
+            {% for latestnews in latest_news %}
+            <article class="dashboard-news-card">
+              <div class="dashboard-news-media">
+                {% if latestnews.image %}
+                <img hidden src="{{ latestnews.image.url }}" alt="{{ latestnews.title }}" loading="lazy" onload="this.hidden=false;this.nextElementSibling.hidden=true" onerror="this.remove()">
+                {% endif %}
+                <div class="dashboard-news-placeholder" aria-hidden="true">
+                  <i data-lucide="newspaper"></i>
+                  <span>News update · No image available</span>
+                </div>
+              </div>
+              <div class="dashboard-news-body">
+                <h6 class="dashboard-news-title">{{ latestnews.title }}</h6>
+                <p class="dashboard-news-description">{{ latestnews.content }}</p>
+                <time class="dashboard-news-date" datetime="{{ latestnews.created_at|date:'c' }}">{{ latestnews.created_at|date:"M j, Y" }}</time>
+              </div>
+            </article>
+            {% endfor %}
+            {% else %}
+            <div class="dashboard-news-empty">Latest news is not available right now.</div>
+            {% endif %}
+          </div><!--end grid-->
+ 
+          <div class="grid grid-cols-1 gap-x-5 xl:grid-cols-2 py-5">
+            
+            <div class="card" style="background: white;">
+                <div class="card-body">
+                    <div class="flex items-center mb-3">
+                        <h6 class="grow text-15">Recent Wallet <span style="color: brown;">Payment Transactions</span></h6>
+                        <div class="relative dropdown shrink-0">
+                            <button type="button" class="flex items-center justify-center size-[30px] p-0 bg-white text-slate-500 btn hover:text-slate-500 hover:bg-slate-100 focus:text-slate-500 focus:bg-slate-100 active:text-slate-500 active:bg-slate-100 dark:bg-zink-700 dark:hover:bg-slate-500/10 dark:focus:bg-slate-500/10 dark:active:bg-slate-500/10 dropdown-toggle" id="customServiceDropdown" data-bs-toggle="dropdown">
+                                <i data-lucide="more-vertical" class="inline-block size-4"></i>
+                            </button>
+                        
+                            <ul class="absolute z-50 hidden py-2 mt-1 ltr:text-left rtl:text-right list-none bg-white rounded-md shadow-md dropdown-menu min-w-[10rem] dark:bg-zink-600" aria-labelledby="customServiceDropdown">
+                                <li>
+                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">1 Weekly</a>
+                                </li>
+                                <li>
+                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">1 Monthly</a>
+                                </li>
+                                <li>
+                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">3 Monthly</a>
+                                </li>
+                                <li>
+                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">6 Monthly</a>
+                                </li>
+                                <li>
+                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">This Yearly</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="ltr:text-left rtl:text-right">
+                               
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500" style="text-align: center;">no transactions</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div><!--end card-->
+            <div class="card" style="background: white;">
+                <div class="card-body">
+                    <div class="flex items-center mb-3">
+                        <h6 class="grow text-15">Recent Service <span style="color: green;">History</span></h6>
+                        <div class="relative dropdown shrink-0">
+                            <button type="button" class="flex items-center justify-center size-[30px] p-0 bg-white text-slate-500 btn hover:text-slate-500 hover:bg-slate-100 focus:text-slate-500 focus:bg-slate-100 active:text-slate-500 active:bg-slate-100 dark:bg-zink-700 dark:hover:bg-slate-500/10 dark:focus:bg-slate-500/10 dark:active:bg-slate-500/10 dropdown-toggle" id="customServiceDropdown" data-bs-toggle="dropdown">
+                                <i data-lucide="more-vertical" class="inline-block size-4"></i>
+                            </button>
+                        
+                            <ul class="absolute z-50 hidden py-2 mt-1 ltr:text-left rtl:text-right list-none bg-white rounded-md shadow-md dropdown-menu min-w-[10rem] dark:bg-zink-600" aria-labelledby="customServiceDropdown">
+                                <li>
+                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">1 Weekly</a>
+                                </li>
+                                <li>
+                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">1 Monthly</a>
+                                </li>
+                                <li>
+                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">3 Monthly</a>
+                                </li>
+                                <li>
+                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">6 Monthly</a>
+                                </li>
+                                <li>
+                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">This Yearly</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="ltr:text-left rtl:text-right">
+                       
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500" style="text-align: center;">no history</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div><!--end card-->
+      </div>
+
+          <div class="content-backdrop fade"></div>
+        </div>
+        <!-- Content wrapper -->
+      </div>
+      <!-- / Layout page -->
+    </div>
+
+    
+    
+    <!-- Overlay -->
+    <div class="layout-overlay layout-menu-toggle"></div>
+    
+    
+    <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+    
+  </div>
+  <!-- / Layout wrapper -->
+
+<script>(function(){var b=document.querySelector('.banner-carousel');if(!b)return;var s=[].slice.call(b.querySelectorAll('.banner-slide')),d=[].slice.call(b.querySelectorAll('.banner-dot')),i=0,t;function show(n){i=(n+s.length)%s.length;s.forEach(function(x,k){x.classList.toggle('is-active',k===i)});d.forEach(function(x,k){x.classList.toggle('is-active',k===i)})}function start(){if(s.length>1)t=setInterval(function(){show(i+1)},5000)}function stop(){clearInterval(t)}var p=b.querySelector('.banner-prev'),n=b.querySelector('.banner-next');if(p)p.onclick=function(){show(i-1)};if(n)n.onclick=function(){show(i+1)};d.forEach(function(x,k){x.onclick=function(){show(k)}});b.onmouseenter=stop;b.onmouseleave=start;b.onkeydown=function(e){if(e.key==='ArrowLeft')show(i-1);if(e.key==='ArrowRight')show(i+1)};start()})()</script>
+{% endblock content %}    
+
+<!-- Newly Arrived / recently added services -->
+<!-- Featured / Popular Services -->
+<!-- Recent Transactions -->
+<!-- New Services -->
+<!-- Shortcut -->

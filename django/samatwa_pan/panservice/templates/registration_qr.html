@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title> SSC Pan Service </title>
+        <style>
+            body {
+                font-family: Arial;
+                text-align: center;
+                background: #f4f6f9;
+                padding: 50px;
+            }
+            .box {
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                display: inline-block;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            }
+            img {
+                width: 250px;
+                margin: 20px 0;
+            }
+            .amount {
+                font-size: 20px;
+                font-weight: bold;
+                margin: 10px 0;
+            }
+            .note {
+                color: red;
+                margin-top: 15px;
+            }
+            .btn {
+                margin-top: 20px;
+                padding: 10px 20px;
+                background: #28a745;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="box">
+            <h2> Registration Payment </h2>
+            <p>User: <strong>{{username}}</strong></p>
+            <div class="amount">
+                Registration Fee: ₹{{amount}}
+            </div>
+            <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+            <p class="note">
+                After payment, send the payment screenshot to our WhatsApp number.
+            </p>
+            <p>
+                WhatsApp: <strong>+91 9497071145</strong>
+            </p>
+
+            <a href="{% url 'login' %}" class="btn">Go to Login</a>
+        </div>
+    </body>
+</html>

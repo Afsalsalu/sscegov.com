@@ -1,0 +1,253 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Buy Coupons</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== BODY ===== */
+        body {
+            font-family: 'Sora', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe, #f1f5f9);
+            margin: 0;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* ===== CARD ===== */
+        .table-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            animation: fadeUp 0.4s ease;
+        }
+
+        /* ANIMATION */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== TITLE ===== */
+        .table-card h2 {
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        /* ===== INFO TEXT ===== */
+        .table-card p {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #475569;
+        }
+
+        .table-card p strong {
+            color: #0f172a;
+        }
+
+        /* ===== FORM ===== */
+        .form-row {
+            margin-bottom: 18px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        /* INPUT FIELD */
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            margin-top: 6px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        /* INPUT FOCUS */
+        input:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14,165,233,0.15);
+        }
+
+        /* ===== TOTAL BOX ===== */
+        .total-box {
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 15px;
+            color: #0f172a;
+            background: #f1f5f9;
+            padding: 10px 12px;
+            border-radius: 8px;
+        }
+
+        /* ===== WARNING ===== */
+        .warning {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        /* ===== BUTTON ===== */
+        .btn-buy {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        /* HOVER */
+        .btn-buy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37,99,235,0.25);
+        }
+
+        /* DISABLED */
+        .btn-buy:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+
+            .table-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Dynamic Topbar -->
+
+    {% if request.user.role == 'admin' %}
+    {% include 'partials/admin_topbar.html' %}
+    {% elif request.user.role == 'state' %}
+    {% include 'partials/state_topbar.html' %}
+    {% elif request.user.role == 'district' %}
+    {% include 'partials/district_topbar.html' %}
+    {% else %}
+    {% include 'partials/retailer_topbar.html' %}
+    {% endif %}
+
+    <div class="main-content">
+
+        <div class="table-card">
+
+            <h2>Buy UTI PSA Coupons</h2>
+
+            <p><strong>Price per Coupon:</strong> ₹ {{ user_price|floatformat:2 }}</p>
+            <p><strong>Wallet Balance:</strong> ₹ {{ wallet_balance|floatformat:2 }}</p>
+
+            <form method="POST" id="buy_coupon_form">
+
+                {% csrf_token %}
+
+                <div class="form-row">
+                    <label>Quantity</label>
+                    <input type="number" id="quantity_input" name="quantity" min="1" required>
+                </div>
+
+                <div class="total-box">
+                    Total Amount: ₹ <span id="total_amount">0.00</span>
+                </div>
+
+                <div id="balance_message" class="warning"></div>
+
+                <button type="submit" id="buy_btn" class="btn-buy">
+                    Submit Request
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const form = document.getElementById("buy_coupon_form");
+        const qtyInput = document.getElementById("quantity_input");
+        const unitPrice = parseFloat("{{ user_price }}");
+        const walletBalance = parseFloat("{{ wallet_balance }}");
+        const addMoneyUrl = "{% url 'add_money' %}";
+        const totalSpan = document.getElementById("total_amount");
+        const message = document.getElementById("balance_message");
+        const buyBtn = document.getElementById("buy_btn");
+
+        function calculateTotal() {
+            let qty = parseInt(qtyInput.value) || 0;
+            return qty * unitPrice;
+        }
+
+        function updateCouponTotal() {
+            let total = calculateTotal();
+
+            totalSpan.innerText = total.toFixed(2);
+
+            if (total > walletBalance) {
+                message.innerText = "Insufficient Wallet Balance!";
+                buyBtn.dataset.redirectToWallet = "true";
+            }
+            else {
+                message.innerText = "";
+                buyBtn.dataset.redirectToWallet = "false";
+            }
+        }
+
+        qtyInput.addEventListener("input", updateCouponTotal);
+
+        form.addEventListener("submit", function (event) {
+            if (buyBtn.dataset.redirectToWallet === "true") {
+                event.preventDefault();
+                window.location.href = addMoneyUrl;
+            }
+        });
+
+        updateCouponTotal();
+
+    </script>
+
+</body>
+
+</html>

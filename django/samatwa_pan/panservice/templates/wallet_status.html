@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Status</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .amount {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .status {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .pending {
+            color: #f39c12;
+        }
+
+        .approved {
+            color: #28a745;
+        }
+
+        .rejected {
+            color: #dc3545;
+        }
+
+        .message {
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        .btn {
+            margin-top: 15px;
+        }
+
+        .btn a {
+            display: block;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: 0.3s ease;
+        }
+
+        .btn a:hover {
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .box {
+                padding: 20px;
+            }
+
+            .amount, .status {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Wallet Status</h2>
+
+    <p class="amount"><strong>Amount:</strong> ₹{{ wallet_req.amount }}</p>
+
+    <p class="status 
+        {% if wallet_req.status == 'pending' %}pending
+        {% elif wallet_req.status == 'approved' %}approved
+        {% else %}rejected
+        {% endif %}
+    ">
+        {{ wallet_req.status|title }}
+    </p>
+
+    <div class="message">
+        {% if wallet_req.status == 'pending' %}
+            ⏳ Waiting for Admin Approval
+        {% elif wallet_req.status == 'approved' %}
+            🟢 Approved! Wallet Updated Successfully
+        {% else %}
+            ❌ Payment Rejected
+        {% endif %}
+    </div>
+
+    <div class="btn">
+        {% if user.role == 'admin' %}
+            <a href="{% url 'admin_dashboard' %}">⬅ Back to Dashboard</a>
+        {% elif user.role == 'state' %}
+            <a href="{% url 'state_dashboard' %}">⬅ Back to Dashboard</a>
+        {% elif user.role == 'district' %}
+            <a href="{% url 'district_dashboard' %}">⬅ Back to Dashboard</a>
+        {% else %}
+            <a href="{% url 'retailer_dashboard' %}">⬅ Back to Dashboard</a>
+        {% endif %}
+    </div>
+
+</div>
+
+</body>
+</html>

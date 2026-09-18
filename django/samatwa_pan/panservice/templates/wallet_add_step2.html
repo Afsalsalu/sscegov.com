@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan & Pay - SAMATWA</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --navy: #0a1628;
+            --gold: #d4a843;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --green: #16a34a;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .page-wrapper {
+            min-height: calc(100vh - 60px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .box {
+            background: var(--card-bg);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(10, 22, 40, 0.12);
+            width: 100%;
+            max-width: 400px;
+            padding: 36px 32px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        p {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        p strong {
+            color: var(--navy);
+        }
+
+        .amount {
+            font-family: 'Space Mono', monospace;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--green);
+            margin: 16px 0 20px 0;
+        }
+
+        img {
+            width: 240px;
+            max-width: 100%;
+            display: block;
+            margin: 20px auto;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            padding: 12px;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .note {
+            color: #b45309;
+            font-size: 13.5px;
+            line-height: 1.6;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .whatsapp {
+            font-size: 15px;
+            color: var(--navy);
+            margin: 16px 0;
+        }
+
+        .whatsapp strong {
+            color: #16a34a;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            background: #f1f5f9;
+            color: var(--navy);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .page-wrapper {
+                padding: 80px 16px 40px;
+                align-items: flex-start;
+            }
+            .box {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Dynamic Topbar -->
+    {% if request.user.role == 'admin' %}
+        {% include 'partials/admin_topbar.html' %}
+    {% elif request.user.role == 'state' %}
+        {% include 'partials/state_topbar.html' %}
+    {% elif request.user.role == 'district' %}
+        {% include 'partials/district_topbar.html' %}
+    {% else %}
+        {% include 'partials/retailer_topbar.html' %}
+    {% endif %}
+
+    <div class="page-wrapper">
+
+        <div class="box">
+
+            <h2>Scan QR to Pay</h2>
+
+            <p>User: <strong>{{ request_obj.user.username }}</strong></p>
+
+            <div class="amount">Add Amount: ₹{{ request_obj.amount }}</div>
+
+            <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+
+            <div class="note">
+                After completing the payment, click below and share the screenshot on WhatsApp for verification.
+            </div>
+
+            <p class="whatsapp">
+                WhatsApp Support: <strong>+91 9497071145</strong>
+            </p>
+
+            <br>
+
+            {% if user.role == 'admin' %}
+                <a href="{% url 'admin_dashboard' %}" class="btn">⬅ Back to Dashboard</a>
+            {% elif user.role == 'state' %}
+                <a href="{% url 'state_dashboard' %}" class="btn">⬅ Back to Dashboard</a>
+            {% elif user.role == 'district' %}
+                <a href="{% url 'district_dashboard' %}" class="btn">⬅ Back to Dashboard</a>
+            {% else %}
+                <a href="{% url 'retailer_dashboard' %}" class="btn">⬅ Back to Dashboard</a>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+</html>

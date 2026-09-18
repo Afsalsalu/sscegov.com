@@ -1,0 +1,66 @@
+.box-main {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping of boxes to the next line if there are more than four */
+    justify-content: space-between; /* Space between boxes */
+    gap: 20px; /* Space between boxes */
+    padding: 10px; /* Padding for the main container */
+}
+
+.box {
+    border: 1px solid #333;
+    width: 23%; /* Adjusted width to fit four boxes per row with space between them */
+    padding: 15px;
+    border-radius: 8px;
+    background-color: antiquewhite;
+    box-sizing: border-box; /* Ensures padding and border are included in the width */
+}
+
+.box img {
+    border: 1px solid #333;
+    border-radius: 50%;
+    width: 100px; /* Set a fixed width for the image */
+    height: 100px; /* Set a fixed height for the image */
+    display: block;
+    margin: 0 auto; /* Center the image horizontally */
+}
+
+.box h4 {
+    text-align: center;
+    margin: 10px 0; /* Margin for spacing */
+}
+
+.box a {
+    background-color: #007A9B;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    display: inline-block; /* Inline block to allow padding */
+    text-align: center; /* Center the link text */
+    width: 100%; /* Make the link full-width */
+    text-decoration: none; /* Remove underline from the link */
+    margin-top: 10px; /* Space above the link */
+}
+
+.bx {
+    font-size: 20px !important;
+}
+/* 3 boxes per row for medium screens (tablets, etc.) */
+@media (max-width: 992px) {
+    .box {
+        width: 30%;
+    }
+}
+
+/* 2 boxes per row for smaller screens (small tablets, large phones, etc.) */
+@media (max-width: 768px) {
+    .box {
+        width: 45%;
+    }
+}
+
+/* 1 box per row for small screens (phones, etc.) */
+@media (max-width: 576px) {
+    .box {
+        width: 100%;
+    }
+}

@@ -1,0 +1,389 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - SAMATWA SSC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #1e40af;
+            --accent: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: #f8fafc;
+        }
+
+        /* ================= TOP CONTACT BAR ================= */
+        .top-bar {
+            background: #0f172a;
+            color: white;
+            padding: 12px 5%;
+            font-size: 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .top-bar a:hover {
+            color: var(--accent);
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 52px;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 16px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #1e2937;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .login-btn {
+            background: #c1c5d1;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #9aaee6;
+            transform: translateY(-2px);
+        }
+
+        /* Hamburger Menu */
+        .menu-toggle {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        /* ================= ABOUT SECTION ================= */
+        .about-section {
+            margin-top: 120px;
+            padding: 100px 5%;
+            background: white;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .about-section h2 {
+            font-size: 38px;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .about-section p {
+            font-size: 17.5px;
+            color: #444;
+            text-align: justify;
+            max-width: 820px;
+            margin: 0 auto 25px;
+        }
+
+        /* ================= FOOTER ================= */
+        .footer {
+            background: #0f172a;
+            color: #cbd5e1;
+            padding: 80px 5% 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-col h3 {
+            color: white;
+            margin-bottom: 22px;
+        }
+
+        .footer-col a {
+            color: #94a3b8;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .footer-col a:hover {
+            color: white;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 26px;
+            cursor: pointer;
+            z-index: 2000;
+        }
+
+        @media (max-width: 768px) {
+
+            .top-bar {
+                position: fixed;
+                top: 0;
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px 20px;
+                gap: 6px;
+                font-size: 13px;
+            }
+
+            .navbar {
+                position: fixed;
+                top: 80px;
+                width: 100%;
+                padding: 14px 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding-left: 20px;
+                width: 100%;
+                border-bottom: 1px solid #eee;
+            }
+
+            .login-btn {
+                margin: 10px 20px;
+                padding: 10px;
+                text-align: center;
+                border-radius: 30px;
+            }
+
+            .hero {
+                margin-top: 160px;
+                height: auto;
+                padding: 80px 20px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .service-grid,
+            .role-grid {
+                grid-template-columns: 1fr;
+            }
+
+            section {
+                padding: 60px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .hero h1 {
+                font-size: 26px;
+            }
+
+            .cta-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <a href="https://www.google.co.in/maps/dir//4VF2%2B2MP+Amrita+Buildings,+Kalanjoor" target="_blank">
+            <i class="fa-solid fa-location-dot"></i> AMRUTHA BUILDING, KALANJOOR
+        </a>
+        <a href="mailto:SSC.SAMATWASERVICECENTER@GMAIL.COM">
+            <i class="fa-solid fa-envelope"></i> SSC.SAMATWASERVICECENTER@GMAIL.COM
+        </a>
+        <a href="tel:8547928316">
+            <i class="fa-solid fa-phone"></i> +91 85479 28316
+        </a>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-shield-halved"></i> SAMATWA SSC
+        </div>
+
+        <div class="menu-toggle" id="menu-toggle">☰</div>
+
+        <div class="nav-links" id="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'home' %}#services">Services</a>
+            <a href="{% url 'home' %}#roles">Pricing</a>
+            <a href="{% url 'about' %}">About</a>
+            <a href="{% url 'login' %}" class="login-btn">Login</a>
+        </div>
+    </nav>
+
+    <!-- About Section -->
+    <div class="about-section">
+        <h2>About Us</h2>
+        <p>
+            SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED is a trusted portal introduced by experts providing B2B Services 
+            in the field of e-governance and digital solutions. We are committed to delivering the best products and 
+            exceptional customer support 24×7 throughout the year.
+        </p>
+        <p>
+            We specialize in Multi Recharge Services, PAN Card Services (NSDL Paperless & UTI PSA), and White Label Portal 
+            solutions. Our team focuses on creating mobile-responsive, user-friendly, reliable, and high-quality software 
+            that helps our clients grow their business efficiently.
+        </p>
+        <p>
+            With a strong network of Super Distributors, Distributors, and Retailers across India, we aim to provide 
+            seamless services with high commission margins and complete technical support.
+        </p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>Our Office</h3>
+                <a href="https://www.google.co.in/maps/dir//4VF2%2B2MP+Amrita+Buildings,+Kalanjoor" target="_blank">
+                    <i class="fa-solid fa-location-dot"></i> AMRUTHA BUILDING, KALANJOOR
+                </a>
+                <a href="mailto:SSC.SAMATWASERVICECENTER@GMAIL.COM">
+                    <i class="fa-solid fa-envelope"></i> SSC.SAMATWASERVICECENTER@GMAIL.COM
+                </a>
+                <a href="tel:8547928316">
+                    <i class="fa-solid fa-phone"></i> +91 85479 28316
+                </a>
+            </div>
+            <div class="footer-col">
+                <h3>Services</h3>
+                <a href="#">Mobile & DTH Recharge</a>
+                <a href="#">NSDL Paperless PAN</a>
+                <a href="#">UTI PSA PAN Center</a>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <a href="{% url 'about' %}">About Us</a>
+                <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+                <a href="{% url 'terms_condition' %}">Terms & Conditions</a>
+            </div>
+            <div class="footer-col">
+                <h3>SAMATWA SERVICE CENTER</h3>
+                <a href="https://sscpanservice.com/files/utiho.pdf" target="_blank">
+                    UTI Physical Application Address
+                </a>
+            </div>
+        </div>
+        <p style="text-align: center; margin-top: 60px; opacity: 0.7; font-size: 14px;">
+            © 2026 SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED. All Rights Reserved.
+        </p>
+    </footer>
+
+    <script>
+        const toggle = document.getElementById("menu-toggle");
+        const navLinks = document.getElementById("nav-links");
+
+        toggle.addEventListener("click", () => {
+            navLinks.classList.toggle("active");
+        });
+
+        // Close menu when clicking a link (optional improvement)
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove("active");
+            });
+        });
+    </script>
+</body>
+</html>

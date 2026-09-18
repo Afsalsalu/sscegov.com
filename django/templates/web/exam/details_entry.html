@@ -1,0 +1,313 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Centre User Account Form</title>
+  <link rel="icon" href="{% static 'web/file/images/logoSSC-blue.png' %}" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <style>
+    .invalid-feedback {
+      display: block;
+    }
+    form {
+      background-color: powderblue;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 10px #000;
+      box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="mb-5 text-center">SSC Connect Account Details</h2>
+    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+      {% csrf_token %}
+      <div class="py-3"></div>
+      <div class="row">
+        <!-- First Column -->
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="id_owner_centre" class="form-label">Centre Owner Name</label>
+            <input type="text" name="owner_centre" id="id_owner_centre" class="form-control {% if form.owner_centre.errors %}is-invalid{% endif %}" value="{{ form.owner_centre.value }}" required>
+            {% if form.owner_centre.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.owner_centre.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_photo" class="form-label">Photo</label>
+            <input type="file" name="photo" id="id_photo" class="form-control {% if form.photo.errors %}is-invalid{% endif %}">
+            {% if form.photo.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.photo.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_email" class="form-label">Centre Owner Email</label>
+            <input type="email" name="email" id="id_email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" value="{{ form.email.value }}" required>
+            {% if form.email.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.email.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_mobile" class="form-label">Mobile</label>
+            <input type="number" name="mobile" id="id_mobile" class="form-control {% if form.mobile.errors %}is-invalid{% endif %}" value="{{ form.mobile.value }}" required>
+            {% if form.mobile.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.mobile.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_alternative_mobile" class="form-label">Alternative Mobile</label>
+            <input type="number" name="alternative_mobile" id="id_alternative_mobile" class="form-control {% if form.alternative_mobile.errors %}is-invalid{% endif %}" value="{{ form.alternative_mobile.value }}">
+            {% if form.alternative_mobile.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.alternative_mobile.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_aadhaar_number" class="form-label">Aadhaar Number</label>
+            <input type="number" name="aadhaar_number" id="id_aadhaar_number" class="form-control {% if form.aadhaar_number.errors %}is-invalid{% endif %}" value="{{ form.aadhaar_number.value }}" required>
+            {% if form.aadhaar_number.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.aadhaar_number.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_aadhaar_front_side_uploading" class="form-label">Aadhaar Front Side Upload</label>
+            <input type="file" name="aadhaar_front_side_uploading" id="id_aadhaar_front_side_uploading" class="form-control {% if form.aadhaar_front_side_uploading.errors %}is-invalid{% endif %}">
+            {% if form.aadhaar_front_side_uploading.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.aadhaar_front_side_uploading.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_aadhaar_back_side_uploading" class="form-label">Aadhaar Back Side Upload</label>
+            <input type="file" name="aadhaar_back_side_uploading" id="id_aadhaar_back_side_uploading" class="form-control {% if form.aadhaar_back_side_uploading.errors %}is-invalid{% endif %}">
+            {% if form.aadhaar_back_side_uploading.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.aadhaar_back_side_uploading.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_pan_card_number" class="form-label">PAN Card Number</label>
+            <input type="text" name="pan_card_number" id="id_pan_card_number" class="form-control {% if form.pan_card_number.errors %}is-invalid{% endif %}" value="{{ form.pan_card_number.value }}" required>
+            {% if form.pan_card_number.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.pan_card_number.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_pan_card_uploading" class="form-label">Pan Card Upload</label>
+            <input type="file" name="pan_card_uploading" id="id_pan_card_uploading" class="form-control {% if form.pan_card_uploading.errors %}is-invalid{% endif %}">
+            {% if form.pan_card_uploading.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.pan_card_uploading.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_sign_uploading" class="form-label">Signature Upload</label>
+            <input type="file" name="sign_uploading" id="id_sign_uploading" class="form-control {% if form.sign_uploading.errors %}is-invalid{% endif %}">
+            {% if form.sign_uploading.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.sign_uploading.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_centre_owner_address" class="form-label">Centre Owner Address</label>
+            <textarea name="centre_owner_address" id="id_centre_owner_address" class="form-control {% if form.centre_owner_address.errors %}is-invalid{% endif %}" required>{{ form.centre_owner_address.value }}</textarea>
+            {% if form.centre_owner_address.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.centre_owner_address.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          
+        </div>
+
+        <!-- Second Column -->
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="id_centre_name" class="form-label">Centre Name</label>
+            <input type="text" name="centre_name" id="id_centre_name" class="form-control {% if form.centre_name.errors %}is-invalid{% endif %}" value="{{ form.centre_name.value }}" required>
+            {% if form.centre_name.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.centre_name.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_centre_phone_number" class="form-label">Centre Phone Number</label>
+            <input type="number" name="centre_phone_number" id="id_centre_phone_number" class="form-control {% if form.centre_phone_number.errors %}is-invalid{% endif %}" value="{{ form.centre_phone_number.value }}" required>
+            {% if form.centre_phone_number.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.centre_phone_number.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_centre_email" class="form-label">Centre Email</label>
+            <input type="email" name="centre_email" id="id_centre_email" class="form-control {% if form.centre_email.errors %}is-invalid{% endif %}" value="{{ form.centre_email.value }}" required>
+            {% if form.centre_email.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.centre_email.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_another_document" class="form-label">Another Document</label>
+            <input type="file" name="another_document" id="id_another_document" class="form-control {% if form.another_document.errors %}is-invalid{% endif %}">
+            {% if form.another_document.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.another_document.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="id_state" class="form-label">State</label>
+            <select name="state" id="id_state" class="form-select {% if form.state.errors %}is-invalid{% endif %}" required>
+              {% for choice in form.state.field.choices %}
+                <option value="{{ choice.0 }}" {% if choice.0 == form.state.value %}selected{% endif %}>{{ choice.1 }}</option>
+              {% endfor %}
+            </select>
+            {% if form.state.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.state.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_district" class="form-label">District</label>
+            <input type="text" name="district" id="id_district" class="form-control {% if form.district.errors %}is-invalid{% endif %}" value="{{ form.district.value }}" required>
+            {% if form.district.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.district.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_taluk" class="form-label">Taluk</label>
+            <input type="text" name="taluk" id="id_taluk" class="form-control {% if form.taluk.errors %}is-invalid{% endif %}" value="{{ form.taluk.value }}" required>
+            {% if form.taluk.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.taluk.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_rural_areas" class="form-label">Rural Areas</label>
+            <select name="rural_areas" id="id_rural_areas" class="form-select {% if form.rural_areas.errors %}is-invalid{% endif %}" required>
+              {% for choice in form.rural_areas.field.choices %}
+                <option value="{{ choice.0 }}" {% if choice.0 == form.rural_areas.value %}selected{% endif %}>{{ choice.1 }}</option>
+              {% endfor %}
+            </select>
+            {% if form.rural_areas.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.rural_areas.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_ward_number" class="form-label">Ward Number</label>
+            <input type="number" name="ward_number" id="id_ward_number" class="form-control {% if form.ward_number.errors %}is-invalid{% endif %}" value="{{ form.ward_number.value }}" required>
+            {% if form.ward_number.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.ward_number.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_pin_code" class="form-label">Pin Code</label>
+            <input type="number" name="pin_code" id="id_pin_code" class="form-control {% if form.pin_code.errors %}is-invalid{% endif %}" value="{{ form.pin_code.value }}" required>
+            {% if form.pin_code.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.pin_code.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label for="id_address" class="form-label">Centre Address</label>
+            <textarea name="address" id="id_address" class="form-control {% if form.address.errors %}is-invalid{% endif %}" required>{{ form.address.value }}</textarea>
+            {% if form.address.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.address.errors %}
+                  {{ error }}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+  
+        </div>
+      </div>
+      
+      <div class="form-group text-center mt-4">
+        <button type="submit" class="btn btn-primary">Submit Details</button>
+      </div>
+    </form>
+    <div class="py-3"></div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

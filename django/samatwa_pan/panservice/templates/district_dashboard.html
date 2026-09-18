@@ -1,0 +1,270 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>District Dashboard</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* ===== RESET ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ===== ROOT ===== */
+        :root {
+            --navy: #0a1628;
+            --primary: #0ea5e9;
+            --text: #1a2a3a;
+            --text-muted: #64748b;
+            --bg: linear-gradient(135deg, #e0f2fe, #f8fafc);
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        /* ===== BODY ===== */
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ===== MAIN CONTENT (FIXED WITH SIDEBAR) ===== */
+        .main-content {
+            margin-left: 260px;
+            /* 🔥 FIX sidebar overlap */
+            padding: 90px 30px 40px;
+        }
+
+        /* ===== HEADER ===== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        /* DATE BADGE */
+        .date-badge {
+            font-family: 'Space Mono', monospace;
+            background: #ffffff;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ===== OVERVIEW ===== */
+        .overview {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+        }
+
+        /* STAT BOX */
+        .stat-box {
+            flex: 1;
+        }
+
+        .stat-box span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .stat-box strong {
+            font-size: 22px;
+            display: block;
+            margin-top: 6px;
+            color: var(--navy);
+        }
+
+        /* ===== GRID ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 18px;
+        }
+
+        /* ===== CARD ===== */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid var(--border);
+
+            /* MODERN SHADOW */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+
+            transition: all .25s ease;
+        }
+
+        /* HOVER */
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        /* ICON */
+        .card-emoji {
+            font-size: 34px;
+            margin-bottom: 10px;
+        }
+
+        /* LABEL */
+        .card-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* ===== MOBILE ===== */
+        @media (max-width:768px) {
+
+            .main-content {
+                margin-left: 0;
+                /* 🔥 remove sidebar space */
+                padding: 90px 15px 30px;
+            }
+
+            .overview {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    {% include 'partials/district_topbar.html' %}
+
+    <div class="main-content">
+
+        <div class="page-header">
+            <h1>Welcome, {{ request.user.username }} 🏙️</h1>
+            <div class="date-badge" id="dateBadge"></div>
+        </div>
+
+        <!-- OVERVIEW -->
+
+        <div class="overview">
+
+            <div class="stat-box">
+                <span>Wallet Amount</span>
+                <strong>₹ {{ district_wallet }}</strong>
+            </div>
+
+            <div class="stat-box">
+                <span>Commission Wallet</span>
+                <strong>₹ {{ wallet_balance }}</strong>
+            </div>
+
+            <div class="stat-box">
+                <span>Total Retailers</span>
+                <strong>{{ total_retailers }}</strong>
+            </div>
+
+        </div>
+
+
+        <!-- DASHBOARD CARDS -->
+
+        <div class="dashboard-grid">
+
+            <a href="{% url 'district_profile' %}" class="card">
+                <div class="card-emoji">👤</div>
+                <div class="card-label">Profile</div>
+            </a>
+
+            <a href="#" class="card">
+                <div class="card-emoji">🏪</div>
+                <div class="card-label">Create Retailer</div>
+            </a>
+
+            <a href="{% url 'list_retailers' %}" class="card">
+                <div class="card-emoji">👥</div>
+                <div class="card-label">Retailer List</div>
+            </a>
+
+            <a href="{% url 'my_commission_wallet' %}" class="card">
+                <div class="card-emoji">💰</div>
+                <div class="card-label">Commission Wallet</div>
+            </a>
+
+            <a href="{% url 'commission_history' %}" class="card">
+                <div class="card-emoji">📊</div>
+                <div class="card-label">Commission History</div>
+            </a>
+
+            <a href="{% url 'add_money' %}" class="card">
+                <div class="card-emoji">💳</div>
+                <div class="card-label">Add Money</div>
+            </a>
+
+            <a href="{% url 'my_wallet_requests' %}" class="card">
+                <div class="card-emoji">📨</div>
+                <div class="card-label">Wallet Requests</div>
+            </a>
+
+            <a href="{% url 'my_transactions' %}" class="card">
+                <div class="card-emoji">📒</div>
+                <div class="card-label">Transactions</div>
+            </a>
+
+            <a href="{% url 'buy_coupons' %}" class="card">
+                <div class="card-emoji">🎟️</div>
+                <div class="card-label">Buy Coupons</div>
+            </a>
+
+            <a href="{% url 'my_coupon_requests' %}" class="card">
+                <div class="card-emoji">📄</div>
+                <div class="card-label">Coupon Requests</div>
+            </a>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const d = new Date();
+
+        document.getElementById('dateBadge').textContent =
+            d.toLocaleDateString('en-IN', {
+                weekday: 'short',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+
+    </script>
+
+</body>
+
+</html>

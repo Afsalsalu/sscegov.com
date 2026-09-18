@@ -1,0 +1,227 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approved Wallet History</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --navy: #0a1628;
+            --bg: skyblue;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --text-muted: #6b7280;
+            --green: #16a34a;
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* ================= CONTENT ================= */
+
+        .main-content {
+            padding: 32px 36px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .page-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        /* ================= FILTER CARD ================= */
+
+        .filter-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            margin-bottom: 28px;
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-form input {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .filter-form button {
+            background: var(--navy);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .filter-form button:hover {
+            opacity: 0.9;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background: var(--navy);
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        .amount {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .empty-row {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        /* ================= BACK LINK ================= */
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 13px;
+            text-decoration: none;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width:768px) {
+            .main-content {
+                padding: 70px 16px;
+            }
+
+            .filter-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+
+        <div class="page-header">
+            <h2>Approved Wallet History 💰</h2>
+        </div>
+
+        <!-- FILTER SECTION -->
+        <div class="filter-card">
+            <form method="GET" class="filter-form">
+                <input type="text" name="search" placeholder="Search user..." value="{{ search }}">
+                <input type="date" name="from_date" value="{{ from_date }}">
+                <input type="date" name="to_date" value="{{ to_date }}">
+                <button type="submit">Filter</button>
+            </form>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th> User ID </th>
+                        <th>User</th>
+                        <th>Amount</th>
+                        <th>Mobile</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for req in approved %}
+                    <tr>
+                        <td>{{ req.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>{{req.user.id}}</td>
+                        <td>{{ req.user.username }}</td>
+                        <td class="amount">₹ {{ req.amount }}</td>
+                        <td>{{ req.user.mobile }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="empty-row">
+                            No Approved Records Found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="{% url 'admin_dashboard' %}" class="back-link">
+            ⬅ Back to Dashboard
+        </a>
+
+    </div>
+
+</body>
+
+</html>

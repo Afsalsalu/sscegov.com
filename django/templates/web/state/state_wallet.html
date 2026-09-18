@@ -1,0 +1,311 @@
+{% extends "web/state/base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'web/css/custom.css' %}" />
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+
+  <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+  <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+    <h4 class="py-5"></h4>
+    <div class="grid grid-cols-12 2xl:grid-cols-12 gap-x-5">
+      <div class="col-span-12 card md:col-span-6 lg:col-span-3 2xl:col-span-2">
+        <div class="text-center card-body">
+            <div class="flex items-center justify-center mx-auto rounded-full size-14 bg-custom-100 text-custom-500 dark:bg-custom-500/20">
+                <i data-lucide="wallet-2"></i>
+            </div>
+            <h5 class="mt-4 mb-2">₹ <span class="counter-value" data-target="0">0</span></h5>
+            <p class="text-slate-500 dark:text-zink-200">Wattet Total Amount</p>
+        </div>
+    </div><!--end col-->
+      <div class="relative col-span-12 overflow-hidden lg:col-span-9 card 2xl:col-span-8 bg-slate-900">
+          <div class="absolute inset-0">
+              <svg xmlns="http://www.w3.org/2000/svg" class="size-100" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="1440" height="560" preserveAspectRatio="none" viewBox="0 0 1440 560">
+                  <g mask="url(&quot;#SvgjsMask1000&quot;)" fill="none">
+                      <use xlink:href="#SvgjsSymbol1007" x="0" y="0"></use>
+                      <use xlink:href="#SvgjsSymbol1007" x="720" y="0"></use>
+                  </g>
+                  <defs>
+                      <mask id="SvgjsMask1000">
+                          <rect width="1440" height="560" fill="#ffffff"></rect>
+                      </mask>
+                      <path d="M-1 0 a1 1 0 1 0 2 0 a1 1 0 1 0 -2 0z" id="SvgjsPath1003"></path>
+                      <path d="M-3 0 a3 3 0 1 0 6 0 a3 3 0 1 0 -6 0z" id="SvgjsPath1004"></path>
+                      <path d="M-5 0 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0z" id="SvgjsPath1001"></path>
+                      <path d="M2 -2 L-2 2z" id="SvgjsPath1005"></path>
+                      <path d="M6 -6 L-6 6z" id="SvgjsPath1002"></path>
+                      <path d="M30 -30 L-30 30z" id="SvgjsPath1006"></path>
+                  </defs>
+                  <symbol id="SvgjsSymbol1007">
+                      <use xlink:href="#SvgjsPath1001" x="30" y="30" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="30" y="90" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="30" y="150" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1003" x="30" y="210" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="30" y="270" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="30" y="330" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="30" y="390" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1003" x="30" y="450" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="30" y="510" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="30" y="570" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="90" y="30" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1003" x="90" y="90" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="90" y="150" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="90" y="210" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1004" x="90" y="270" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1003" x="90" y="330" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="90" y="390" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="90" y="450" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="90" y="510" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="90" y="570" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="150" y="30" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="150" y="90" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="150" y="150" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="150" y="210" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="150" y="270" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1006" x="150" y="330" stroke="rgba(32, 43, 61, 1)" stroke-width="3"></use>
+                      <use xlink:href="#SvgjsPath1004" x="150" y="390" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="150" y="450" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="150" y="510" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="150" y="570" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="210" y="30" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="210" y="90" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1006" x="210" y="150" stroke="rgba(32, 43, 61, 1)" stroke-width="3"></use>
+                      <use xlink:href="#SvgjsPath1002" x="210" y="210" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="210" y="270" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="210" y="330" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="210" y="390" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="210" y="450" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1006" x="210" y="510" stroke="rgba(32, 43, 61, 1)" stroke-width="3"></use>
+                      <use xlink:href="#SvgjsPath1003" x="210" y="570" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="270" y="30" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="270" y="90" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="270" y="150" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="270" y="210" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="270" y="270" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="270" y="330" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1006" x="270" y="390" stroke="rgba(32, 43, 61, 1)" stroke-width="3"></use>
+                      <use xlink:href="#SvgjsPath1002" x="270" y="450" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="270" y="510" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="270" y="570" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="330" y="30" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1006" x="330" y="90" stroke="rgba(32, 43, 61, 1)" stroke-width="3"></use>
+                      <use xlink:href="#SvgjsPath1002" x="330" y="150" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="330" y="210" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1006" x="330" y="270" stroke="rgba(32, 43, 61, 1)" stroke-width="3"></use>
+                      <use xlink:href="#SvgjsPath1001" x="330" y="330" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="330" y="390" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="330" y="450" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1003" x="330" y="510" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="330" y="570" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1004" x="390" y="30" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="390" y="90" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="390" y="150" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="390" y="210" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="390" y="270" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="390" y="330" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="390" y="390" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1003" x="390" y="450" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="390" y="510" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="390" y="570" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="450" y="30" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1004" x="450" y="90" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="450" y="150" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="450" y="210" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="450" y="270" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="450" y="330" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="450" y="390" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="450" y="450" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="450" y="510" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="450" y="570" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="510" y="30" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1003" x="510" y="90" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="510" y="150" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="510" y="210" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="510" y="270" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1004" x="510" y="330" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1006" x="510" y="390" stroke="rgba(32, 43, 61, 1)" stroke-width="3"></use>
+                      <use xlink:href="#SvgjsPath1001" x="510" y="450" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="510" y="510" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="510" y="570" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="570" y="30" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="570" y="90" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="570" y="150" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="570" y="210" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="570" y="270" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="570" y="330" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1006" x="570" y="390" stroke="rgba(32, 43, 61, 1)" stroke-width="3"></use>
+                      <use xlink:href="#SvgjsPath1005" x="570" y="450" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="570" y="510" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="570" y="570" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="630" y="30" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="630" y="90" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="630" y="150" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="630" y="210" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="630" y="270" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1006" x="630" y="330" stroke="rgba(32, 43, 61, 1)" stroke-width="3"></use>
+                      <use xlink:href="#SvgjsPath1002" x="630" y="390" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1006" x="630" y="450" stroke="rgba(32, 43, 61, 1)" stroke-width="3"></use>
+                      <use xlink:href="#SvgjsPath1001" x="630" y="510" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="630" y="570" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="690" y="30" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="690" y="90" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="690" y="150" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1002" x="690" y="210" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1005" x="690" y="270" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1001" x="690" y="330" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1003" x="690" y="390" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1003" x="690" y="450" stroke="rgba(32, 43, 61, 1)"></use>
+                      <use xlink:href="#SvgjsPath1006" x="690" y="510" stroke="rgba(32, 43, 61, 1)" stroke-width="3"></use>
+                      <use xlink:href="#SvgjsPath1003" x="690" y="570" stroke="rgba(32, 43, 61, 1)"></use>
+                  </symbol>
+              </svg>
+          </div>
+          <div class="relative card-body">
+              <div class="grid items-center grid-cols-12">
+                  <div class="col-span-12 lg:col-span-8 2xl:col-span-7">
+                      <h5 class="mb-3 font-normal tracking-wide text-slate-200">Money to Wallet 🎉</h5>
+                      <p class="mb-5 text-slate-400">Conveniently load funds into your wallet for instant access to cashless transactions, simplifying your financial management.</p>
+                    <a href="#!">
+                      <button type="button" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-500/20 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-500/20 dark:ring-custom-400/20">Add Money to Wallet</button>
+                    </a>
+                    </div>
+                  <div class="hidden col-span-12 2xl:col-span-3 lg:col-span-2 lg:col-start-11 2xl:col-start-10 lg:block">
+                      <img src="{% static 'web/images/service/banks.png' %}" alt="" class="h-30 ltr:2xl:ml-auto rtl:2xl:mr-auto">
+                  </div>
+              </div>
+          </div>
+      </div><!--end col-->
+
+
+  </div><!--end grid-->
+
+
+
+
+
+    <div class="grid grid-cols-1 2xl:grid-cols-12">
+      <div class="col-span-12 2xl:col-start-3 2xl:col-span-8">
+          <div class="card">
+              <div class="card-body">
+
+    <div class="mt-5 tab-content">
+        
+      <div class="block tab-pane" data-tab-id="1" id="accountInfo">
+        
+          <div class="grid grid-cols-1 gap-3 mb-4 md:grid-cols-3 lg:grid-cols-4">
+            <div>
+                <a href="#!">
+                <input  name="businessType" class="hidden border rounded-full appearance-none size-4 peer/business bg-slate-100 border-slate-200 dark:bg-zink-600 dark:border-zink-500 checked:bg-custom-500 dark:checked:bg-custom-500 checked:border-custom-500 dark:checked:border-custom-500" type="radio" value="" checked>
+                <label for="brandingRadio" class="block px-3 text-center border rounded-md cursor-pointer border-slate-200 py-7 text-slate-500 dark:border-zink-500 dark:text-zink-200 peer-checked/business:border-custom-500 dark:peer-checked/business:border-custom-500 peer-checked/business:text-custom-500 dark:peer-checked/business:text-custom-500">
+                  <i class='bx bx-history block mx-auto mb-3 stroke-1 size-8 fill-slate-100 dark:fill-zink-600' ></i>                    
+                  <span class="block font-medium text-15">Wallet History</span>
+                    <h6>View Wallet Transactions</h6>
+                </label>
+            </a>
+            </div>
+        
+
+            <div>
+                <input id="mobileDesignRadio" name="businessType" class="hidden border rounded-full appearance-none size-4 peer/business bg-slate-100 border-slate-200 dark:bg-zink-600 dark:border-zink-500 checked:bg-custom-500 dark:checked:bg-custom-500 checked:border-custom-500 dark:checked:border-custom-500" type="radio" value="">
+                <label for="mobileDesignRadio" class="block px-3 text-center border rounded-md cursor-pointer border-slate-200 py-7 text-slate-500 dark:border-zink-500 dark:text-zink-200 peer-checked/business:border-custom-500 dark:peer-checked/business:border-custom-500 peer-checked/business:text-custom-500 dark:peer-checked/business:text-custom-500">
+                  <i class='bx bx-notepad block mx-auto mb-3 stroke-1 size-8 fill-slate-100 dark:fill-zink-600'></i>                   
+                  <span class="block font-medium text-15">Wallet Summary</span>
+                    <h6>View Summary of Wallet</h6>
+                </label>
+            </div>
+
+            <div>
+                <input id="webDesignRadio" name="businessType" class="hidden border rounded-full appearance-none size-4 peer/business bg-slate-100 border-slate-200 dark:bg-zink-600 dark:border-zink-500 checked:bg-custom-500 dark:checked:bg-custom-500 checked:border-custom-500 dark:checked:border-custom-500" type="radio" value="">
+                <label for="webDesignRadio" class="block px-3 text-center border rounded-md cursor-pointer border-slate-200 py-7 text-slate-500 dark:border-zink-500 dark:text-zink-200 peer-checked/business:border-custom-500 dark:peer-checked/business:border-custom-500 peer-checked/business:text-custom-500 dark:peer-checked/business:text-custom-500">
+                  <i class='bx bxs-bank block mx-auto mb-3 stroke-1 size-8 fill-slate-100 dark:fill-zink-600'></i>
+                  <span class="block font-medium text-15">Bank Setting</span>
+                    <h6>Bank Setting</h6>
+                </label>
+            </div>
+        </div><!--end grid-->
+      </div>
+    </div><!--end grid-->
+  </div>
+</div><!--end grid-->
+</div>
+</div><!--end grid-->
+
+
+</div><!--end grid-->
+
+<div class="card">
+  <div class="card-body">
+      <h6 class="mb-4 text-15">Faq' s</h6>
+      <div class="gap-4 md:flex">
+          <ul class="cos9 flex flex-col w-full mb-4 text-sm font-medium text-center md:w-36 shrink-0 nav-tabs md:mb-0">
+              <li class="group grow active">
+                  <a href="javascript:void(0);" data-tab-toggle data-target="homeVertical" class="inline-block px-4 w-full py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white hover:text-custom-500 active:text-custom-500 dark:hover:text-custom-500 dark:active:text-custom-500 dark:group-[.active]:hover:text-white -mb-[1px]">What is SSC wallet?</a>
+              </li>
+              <li class="group grow ">
+                  <a href="javascript:void(0);" data-tab-toggle data-target="profileVertical" class="inline-block px-4 w-full py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white hover:text-custom-500 active:text-custom-500 dark:hover:text-custom-500 dark:active:text-custom-500 dark:group-[.active]:hover:text-white -mb-[1px]">How do I load money into my SSC wallet?</a>
+              </li>
+              <li class="group grow ">
+                  <a href="javascript:void(0);" data-tab-toggle data-target="settingVertical" class="inline-block px-4 w-full py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white hover:text-custom-500 active:text-custom-500 dark:hover:text-custom-500 dark:active:text-custom-500 dark:group-[.active]:hover:text-white -mb-[1px]">How to load money in the SSC wallet through a bank deposit mode?</a>
+              </li>
+              <li class="group grow ">
+                  <a href="javascript:void(0);" data-tab-toggle data-target="contactVertical" class="inline-block px-4 w-full py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white hover:text-custom-500 active:text-custom-500 dark:hover:text-custom-500 dark:active:text-custom-500 dark:group-[.active]:hover:text-white -mb-[1px]">How to load wallet through Instant credit mode?</a>
+              </li>
+              <li class="group grow ">
+                <a href="javascript:void(0);" data-tab-toggle data-target="sumVertical" class="inline-block px-4 w-full py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white hover:text-custom-500 active:text-custom-500 dark:hover:text-custom-500 dark:active:text-custom-500 dark:group-[.active]:hover:text-white -mb-[1px]">How can I check my wallet load summary?</a>
+            </li>
+
+            <li class="group grow ">
+              <a href="javascript:void(0);" data-tab-toggle data-target="smVertical" class="inline-block px-4 w-full py-2 text-base transition-all duration-300 ease-linear rounded-md text-slate-500 dark:text-zink-200 border border-transparent group-[.active]:bg-custom-500 group-[.active]:text-white hover:text-custom-500 active:text-custom-500 dark:hover:text-custom-500 dark:active:text-custom-500 dark:group-[.active]:hover:text-white -mb-[1px]">How to load wallet through UPI mode?</a>
+          </li>
+          </ul>
+
+          <div class="tab-content">
+              <div class="block tab-pane" id="homeVertical">
+                  <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i> It is prepaid money that allows SSC to provide services like Money transfer, recharge, bill payments, travel booking, cash collection, etc. to their customers digitally</p>
+              </div>
+              <div class="hidden tab-pane" id="profileVertical">
+                  <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i>                               The Wallet can be loaded by depositing cash to SSC bank account or you can load through other digital modes like UPI, net banking, instant credit
+                  </p>
+              </div>
+              <div class="hidden tab-pane" id="settingVertical">
+                <p class="flex gap-2 text-slate-500 dark:text-zink-200"> To load your wallet through bank deposit mode follow the below steps: </p>
+
+                <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i> Visit any SSC bank branch( bank account details are available in the bank deposit tab)</p>
+                <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i> Deposit the cash into the bank account</p>
+                <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i> Login to SSC App</p>
+                <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i> Click on the bank deposit option available inside wallet recharge</p>
+                <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i> Fill the required fields and submit the details of the payment made to the bank</p>
+                <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i> The request will be sent to our internal team for review</p>
+                <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i> Once the request is approved the wallet would be recharged instantly.</p>
+              </div>
+              <div class="hidden tab-pane" id="contactVertical">
+                  <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i> To load your SSC wallet through instant credit mode you have to add your virtual account number (available under Instant credit tab) as a beneficiary account in your bank account registered with SSC. Transfer the amount to the virtual account and the wallet will be loaded instantly.</p>
+              </div>
+              <div class="hidden tab-pane" id="sumVertical">
+                <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i>To check your wallet load summary click on the 'Wallet history' tile then click on the 'Wallet load' tab your wallet summary would be visible you can also filter the summary basis status, date, mode, and transaction id  </p>
+            </div>
+            <div class="hidden tab-pane" id="smVertical">
+              <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200">To load your SSC wallet through UPI follow the below steps</p>
+              <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i>Enter the recharge amount</p>
+              <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i>Click on the UPI tab</p>
+              <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i>UPI enabled apps downloaded on your phone will be visible</p>
+              <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i>Select one of the UPI apps</p>
+              <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i>Collect request will be sent to the UPI app</p>
+              <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i>Approve the request</p>
+              <p class="flex gap-2 mb-2 text-slate-500 dark:text-zink-200"><i data-lucide="check-square" class="inline-block h-3.5 mt-1 shrink-0 text-green-500"></i>The wallet will be loaded instantly</p>
+          </div>
+          </div>
+      </div>
+  </div>
+</div><!--end card-->
+
+
+
+
+           
+{% endblock %}

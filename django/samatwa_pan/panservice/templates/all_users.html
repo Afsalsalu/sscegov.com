@@ -1,0 +1,335 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Users - SAMATWA Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --navy: #0a1628;
+            --gold: #d4a843;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --text-muted: #64748b;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 80px 24px 40px;
+        }
+
+        .table-card {
+            background: var(--card-bg);
+            padding: 28px;
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            max-width: 380px;
+        }
+
+        .search-box input {
+            padding: 10px 14px;
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        }
+
+        .search-box button {
+            padding: 10px 20px;
+            background: var(--navy);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .search-box button:hover {
+            background: #0f1f38;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            background: white;
+            table-layout: fixed;   /* Important for fixed column widths */
+        }
+
+        th, td {
+            padding: 12px 10px;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--navy);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        /* ================= COLUMN WIDTHS ================= */
+        th:nth-child(1), td:nth-child(1) { width: 110px; }   /* Type / Date */
+        th:nth-child(2), td:nth-child(2) { width: 220px; }   /* VLE Details */
+        th:nth-child(3), td:nth-child(3) { width: 210px; }   /* Address */
+        th:nth-child(4), td:nth-child(4) { width: 130px; }   /* UPI ID */
+        th:nth-child(5), td:nth-child(5) { width: 100px; }   /* Created */
+        th:nth-child(6), td:nth-child(6) { width: 100px; }   /* Amount */
+        th:nth-child(7), td:nth-child(7) { width: 110px; }   /* Change Password */
+        th:nth-child(8), td:nth-child(8) { width: 160px; }   /* Action */
+
+        .vle-details {
+            white-space: normal;
+            line-height: 1.5;
+        }
+
+        .approve, .reject, .delete, .change {
+            min-width: 68px;
+            text-align: center;
+            font-size: 12px;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .approve { background: #16a34a; color: white; }
+        .reject  { background: #dc2626; color: white; }
+        .delete  { background: #ef4444; color: white; }
+        .change  { background: #2563eb; color: white; }
+
+        .approved {
+            color: #16a34a;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .approve:hover, .reject:hover, .delete:hover, .change:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .delete-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .pagination a {
+            padding: 8px 14px;
+            background: var(--navy);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 0 4px;
+            font-size: 14px;
+        }
+
+        .pagination span {
+            margin: 0 12px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 80px 16px 30px;
+            }
+            .table-card {
+                padding: 20px;
+            }
+            .search-box {
+                flex-direction: column;
+            }
+            table {
+                font-size: 12.5px;
+                min-width: 1100px;   /* Ensures horizontal scroll on mobile */
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+        <div class="table-card">
+
+            <h2>All Users</h2>
+
+            <form method="GET" class="search-box">
+                <input type="text" name="search" placeholder="Search users..." value="{{ search_query }}">
+                <button type="submit">Search</button>
+            </form>
+
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>Type / Date</th>
+                        <th>VLE Details</th>
+                        <th>Address</th>
+                        <th>UPI ID</th>
+                        <th>Created</th>
+                        <th>Amount</th>
+                        <th>Change Password</th>
+                        <th>Action</th>
+                    </tr>
+
+                    {% for u in users %}
+
+                    <tr>
+                        <td>
+                            {{ u.profile.created_at|date:"H:i" }}<br>
+                            {{ u.profile.created_at|date:"d M Y" }}<br>
+                            {{ u.role }}
+                        </td>
+
+                        <td class="vle-details">
+                            <strong>{{ u.username }}</strong><br>
+                            ID: SSC{{ u.mobile }}<br>
+                            {{ u.email }}<br>
+                            {{ u.mobile }}
+                        </td>
+
+                        <td>
+                            {{ u.profile.address }}<br>
+                            {{ u.profile.state }}, {{ u.profile.pin_code }}
+                        </td>
+
+                        <td>{{ u.profile.upi_id|default:"-" }}</td>
+
+                        <td>
+                            {% if u.created_by %}
+                                {{ u.created_by.username }}
+                            {% else %}
+                                Self Registration
+                            {% endif %}
+                        </td>
+
+                        <td>₹ {{ u.wallet.balance|default:"0" }}</td>
+
+                        <td>
+                            <a class="change" href="{% url 'admin_change_user_password' u.id %}">
+                                Change
+                            </a>
+                        </td>
+
+                        <td>
+                            <div class="action-buttons">
+                                {% if u.profile.is_approved %}
+                                    <span class="approved">Approved</span>
+                                {% else %}
+                                    <div class="action-row">
+                                        <a class="approve" href="{% url 'approve_user' u.id %}">Approve</a>
+                                        <a class="reject" href="{% url 'reject_user' u.id %}">Reject</a>
+                                    </div>
+                                {% endif %}
+
+                                <div class="delete-row">
+                                    <a class="delete" href="{% url 'delete_user' u.id %}" onclick="return confirmDelete()">Delete</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" style="text-align:center; padding: 40px;">
+                            No Users Found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <div class="pagination">
+                {% if users.has_previous %}
+                    <a href="?search={{search_query}}&page=1">First</a>
+                    <a href="?search={{search_query}}&page={{users.previous_page_number}}">Previous</a>
+                {% endif %}
+
+                <span>Page {{users.number}} of {{users.paginator.num_pages}}</span>
+
+                {% if users.has_next %}
+                    <a href="?search={{search_query}}&page={{users.next_page_number}}">Next</a>
+                    <a href="?search={{search_query}}&page={{users.paginator.num_pages}}">Last</a>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function confirmDelete(){
+            return confirm("Are you sure you want to delete this user?");
+        }
+    </script>
+
+</body>
+</html>

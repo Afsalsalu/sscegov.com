@@ -1,0 +1,51 @@
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Congratulations!</title>
+    
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+
+
+    <style>
+        
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            padding: 50px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            width: 75%;
+        }
+        h1 {
+            color: green;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            text-decoration: none;
+            background: green;
+            color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- <i class='bx bxs-check-circle' style='color:#3ba123'  ></i> -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 24 24" style="fill: rgba(59, 161, 35, 1);transform: ;msFilter:;"><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm-1.999 14.413-3.713-3.705L7.7 11.292l2.299 2.295 5.294-5.294 1.414 1.414-6.706 6.706z"></path></svg>
+        <!-- <img src="{% static 'web/images/check-green.gif' %}" alt=""> -->
+        <h1> Congratulations! </h1>
+        <p>You passed the main exam with a score of {{ score }}%.</p>
+        <a href="{% url 'exam:dashboard' %}" class="btn">Go to Dashboard</a>
+    </div>
+</body>
+</html>

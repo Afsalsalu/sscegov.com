@@ -1,0 +1,197 @@
+.center {
+    margin: auto;
+    border: 3px solid #007a9b;
+    padding: 10px;
+    text-align: center;
+    background-color: antiquewhite !important;
+  }
+
+  .center h2 {
+    color: purple;
+    
+  }
+
+  label {
+    display: block;
+    margin-top: 5px !important;
+  }
+
+  input,
+  select {
+    /* width: 35% !important; */
+    box-sizing: border-box;
+    margin-left: 3px;
+    padding: 4px;
+    background-color: white;
+  }
+
+  .series {
+    /* width: 51% !important; */
+    display: flex;
+  }
+
+  .firstdiv {
+    display: flex;
+    /* gap: 40%; */
+    justify-content: center;
+  }
+
+  .firstdivright {
+    justify-content: center;
+    width: 80%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .grid-container {
+    display: grid;
+    column-gap: 10px;
+    grid-template-columns: auto auto auto;
+  }
+
+  .grid-item {
+    display: flex;
+  }
+
+  .lastdivright {
+    /* justify-content: end; */
+    /* width: 20%; */
+    display: flex;
+  }
+
+  .secndedivright {
+    text-align: end;
+    justify-content: end;
+  }
+
+  .secndedivright input {
+    width: 40%;
+  }
+
+  .secndedivright input[type=text] {
+    background-color: aqua;
+    width: 50%;
+  }
+
+  table {
+    width: 90%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    margin-left: 40px;
+  }
+
+  th {
+    border: 1px solid #ddd;
+    /* padding: 8px; */
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+  td {
+    border: 1px solid #ddd;
+  }
+  .newinput {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px;
+    margin: auto;
+    text-align: center;
+  }
+
+  .newdate {
+    width: 5%;
+  }
+
+  .lastdiv {
+    display: flex;
+    /* gap: 20%; */
+    justify-content: end;
+
+
+  }
+
+  .middeldiv {
+    display: flex;
+
+  }
+
+  .bal {
+    width: 40%;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+  }
+
+  .bal input {
+    width: 30%;
+
+  }
+
+  .btns {
+    margin: auto;
+    padding: 10px;
+    text-align: center;
+    gap: 10px;
+    width: 90%;
+  }
+
+  .addbutton {
+    background-color: blueviolet;
+    color: white;
+    padding: 7px;
+    border-radius: 5px;
+    display: flex;
+  }
+
+  .exitbutton {
+    background-color: brown;
+    color: white;
+    padding: 7px;
+    border-radius: 5px;
+    display: flex;
+  }
+
+  .bx-plus-medical,
+  .bx-search-alt-2,
+  .bxs-edit,
+  .bx-trash,
+  .bx-exit {
+    font-size: 15px !important;
+    margin-top: 3px;
+  }
+
+  .bx-plus-medical {
+    color: greenyellow;
+  }
+
+  .bxs-edit {
+    color: rgb(0, 195, 255);
+  }
+
+  button {
+    gap: 10px;
+  }
+
+
+.lefttext {
+  text-align: start;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+  margin: auto;
+}
+
+.newinputt {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+  margin: auto;
+  text-align: start;
+}
+
+.lastdivright2 {
+    justify-content: end;
+    /* width: 17%; */
+    display: flex;
+  }

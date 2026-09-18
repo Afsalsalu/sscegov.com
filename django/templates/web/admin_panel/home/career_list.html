@@ -1,0 +1,100 @@
+{% extends "web/admin_panel/base.html" %}
+
+{% load static %}
+
+{% block content %} 
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<link rel="stylesheet" href="{% static 'web/css/non.css' %}" />
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+  <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">        
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+        <h4 class="py-5"></h4>
+        <form action="#!" class="mb-5">
+            <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
+              <div class="relative lg:col-span-4 xl:col-span-3">
+                <input type="text" class="ltr:pl-8 rtl:pr-8 search form-input border-slate-200 dark:border-zink-500 focus:outline-none focus:border-custom-500 disabled:bg-slate-100 dark:disabled:bg-zink-600 disabled:border-slate-300 dark:disabled:border-zink-500 dark:disabled:text-zink-200 disabled:text-slate-500 dark:text-zink-100 dark:bg-zink-700 dark:focus:border-custom-800 placeholder:text-slate-400 dark:placeholder:text-zink-200" placeholder="Search for name, email, phone number etc..." autocomplete="off">
+                <i data-lucide="search" class="inline-block size-4 absolute ltr:left-2.5 rtl:right-2.5 top-2.5 text-slate-500 dark:text-zink-200 fill-slate-100 dark:fill-zink-600"></i>
+              </div>
+              <div class="lg:col-span-3 lg:col-start-10">
+                <div class="flex gap-2 lg:justify-end">
+                  <a href="{% url 'web:add_career' %}">
+                    <button data-modal-target="addUserModal" type="button" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20"><i data-lucide="plus" class="inline-block size-4"></i> <span class="align-middle">Add</span></button>
+                  </a>
+                  <a href="{% url 'web:career_applications' %}">
+                    <button data-modal-target="addUserModal" type="button" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20"><i data-lucide="eye" class="inline-block size-4"></i> <span class="align-middle">Applications</span></button>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <div class="grid grid-cols-1 gap-x-5 xl:grid-cols-1">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="mb-4 text-15">Job Table</h6>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="ltr:text-left rtl:text-right">
+                                <tr>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">Name Of Host</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">experience</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">qualification</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">Salary</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in career %}
+                                <tr>
+                                    <td  style="color: rgb(13, 14, 14);padding: 5px; cursor: pointer; font-weight: 700;" class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">{{ c.name_of_host }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">{{ c.experience }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">{{ c.qualification }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">{{ c.salary }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500 text-center">
+                                      <a href="#" onclick="confirmDelete(event, '{% url 'web:delete_career' c.id %}')" 
+                                         class="transition-all duration-150 ease-linear text-custom-500 hover:text-custom-600 text-center">
+                                         <i class='bx bxs-trash'></i>
+                                      </a>
+                                  </td>                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div><!--end card-->
+        </div>
+    </div>
+</div>
+</div>
+
+
+<script>
+  function confirmDelete(event, url) {
+      event.preventDefault(); // Prevents the default action of the link
+      Swal.fire({
+          title: 'Are you sure?',
+          text: 'This action cannot be undone.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'No, cancel!',
+          reverseButtons: true
+      }).then((result) => {
+          if (result.isConfirmed) {
+              window.location.href = url; // Redirect to the delete URL if confirmed
+          }
+      });
+  }
+  </script>
+
+
+{% endblock %}

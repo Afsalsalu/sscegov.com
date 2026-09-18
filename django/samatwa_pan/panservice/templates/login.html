@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | SSC Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="page-container">
+
+    <div class="login-wrapper">
+
+        <!-- LEFT -->
+        <div class="login-left">
+            <div class="left-content">
+                <div class="logo-circle">🔒</div>
+                <h2>Welcome Back!</h2>
+                <p>
+                    To stay connected with us<br>
+                    please login with your personal info
+                </p>
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="login-right">
+            <h2>Welcome</h2>
+            <p class="subtitle">Log in to your account to continue</p>
+
+            <form method="POST" class="login-form">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="password" name="password" placeholder="Password" required>
+
+                <button type="submit" class="login-btn">LOG IN</button>
+            </form>
+
+            {% for msg in messages %}
+                <p class="error-msg">{{ msg }}</p>
+            {% endfor %}
+
+            <p class="signup-text">
+                Don’t have an account? <a href="{% url 'register' %}">Sign up</a>
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

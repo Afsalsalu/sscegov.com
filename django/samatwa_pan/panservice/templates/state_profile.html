@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><title>State Distributor Profile</title></head>
+<body>
+
+<h2>Profile: {{ user.username }}</h2>
+
+<table border="1" cellpadding="6">
+<tr><th>Name</th><td>{{ profile.name }}</td></tr>
+<tr><th>Mobile</th><td>{{ profile.mobile }}</td></tr>
+<tr><th>State</th><td>{{ profile.state }}</td></tr>
+<tr><th>DOB</th><td>{{ profile.dob }}</td></tr>
+<tr><th>Gender</th><td>{{ profile.gender }}</td></tr>
+<tr><th>Aadhar</th><td>{{ profile.aadhar }}</td></tr>
+<tr><th>PAN</th><td>{{ profile.pan }}</td></tr>
+<tr><th>Company</th><td>{{ profile.company }}</td></tr>
+<tr><th>Address</th><td>{{ profile.address }}</td></tr>
+<tr><th>PIN Code</th><td>{{ profile.pin_code }}</td></tr>
+<tr><th>Password</th><td>{{ profile.raw_password }}</td></tr>
+</table>
+<a href="{% url 'edit_contact' %}">✏ Edit Contact Info</a><br><br>
+
+<br>
+<a href="javascript:history.back()">⬅ Back</a>
+
+</body>
+</html>

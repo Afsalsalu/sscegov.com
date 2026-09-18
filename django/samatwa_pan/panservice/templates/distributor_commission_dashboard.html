@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=
+    , initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h3>My Commission Earnings</h3>
+<p><strong>Total Earned:</strong> ₹{{ total_commission }}</p>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>From User</th>
+            <th>Level</th>
+            <th>Amount</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for c in commissions %}
+        <tr>
+            <td>{{ c.from_user.username }}</td>
+            <td>{{ c.level }}</td>
+            <td>₹{{ c.amount }}</td>
+            <td>{{ c.created_at|date:"d-m-Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center">No commissions yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

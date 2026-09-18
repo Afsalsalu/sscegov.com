@@ -1,0 +1,208 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC Style Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://kit.fontawesome.com/a382ac06a7.js" crossorigin="anonymous"></script>
+    <style>/* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Header Navigation */
+        header {
+            background: #004A91;
+            padding: 10px 0;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+        }
+        
+        nav ul li {
+            margin: 0 15px;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* Banner Section */
+        .banner {
+            background: #f4f4f4;
+            text-align: center;
+            padding: 20px 0;
+        }
+        
+        .hex-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .hex img {
+            width: 80px;
+            height: auto;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 25%;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        
+        .sidebar h2 {
+            font-size: 18px;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+        
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+        }
+        
+        /* Content */
+        main {
+            display: flex;
+            padding: 20px;
+        }
+        
+        .content {
+            width: 75%;
+            padding-left: 20px;
+        }
+        
+        .content h2 {
+            color: #004A91;
+        }
+        table {
+    width: 100%;
+    border-collapse: collapse;
+    line-height: 30px;
+}
+ .left {
+    padding: 10px;
+    text-align: left;
+}
+.right {
+    padding: 10px;
+    text-align: right;
+}
+.right i {
+    margin-right: 20px;
+}
+table tr:nth-child(odd) {
+    background-color: #f2f2f2; /* Light Gray */
+}
+
+table tr:nth-child(even) {
+    background-color: #ffffff; /* White */
+}
+.hex-grid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between hexagons */
+    padding: 20px;
+}
+
+.hex {
+    width: 100px; /* Size of hexagon */
+    height: 115px;
+    background-color: #f2f2f2; /* Light background */
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.hex:hover {
+    transform: scale(1.1); /* Slight zoom on hover */
+    background-color: #ddd; /* Darker shade on hover */
+}
+
+.hex img {
+    max-width: 70%;
+    max-height: 70%;
+    object-fit: contain;
+}
+
+        </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#">HOME</a></li>
+                <li><a href="#">ABOUT</a></li>
+                <li><a href="#">PROJECTS</a></li>
+                <li><a href="#">PARTNERS</a></li>
+                <li><a href="#">RESOURCES</a></li>
+                <li><a href="#">SERVICES</a></li>
+                <li><a href="#">MEDIA</a></li>
+                <li><a href="#">CONTACT US</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="banner">
+        <div class="hex-grid">
+            <!-- Hexagonal icons here -->
+            <div class="hex"><img src="{% static 'web/assets/img/Aadhaar.png' %}" alt="Aadhaar"></div>
+            <div class="hex"><img src="{% static 'web/assets/img/irctc.png' %}" alt="IRCTC"></div>
+            <div class="hex"><img src="{% static 'web/assets/img/Passport.svg' %}" alt="Passport"></div>
+        </div>
+    </section>
+    <main>
+        <aside class="sidebar">
+            <h2>Resources</h2>
+            <ul>
+                <li><a href="#">Implementation Resources</a></li>
+                <li><a href="#">Right to Information</a></li>
+                <li><a href="#">FAQ's</a></li>
+                <li><a href="#">CSC Common Branding</a></li>
+            </ul>
+        </aside>
+        <section class="content">
+            <h2>Common Branding SSC</h2>
+            <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
+                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
+
+                <table>
+                    {% for resource in resources %}
+                        <tr>
+                            <td> {{ resource.description}} </td>
+                            <td class="right">
+                   		<a href="{{ resource.file.url }}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-eye"></i></a>
+                                <a href="{{ resource.file.url }}" download><i class="fa-solid fa-download"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+        </section>
+    </main>
+</body>
+</html>

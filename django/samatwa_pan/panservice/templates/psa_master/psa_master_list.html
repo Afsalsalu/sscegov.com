@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSA Master - SAMATWA Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --navy: #0a1628;
+            --gold: #d4a843;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --text-muted: #64748b;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 80px 24px 40px;
+        }
+
+        .table-card {
+            background: var(--card-bg);
+            padding: 28px;
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header-action {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .add-btn {
+            padding: 10px 20px;
+            background: #16a34a;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .add-btn:hover {
+            background: #15803d;
+            transform: translateY(-1px);
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background: white;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .change {
+            background: #2563eb; 
+            color: white; 
+            padding: 6px 12px; 
+            border-radius: 6px; 
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .change:hover { background: #1d4ed8; }
+
+        .delete-btn {
+            background: #ef4444; 
+            color: white; 
+            padding: 6px 12px; 
+            border-radius: 6px; 
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .delete-btn:hover { background: #dc2626; }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+        .alert {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+        <div class="table-card">
+            
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="header-action">
+                <h2>PSA Master List</h2>
+                <div>
+                    <a href="{% url 'all_psa_history' %}" class="add-btn" style="background:#2563eb; margin-right:10px;"><i class="fas fa-history"></i> View All History</a>
+                    <a href="{% url 'psa_master_add' %}" class="add-btn"><i class="fas fa-plus"></i> Add PSA</a>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>Created At</th>
+                        <th>PSA Login ID</th>
+                        <th>PSA Password</th>
+                        <th>Actions</th>
+                    </tr>
+
+                    {% for psa in psas %}
+                    <tr>
+                        <td>{{ psa.created_at|date:"d M Y, H:i" }}</td>
+                        <td><strong>{{ psa.psa_login_id }}</strong></td>
+                        <td>{{ psa.psa_password }}</td>
+                        <td>
+                            <div class="action-row">
+                                <a class="change" href="{% url 'psa_master_edit' psa.pk %}">Edit</a>
+                                <a class="delete-btn" href="{% url 'psa_master_delete' psa.pk %}">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align:center; padding: 40px;">
+                            No PSA Records Found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

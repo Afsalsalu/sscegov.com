@@ -1,0 +1,404 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'web/css/receipt.css' %}">
+<link rel="stylesheet" href="{% static 'web/js/search.js' %}">
+<link rel="stylesheet" href="{% static 'web/css/style.css' %}" />
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+  .search-dropdown-container {
+    position: relative;
+    width: 100%;
+  }
+
+  #headSearch {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    margin-bottom: 5px;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-top: none;
+    background-color: white;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none; /* Initially hidden */
+  }
+
+  .dropdown-item {
+    padding: 8px;
+    cursor: pointer;
+    text-align: left; /* Ensure text is left-aligned */
+  }
+
+  .dropdown-item:hover {
+    background-color: #f0f0f0;
+  }
+  .red {
+    color:red;
+  }
+  #series {
+    text-transform: uppercase;
+} 
+</style>
+
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+  
+      <h4 class="py-5"></h4>
+      <div class="center">
+        <h2>Receipt Voucher</h2>
+        <h4 class="py-5"></h4>
+  
+        <form method="post" action="{% url 'web:receipt' %}" class="mb-5" id="receiptForm" onsubmit="handleSubmit(event)">
+          {% csrf_token %}
+          <div class="firstdiv">
+            <div class="series">
+              <label for="Series">Series</label>
+              <select name="Series" id="series" onchange="updateSerialNo()">
+                <option value="" disabled selected>Select</option>
+                {% for voucher in vouchers %}
+                <option value="{{ voucher.series }}">{{ voucher.series }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            
+            <div class="firstdivright">
+              <label for="Headcode">Book Head</label>
+              <select name="Headcode" id="table_acntchild" onchange="displayAccountDetails(this)" required>
+                  <option value="" selected disabled>Select</option>
+                  {% for child in table_acntchildren %}
+                    <option value="{{ child.account_master.head }}" data-account-code="{{ child.account_code }}" data-current-balance="{{ child.current_balance }}">
+                      {{ child.account_master.head }}
+                    </option>
+                  {% endfor %}
+              </select>
+          </div>
+          </div>
+          <br>
+          <div class="secondediv grid-container">
+            <div class="grid-item">
+              <label for="VoucherNo"> Voucher No</label>
+              <input type="text" name="VoucherNo" style="width: 40%;" id="serial_no" readonly>
+            </div>
+            <div class="grid-item">
+              <label for="Vdate" style="padding-top: 5px;">Date : &nbsp</label>
+              <input style="width: 50%; margin: 0;" type="date" class="newinput" name="Vdate" id="date" {% if matched_note_dr %}value="{{ matched_note_dr.ndate }}" {% endif %} required>
+            </div>
+            <div class="secndedivright grid-item">
+              <label for="Headcode">Book Code</label>
+              <input type="text" name="Headcode" id="account_code" readonly>
+            </div>
+          </div>
+          <br>  
+          <div class="grid-item" style="justify-content: end;">
+            <label for="current_balance">Current Balance</label>
+            <input type="text" name="current_balance" id="current_balance" style="width: 16.7%;" readonly>
+          </div>
+          <br>
+          <table id="dynamicTable" style="background-color: white !important;">
+            <thead>
+              <tr>
+                <th>Sl No</th>
+                <th>Head</th>
+                <th>Narration</th>
+                <th>Cash/RTGS.</th>
+                <th>Amount</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="py-1">
+                <td>1</td>
+                <td>
+                    <div class="search-dropdown-container">
+                      <input type="text" class="newinput" placeholder="Search head..." onkeyup="filterOptions(this)">
+                      <input type="hidden" name="Accountcode[]" class="selectedAccountCode">
+                      <div class="dropdown-menu">
+                        {% for account in head_accounts %}
+                        <div class="dropdown-item" data-value="{{ account.account_code }}">{{ account.head }}</div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </td>
+                <td><input type="text" class="newinput" name="Narration[]"></td>
+                <td style="width:13%;">
+                  <select name="VType[]" id="paymentMethod" class="newinput" onchange="toggleChequeFields(this)">
+                    <option value="CASH">CASH</option>
+                    <option value="RTGS">RTGS</option>
+                    <option value="G-PAY">G-PAY</option>
+                  </select>
+                </td>
+                <td style="width:10%;">    
+                  <input type="text" name="payment[]" step="0.01" onkeydown="checkEnter(event)" oninput="updateTotalAmount()" class="newinput" required>
+                </td>
+                <td><button type="button"><i class='bx bx-minus'></i></button></td>
+              </tr>
+            </tbody>
+          </table>
+          <br><br>
+  
+          <br>
+          <div class="lastdiv">
+            <div class="series">
+            </div>
+            <div class="lastdivright">
+              <label for="VAmount">Total Amount</label>
+              <input type="text" name="VAmount" id="total_amount" readonly>
+            </div>
+          </div>
+          <br>
+          
+          <br>
+          <div class="box btns" style="display: flex; justify-content: center;">
+            <button type="submit" class="addbutton"><i class='bx bx-plus-medical'></i> Save</button>
+            <a href="{% url 'web:receipt_list' %}"><button type="button" class="addbutton"><i class='bx bx-search-alt-2'></i> Search</button></a>
+            <a href=""><button type="button" class="exitbutton"><i class='bx bx-trash'></i> Clear</button></a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    let isAddingRow = false; // Flag to prevent adding multiple rows
+  
+    document.addEventListener('DOMContentLoaded', function() {
+      const seriesSelect = document.getElementById('series');
+      const serialNoInput = document.getElementById('serial_no');
+      const nextSerialNumbers = {{ next_serial_numbers|safe }};
+  
+      seriesSelect.addEventListener('change', function() {
+        const selectedSeries = seriesSelect.value;
+        if (nextSerialNumbers.hasOwnProperty(selectedSeries)) {
+          serialNoInput.value = nextSerialNumbers[selectedSeries];
+        } else {
+          serialNoInput.value = '';
+        }
+      });
+  
+      document.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const container = this.closest('.search-dropdown-container');
+          const input = container.querySelector('.newinput');
+          const hiddenInput = container.querySelector('.selectedAccountCode');
+          input.value = this.textContent;
+          hiddenInput.value = this.getAttribute('data-value');
+          container.querySelector('.dropdown-menu').style.display = 'none';
+        });
+      });
+  
+      document.addEventListener('click', function(event) {
+        if (!event.target.closest('.search-dropdown-container')) {
+          document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.style.display = 'none';
+          });
+        }
+      });
+    });
+  
+    function checkEnter(event) {
+      if (event.key === 'Enter' && !isAddingRow) {
+        isAddingRow = true; // Set the flag to true to prevent adding multiple rows
+        event.preventDefault();
+        addRow();
+      }
+    }
+  
+    function addRow() {
+      const tableBody = document.getElementById('dynamicTable').getElementsByTagName('tbody')[0];
+      const newRow = tableBody.insertRow();
+      const rowCount = tableBody.rows.length;
+  
+      newRow.innerHTML = `
+        <td>${rowCount}</td>
+        <td>
+          <div class="search-dropdown-container">
+            <input type="text" class="newinput" placeholder="Search head..." onkeyup="filterOptions(this)">
+            <input type="hidden" name="Accountcode[]" class="selectedAccountCode">
+            <div class="dropdown-menu">
+              {% for account in head_accounts %}
+              <div class="dropdown-item" data-value="{{ account.account_code }}">{{ account.head }}</div>
+              {% endfor %}
+            </div>
+          </div>
+        </td>
+        <td><input type="text" class="newinput" name="Narration[]"></td>
+        <td style="width:13%;">
+          <select name="VType[]" class="newinput" onchange="toggleChequeFields(this)">
+            <option value="CASH">CASH</option>
+            <option value="RTGS">RTGS</option>
+            <option value="G-PAY">G-PAY</option>
+          </select>
+        </td>
+        <td style="width:10%;">
+          <input type="text" name="payment[]" step="0.01" onkeydown="checkEnter(event)" oninput="updateTotalAmount()" class="newinput" required>
+        </td>
+        <td><button type="button" onclick="removeRow(this)"><i class='bx bx-minus red'></i></button></td>
+      `;
+  
+      document.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const container = this.closest('.search-dropdown-container');
+          const input = container.querySelector('.newinput');
+          const hiddenInput = container.querySelector('.selectedAccountCode');
+          input.value = this.textContent;
+          hiddenInput.value = this.getAttribute('data-value');
+          container.querySelector('.dropdown-menu').style.display = 'none';
+        });
+      });
+  
+      isAddingRow = false; // Reset the flag to false
+    }
+  
+    function removeRow(button) {
+        Swal.fire({
+          title: 'Are you sure?',
+          text: 'Do you really want to delete this row?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'No, cancel!',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Remove the row if 'Yes' is clicked
+            const row = button.closest('tr');
+            row.remove();
+            updateTotalAmount(); // Recalculate the total amount after a row is removed
+            Swal.fire(
+              'Deleted!',
+              'The row has been deleted.',
+              'success'
+            );
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire(
+              'Cancelled',
+              'The row is safe :)',
+              'error'
+            );
+          }
+        });
+      }
+  
+    function filterOptions(input) {
+      const container = input.closest('.search-dropdown-container');
+      const filter = input.value.toLowerCase();
+      const dropdown = container.querySelector('.dropdown-menu');
+      const items = dropdown.getElementsByClassName('dropdown-item');
+  
+      let hasVisibleItems = false;
+  
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const txtValue = item.textContent || item.innerText;
+  
+        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+          item.style.display = '';
+          hasVisibleItems = true;
+        } else {
+          item.style.display = 'none';
+        }
+      }
+  
+      dropdown.style.display = hasVisibleItems ? 'block' : 'none';
+    }
+  
+    function handleSubmit(event) {
+      const tableBody = document.getElementById('dynamicTable').getElementsByTagName('tbody')[0];
+      let isValid = true;
+  
+      for (let row of tableBody.rows) {
+        const paymentInput = row.querySelector('input[name="payment[]"]');
+        const accountInput = row.querySelector('input[name="Accountcode[]"]');
+  
+        if (!paymentInput.value.trim() || !accountInput.value.trim()) {
+          isValid = false;
+          Swal.fire({
+            title: 'Error!',
+            text: 'Please fill in all fields before submitting.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+          break;
+        }
+      }
+  
+      if (!isValid) {
+        event.preventDefault();
+      } else {
+        // Calculate the total amount
+        let totalAmount = 0;
+        for (let row of tableBody.rows) {
+          const paymentInput = row.querySelector('input[name="payment[]"]');
+          totalAmount += parseFloat(paymentInput.value) || 0;
+        }
+        document.getElementById('total_amount').value = totalAmount.toFixed(2);
+  
+        // Show success message
+        Swal.fire({
+          title: 'Success!',
+          text: 'The form has been submitted successfully.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          timer: 3000, // Adjust the timer to control how long the alert stays open
+          timerProgressBar: true // Show a progress bar
+        }).then((result) => {
+          if (result.dismiss === Swal.DismissReason.timer) {
+            // Optionally handle what happens when the timer ends
+          }
+        });
+      }
+    }
+  
+    function updateTotalAmount() {
+      const tableBody = document.getElementById('dynamicTable').getElementsByTagName('tbody')[0];
+      let totalAmount = 0;
+  
+      for (let row of tableBody.rows) {
+        const paymentInput = row.querySelector('input[name="payment[]"]');
+        totalAmount += parseFloat(paymentInput.value) || 0;
+      }
+  
+      document.getElementById('total_amount').value = totalAmount.toFixed(2);
+    }
+  
+    function displayAccountDetails(selectElement) {
+      const selectedOption = selectElement.options[selectElement.selectedIndex];
+      const accountCode = selectedOption.getAttribute('data-account-code');
+      const currentBalance = selectedOption.getAttribute('data-current-balance');
+  
+      document.getElementById('account_code').value = accountCode;
+      document.getElementById('current_balance').value = currentBalance;
+      document.getElementById('current_balance').innerText = `Current Balance: ${currentBalance}`;
+
+    }
+  
+    document.addEventListener('DOMContentLoaded', (event) => {
+      let dateInput = document.getElementById('date');
+      // Assuming matched_note_dr is set from the backend
+      let defaultDate = "{{ matched_note_dr.ndate }}" || new Date().toISOString().split('T')[0];
+      dateInput.value = defaultDate;
+  
+      // Check if there are any messages from the backend
+      {% if messages %}
+      {% for message in messages %}
+      Swal.fire({
+        title: "{{ message.tags|capfirst }}",
+        text: "{{ message }}",
+        icon: "{{ message.tags }}",
+        confirmButtonText: 'OK'
+      });
+      {% endfor %}
+      {% endif %}
+    });
+  </script>
+  
+{% endblock %}

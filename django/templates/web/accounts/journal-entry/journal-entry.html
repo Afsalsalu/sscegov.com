@@ -1,0 +1,553 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'web/css/contra-entry.css' %}">
+<link rel="stylesheet" href="{% static 'web/js/search.js' %}">
+<link rel="stylesheet" href="{% static 'web/css/style.css' %}" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+    .removeRowBtn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: rgb(84, 7, 7);
+    }
+
+    @keyframes slideOut {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+    }
+
+    .slide-out {
+        animation: slideOut 0.5s forwards;
+    }
+
+    /* Style the list items */
+#headList li, .headList li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+/* Highlight list item on hover */
+#headList li:hover, .headList li:hover {
+    background-color: #f1f1f1;
+}
+
+
+/* Dropdown trigger styles */
+.dropdown-trigger {
+    position: relative;
+    border: 1px solid #ddd;
+    padding: 8px;
+    background: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Arrow styling */
+.arrow {
+    font-size: 12px;
+}
+
+/* Dropdown list styles */
+.headList {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    z-index: 1000;
+    width: 100%;
+    text-align: left;
+}
+
+/* Search input inside dropdown */
+.search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid #ddd;
+    margin-bottom: 8px;
+}
+
+
+</style>
+
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+  <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+    <h4 class="py-5"></h4>
+    <div class="center">
+      <h2>Journal Entry</h2>
+      <h4 class="py-5"></h4>
+
+      <form method="post" action="{% url 'web:account_journal_entry' %}" id="receiptForm" onsubmit="handleSubmit(event)" required>
+        {% csrf_token %}
+        <div class="firstdiv">
+            <div class="series">
+                <label for="series">Series</label>
+                <select name="series" id="series" onchange="updateSerialNo()" style="width: 180px; margin-right: 100px;" required>
+                    <option value="" disabled selected>Select</option>
+                    {% for voucher in vouchers %}
+                    <option value="{{ voucher.series }}">{{ voucher.series }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="secondediv grid-container">
+                <div class="grid-item">
+                    <label for="voucher_no">Voucher No</label>
+                    <input style="width: 180px; margin-right: 100px; text-align: center;" type="text" name="voucher_no" id="serial_no" readonly>
+                </div>
+                <div class="date grid-item">
+                    <label for="vdate" style="padding-top: 5px;">Date : &nbsp</label>
+                    <input style="width: 76%; margin: 0;" type="date" class="newinput" name="vdate" id="date" required>
+                </div>
+            </div>
+        </div>
+
+        <br> <br><br> 
+        <br>
+        <table id="dynamicTable" style="background-color: white !important; width: 95%;margin-left: 20px;">
+            <thead >
+                <tr>
+                    <th style="width: 10px; text-align: center; padding-left: 0;">sl no</th>
+                    <th style="width: 10px; text-align: center;">Head</th>
+                    <th style="width: 70px; text-align: center;">Narration</th>
+                    <th style="width: 30px; text-align: center;">Debit</th>
+                    <th style="width: 30px; text-align: center;">Credit</th>
+                    <th style="width: 30px; text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody id="formBody">
+                <tr class="slide-in">
+                    <td>
+                        1
+                    </td>
+                    <td>
+                        <div class="dropdownContainer" style="position: relative; width: 300px;">
+                            <div class="dropdownButton" onclick="toggleDropdown(event)" style="display: flex; align-items: center; justify-content: space-between; padding: 8px; background: white; cursor: pointer;">
+                                <span class="selectedHead">Select Head</span>
+                                <span class="arrow" style="font-size: 14px; margin-left: 5px; transition: transform 0.3s;">
+                                    <!-- FontAwesome Arrow Icon -->
+                                    <i class="fas fa-chevron-down"></i>
+                                </span>
+                            </div>
+                            <div class="headDropdown" style="display: none; position: absolute; background: white; border: 1px solid #ddd; z-index: 1000; width: 100%; text-align: left; margin-top: 5px;">
+                                <input name="head" type="text" class="dropdownSearch" placeholder="Search..." oninput="filterHeads(event)" style="width: 100%; box-sizing: border-box; padding: 8px;">
+                                <ul class="headList" style="list-style-type: none; padding: 0; margin: 0; max-height: 150px; overflow-y: auto;">
+                                    {% for account in head_accounts %}
+                                        <li data-value="{{ account.account_code }}" data-text="{{ account.head }}" onclick="selectHead(event)" style="padding: 8px; cursor: pointer;">{{ account.head }}</li>
+                                    {% endfor %}
+                                </ul>
+                                <div class="errorMessage" style="color: red; display: none;">Head not found.</div>
+                            </div>
+                            <input type="hidden" name="head_code" class="headCode"> <!-- Hidden input to store account_code -->
+                        </div>
+                    </td>
+                    
+                    
+                    
+
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <td><input type="text" name="narration[]" style="width: 300px" ></td>
+                    <td><input type="number" name="dramount[]" style="width: 100px" step="0.01"  ></td>
+                    <td><input type="number" name="cramount[]" style="width: 100px" step="0.01"  onkeydown="checkEnter(event)" ></td>
+                    <td style="text-align: center;"><button type="button" class="removeRowBtn" title="Non Remove"> <i class="fas fa-ban"></i></button></td>
+                </tr>
+            </tbody>
+        </table>
+
+<br><br>
+
+        <div class="lastdiv">
+            <div class="series">
+            </div>
+            <div class="lastdivright2">
+                <label for="total_amount">Total Amount</label>
+                <input style="margin-right: 0; width: 40%; text-align: center; background-color: rgb(86, 251, 251);" type="text" name="total_amount" id="total_amount" title="Debit total amount" readonly>
+            </div>
+            <div class="lastdivright">
+                <!-- <label for="total_amount">Total Amount</label> -->
+                <input style="margin-right: 0px; width: 60%; text-align: center; background-color: rgb(86, 251, 251);" type="text" name="total_amount2" id="total_amount2" title="Credit total amount" readonly>
+            </div>
+        </div>
+
+
+        <br><br>
+
+
+        {% comment %} <button type="button" onclick="addRow()">Add More</button> {% endcomment %}
+                <div class="box btns" style="display: flex; justify-content: center;">
+                   
+                   
+                    {% if matched_note_cr and matched_note_dr %}
+                    <button type="submit" class="addbutton"><i class='bx bxs-edit'></i> Save</button>
+                    <a href="{% url 'web:account_debit_note' %}"><button type="button" class="exitbutton"><i class='bx bx-exit'></i> Cancel</button></a>
+                    <a href="{% url 'web:delete_debit_note' matched_note_cr.id matched_note_dr.noteno %}" id="deleteLink">
+                        <button type="button" class="exitbutton" onclick="confirmDelete(event)">
+                            <i class='bx bx-trash'></i> Delete
+                        </button>
+                    </a>
+                    
+
+                    
+                {% else %}
+                    <button type="submit" class="addbutton" title="Submit form"><i class='bx bx-plus-medical'></i> Save</button>
+                    <a href=""><button type="button" class="exitbutton"  title="Clear this page"><i class='bx bx-exit'></i> Clear</button></a>
+                    <a href="{% url 'web:account_journal_table' %}"><button type="button" class="addbutton" title="Go to Journal table"><i class='bx bx-search-alt-2'></i> Search</button></a>
+                {% endif %}
+                                  <!-- <button type="submit" class="addbutton"><i class='bx bxs-edit'></i> Edit</button> -->
+                    <!-- <button type="button" class="exitbutton"><i class='bx bx-trash'></i> Delete</button> -->
+                </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    let rowCounter = 1; // Initialize the row counter
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        let dateInput = document.getElementById('date');
+        let defaultDate = "{{ matched_note_dr.ndate }}" || new Date().toISOString().split('T')[0];
+        dateInput.value = defaultDate;
+
+        // Check if there are any messages from the backend
+        {% if messages %}
+        {% for message in messages %}
+        Swal.fire({
+            title: "{{ message.tags|capfirst }}",
+            text: "{{ message }}",
+            icon: "{{ message.tags }}",
+            confirmButtonText: 'OK'
+        });
+        {% endfor %}
+        {% endif %}
+        
+        // Initial calculation
+        updateCreditAndTotal();
+    });
+
+    // JavaScript function to update serial number based on selected series
+    function updateSerialNo() {
+        const series = document.getElementById("series").value;
+        const serialNoInput = document.getElementById("serial_no");
+        const nextSerialNumbers = {{ next_serial_numbers|safe }};
+
+        if (nextSerialNumbers.hasOwnProperty(series)) {
+            serialNoInput.value = nextSerialNumbers[series];
+        } else {
+            serialNoInput.value = '';
+        }
+    }
+
+    // JavaScript function to handle row removal with slide-out effect
+    function removeRow(button) {
+        const row = button.closest('tr');
+        row.classList.add('slide-out');
+        setTimeout(() => {
+            row.remove();
+            updateRowNumbers(); // Update row numbers after removal
+        }, 500);
+    }
+
+    // JavaScript function to update row numbers
+    function updateRowNumbers() {
+        const rows = document.querySelectorAll('#formBody tr');
+        rows.forEach((row, index) => {
+            row.querySelector('td:first-child').textContent = index + 1;
+        });
+        rowCounter = rows.length;
+    }
+
+    // JavaScript function to handle row addition with Enter key
+    function checkEnter(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevents the default action, e.g., form submission
+            addRow();
+        }
+    }
+
+    function addRow() {
+    const tableBody = document.getElementById('formBody');
+    const newRow = document.createElement('tr');
+    rowCounter++;
+
+    newRow.innerHTML = `
+        <td>${rowCounter}</td>
+<td>
+    <div class="dropdownContainer" style="position: relative; width: 300px;">
+        <div class="dropdownButton" onclick="toggleDropdown(event)" style="display: flex; align-items: center; justify-content: space-between; padding: 8px; background: white; cursor: pointer;">
+            <span class="selectedHead">Select Head</span>
+            <span class="arrow" style="font-size: 14px; margin-left: 5px; transition: transform 0.3s;">
+                <!-- FontAwesome Arrow Icon -->
+                <i class="fas fa-chevron-down"></i>
+            </span>
+        </div>
+        <div class="headDropdown" style="display: none; position: absolute; background: white; border: 1px solid #ddd; z-index: 1000; width: 100%; text-align: left; margin-top: 5px;">
+            <input name="head" type="text" class="dropdownSearch" placeholder="Search..." oninput="filterHeads(event)" style="width: 100%; box-sizing: border-box; padding: 8px;">
+            <ul class="headList" style="list-style-type: none; padding: 0; margin: 0; max-height: 150px; overflow-y: auto;">
+                {% for account in head_accounts %}
+                    <li data-value="{{ account.account_code }}" data-text="{{ account.head }}" onclick="selectHead(event)" style="padding: 8px; cursor: pointer;">{{ account.head }}</li>
+                {% endfor %}
+            </ul>
+            <div class="errorMessage" style="color: red; display: none;">Head not found.</div>
+        </div>
+        <input type="hidden" name="head_code" class="headCode"> <!-- Hidden input to store account_code -->
+    </div>
+</td>
+
+
+
+        <td><input type="text" name="narration[]" style="width: 300px" title="Narration"></td>
+        <td><input type="number" name="dramount[]" style="width: 100px" step="0.01" title="Debit amount"></td>
+        <td><input type="number" name="cramount[]" style="width: 100px" step="0.01" onkeydown="checkEnter(event)" title="Credit amount"></td>
+        <td style="text-align: center;"><button type="button" class="removeRowBtn" title="Remove" onclick="removeRow(this)"><i class="fas fa-trash-alt"></i></button></td>
+    `;
+
+    tableBody.appendChild(newRow);
+}
+
+
+
+
+
+
+
+    function handleSubmit(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const series = document.getElementById('series').value;
+    const vdate = document.getElementById('date').value;
+
+    if (!series || !vdate) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Please fill out all required fields.'
+        });
+        return;
+    }
+
+    // Show confirmation dialog
+    Swal.fire({
+        title: 'Confirm Submission',
+        text: "Are you sure you want to submit the form?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, submit it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+}
+
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        updateCreditAndTotal(); // Initial calculation
+
+        // Add event listeners for input changes
+        document.getElementById('formBody').addEventListener('input', updateCreditAndTotal);
+    });
+
+    function updateCreditAndTotal() {
+        let totalDebit = 0;
+        let totalCredit = 0;
+
+        const debitInputs = document.querySelectorAll('input[name="dramount[]"]');
+        const creditInputs = document.querySelectorAll('input[name="cramount[]"]');
+
+        debitInputs.forEach(input => {
+            const value = parseFloat(input.value) || 0;
+            totalDebit += value;
+        });
+
+        creditInputs.forEach(input => {
+            const value = parseFloat(input.value) || 0;
+            totalCredit += value;
+        });
+
+        document.getElementById('total_amount').value = totalDebit.toFixed(2);
+        document.getElementById('total_amount2').value = totalCredit.toFixed(2);
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+
+        const totalAmount = parseFloat(document.getElementById('total_amount').value) || 0;
+        const totalAmount2 = parseFloat(document.getElementById('total_amount2').value) || 0;
+
+        if (totalAmount !== totalAmount2) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'The Debit and Credit totals do not match. Please correct the amounts.'
+            });
+            return;
+        }
+
+        const form = event.target;
+        const series = document.getElementById('series').value;
+        const vdate = document.getElementById('date').value;
+
+        if (!series || !vdate) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Please fill out all required fields.'
+            });
+            return;
+        }
+
+        // Show confirmation dialog
+        Swal.fire({
+            title: 'Confirm Submission',
+            text: "Are you sure you want to submit the form?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, submit it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+</script>
+
+
+<script>
+    function removeRow(button) {
+    const row = button.closest('tr');
+    
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to remove this row?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, remove it!',
+        cancelButtonText: 'No, cancel!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            row.classList.add('slide-out');
+            setTimeout(() => {
+                row.remove();
+                updateRowNumbers(); // Update row numbers after removal
+            }, 500);
+            
+            // Swal.fire(
+            //     'Removed!',
+            //     'The row has been removed.',
+            //     'success'
+            // );
+        }
+    });
+}
+
+</script>
+
+<script>
+function toggleDropdown(event) {
+    const dropdownButton = event.currentTarget;
+    const dropdown = dropdownButton.nextElementSibling;
+    const arrow = dropdownButton.querySelector('.arrow');
+    const isVisible = dropdown.style.display === 'block';
+
+    // Toggle dropdown visibility
+    dropdown.style.display = isVisible ? 'none' : 'block';
+
+    // Rotate arrow icon
+    arrow.style.transform = isVisible ? 'rotate(0deg)' : 'rotate(180deg)';
+
+    // Focus on the search input if showing
+    if (!isVisible) {
+        dropdown.querySelector('.dropdownSearch').focus();
+    }
+}
+
+function filterHeads(event) {
+    const searchInput = event.currentTarget;
+    const filter = searchInput.value.toLowerCase();
+    const headDropdown = searchInput.closest('.headDropdown');
+    const headList = headDropdown.querySelector('.headList');
+    const items = Array.from(headList.getElementsByTagName('li'));
+    const errorMessage = headDropdown.querySelector('.errorMessage');
+
+    // Filter items based on the search input
+    const filteredItems = items.filter(item => {
+        const text = item.getAttribute('data-text').toLowerCase();
+        return text.includes(filter);
+    });
+
+    // Clear and append filtered items to the list
+    headList.innerHTML = '';
+    filteredItems.forEach(item => headList.appendChild(item));
+
+    // Show or hide the list and error message based on the search result
+    if (filteredItems.length > 0) {
+        headList.style.display = 'block';
+        errorMessage.style.display = 'none';
+    } else {
+        headList.style.display = 'none';
+        errorMessage.style.display = 'block';
+    }
+}
+
+function selectHead(event) {
+    const item = event.currentTarget;
+    const dropdownContainer = item.closest('.dropdownContainer');
+    const selectedHead = dropdownContainer.querySelector('.selectedHead');
+    const headCode = dropdownContainer.querySelector('.headCode');
+
+    selectedHead.textContent = item.getAttribute('data-text');
+    headCode.value = item.getAttribute('data-value'); // Set the hidden input's value
+
+    // Hide the dropdown list and error message
+    dropdownContainer.querySelector('.headDropdown').style.display = 'none';
+    dropdownContainer.querySelector('.errorMessage').style.display = 'none';
+}
+
+// Close dropdown if clicking outside of it
+document.addEventListener('click', (event) => {
+    const dropdownContainers = document.querySelectorAll('.dropdownContainer');
+
+    dropdownContainers.forEach(container => {
+        const dropdown = container.querySelector('.headDropdown');
+        const button = container.querySelector('.dropdownButton');
+
+        if (!container.contains(event.target) && !button.contains(event.target)) {
+            dropdown.style.display = 'none';
+            container.querySelector('.arrow').style.transform = 'rotate(0deg)';
+        }
+    });
+});
+
+</script>
+
+    
+
+
+{% endblock %}

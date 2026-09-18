@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table border="1" cellpadding="8">
+    <tr>
+        <th>State Distributor</th>
+        <th>District Count</th>
+        <th>Retailer Count</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for item in distributor_details %}
+    <tr>
+        <td>
+    <a href="{% url 'state_distributor_profile' item.sd.id %}">
+        {{ item.sd.username }}
+    </a>
+</td>
+        <td>{{ item.district_count }}</td>
+        <td>{{ item.retailer_count }}</td>
+        <td>
+            <a href="{% url 'state_districts_list' item.sd.id %}">View District Distributors</a> |
+            <a href="{% url 'state_retailers_list' item.sd.id %}">View Retailers</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="{% url 'state_list' %}">Back</a>
+
+</body>
+</html>

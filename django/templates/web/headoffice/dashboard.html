@@ -1,0 +1,281 @@
+{% extends "web/headoffice/base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<style>
+    .text-slate-500 {
+    --tw-text-opacity: 1;
+    color: #000000;
+}
+</style>
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+
+  <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+      <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+
+          <div class="flex flex-col gap-2 py-4 md:flex-row md:items-center print:hidden">
+              <div class="grow">
+                  <h5 class="text-16">Head Office Dashboard</h5>
+              </div>
+              <ul class="flex items-center gap-2 text-sm font-normal shrink-0">
+                  
+                  <li class="text-slate-700 dark:text-zink-100">
+                    <p style="font-weight:bold; font-size: 15px;"><span style="color:brown;">Time:</span> <span id="currentTime"></span></p> 
+
+                  </li>
+                  <li class="text-slate-700 dark:text-zink-100">
+                    <p style="font-weight:bold; font-size: 15px;"><span style="color:brown;">Date:</span> <span id="currentDate"></span></p> 
+
+                </li>
+              </ul>
+          </div>
+          
+          
+          <div class="grid grid-cols-12 gap-x-5">
+              <div class="order-1 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-green-100 dark:bg-green-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-green-500/20 relative overflow-hidden">
+                  <div class="card-body">
+                      <i data-lucide="kanban" class="absolute top-0 stroke-1 size-32 text-green-200/50 dark:text-green-500/20 ltr:-right-10 rtl:-left-10"></i>
+                      <div class="flex items-center justify-center bg-green-500 rounded-md size-12 text-15 text-green-50">
+                          <i data-lucide="users"></i>
+                      </div>
+                      <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{ total_kerala }}">0</span></h5>
+                      <p class="text-slate-500 dark:text-slate-200">Centres Users</p>
+                  </div>
+              </div><!--end col-->
+              <div class="order-5 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-orange-100 dark:bg-orange-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-orange-500/20 relative overflow-hidden">
+                  <div class="card-body">
+                      <i data-lucide="list-filter" class="absolute top-0 stroke-1 size-32 text-orange-200/50 dark:text-orange-500/20 ltr:-right-10 rtl:-left-10"></i>
+                      <div class="flex items-center justify-center bg-orange-500 rounded-md size-12 text-15 text-orange-50">
+                        <i data-lucide="users"></i>
+                      </div>
+                      <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{ total_employees }}">0</span></h5>
+                      <p class="text-slate-500 dark:text-slate-200">SSC Employee Users</p>
+                  </div>
+              </div><!--end col-->
+              <div class="order-8 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-purple-100 dark:bg-purple-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-purple-500/20 relative overflow-hidden">
+                  <div class="card-body">
+                      <i data-lucide="kanban" class="absolute top-0 stroke-1 size-32 text-purple-200/50 dark:text-purple-500/20 ltr:-right-10 rtl:-left-10"></i>
+                      <div class="flex items-center justify-center bg-purple-500 rounded-md size-12 text-15 text-purple-50">
+                        <i data-lucide="cog"></i>
+                      </div>
+                      <h5 class="mt-5 mb-2">{{ip}}</h5>
+                      <p class="text-slate-500 dark:text-slate-200">Your IP Address</p>
+                  </div>
+              </div><!--end col-->
+              <div class="order-4 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-sky-100 dark:bg-sky-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-sky-500/20 relative overflow-hidden">
+                  <div class="card-body">
+                      <i data-lucide="list-filter" class="absolute top-0 stroke-1 size-32 text-sky-200/50 dark:text-sky-500/20 ltr:-right-10 rtl:-left-10"></i>
+                      <div class="flex items-center justify-center rounded-md size-12 bg-sky-500 text-15 text-sky-50">
+                          <i data-lucide="users"></i>
+                      </div>
+                      <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{ total_state }}">0</span></h5>
+                      <p class="text-slate-500 dark:text-slate-200">State Users</p>
+                  </div>    
+              </div><!--end col-->
+              <div class="order-5 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 dark:bg-sky-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-sky-500/20 relative overflow-hidden" style="background-color: rgb(255 199 199);">
+                <div class="card-body">
+                    <i data-lucide="list-filter" class="absolute top-0 stroke-1 size-32 dark:text-sky-500/20 ltr:-right-10 rtl:-left-10" style="color: #ff0000ad;"></i>
+                    <div class="flex items-center justify-center rounded-md size-12 text-15 text-sky-50" style="background-color: white;">
+                        <img src="{% static 'web/images/google.webp' %}" alt="google">
+                    </div>
+                    <h5 class="mt-5 mb-2"><a href="https://analytics.google.com/analytics/web/?authuser=0#/p442561502/reports/intelligenthome?params=_u..nav%3Dmaui" target="_blank" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">Analytics</a></h5>
+                    <p class="text-slate-500 dark:text-slate-200">Google Analytics</p>
+                </div>    
+            </div><!--end col-->
+            <div class="order-6 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-sky-100 dark:bg-sky-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-sky-500/20 relative overflow-hidden">
+                <div class="card-body">
+                    <i data-lucide="list-filter" class="absolute top-0 stroke-1 size-32 text-sky-200/50 dark:text-sky-500/20 ltr:-right-10 rtl:-left-10"></i>
+                    <div class="flex items-center justify-center rounded-md size-12 bg-sky-500 text-15 text-sky-50">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{ total_register }}">0</span></h5>
+                    <p class="text-slate-500 dark:text-slate-200">Exam Register Users</p>
+                </div>    
+            </div><!--end col-->
+            <div class="order-2 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-green-100 dark:bg-green-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-green-500/20 relative overflow-hidden">
+                <div class="card-body">
+                    <i data-lucide="kanban" class="absolute top-0 stroke-1 size-32 text-green-200/50 dark:text-green-500/20 ltr:-right-10 rtl:-left-10"></i>
+                    <div class="flex items-center justify-center bg-green-500 rounded-md size-12 text-15 text-green-50">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{ total_service }}">0</span></h5>
+                    <p class="text-slate-500 dark:text-slate-200">Total Services</p>
+                </div>
+            </div><!--end col-->
+          </div>
+          <marquee behavior="" direction="" style="background-color: antiquewhite; height: 3vh;">
+            <p>Welcome to the Samatwa Service Centre E-Governance LTD Head Office Dashboard, facilitating nationwide access. Control total exam registrations, monitor IP addresses, manage Center Users, track employee counts, and govern state operations efficiently.</p>
+          </marquee>
+          
+          <div class="grid grid-cols-1 gap-x-5 xl:grid-cols-2 py-5">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="mb-4 text-15">Recent Exam Registrations <span style="color: brown;">Payment Transactions</span> </h6>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="ltr:text-left rtl:text-right">
+                                <tr>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">TEC No</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Amount</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">State</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">District</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500"></td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500"></td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500"></td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div><!--end card-->
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="mb-4 text-15">Recent Exam Registrations</h6>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="ltr:text-left rtl:text-right">
+                                <tr>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">TEC No</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Name</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">State</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">District</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in registered_users %}
+                                <tr>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ user.username }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ user.image.url }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ user.state }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ user.district }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div><!--end card-->
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="mb-4 text-15">New Center Account <span style="color: green;">Opening</span> </h6>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="ltr:text-left rtl:text-right">
+                                <tr>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Centre ID</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Name</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">State</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">District</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500"></td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500"></td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500"></td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div><!--end card-->
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="mb-4 text-15">Center Wallet <span style="color: blue;">Top Up</span> Transactions    </h6>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="ltr:text-left rtl:text-right">
+                                <tr>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Centre ID</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Virtual A/C No.</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500"></td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500"></td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div><!--end card-->
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="mb-4 text-15">Recent Enquiry via Contact Form</h6>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="ltr:text-left rtl:text-right">
+                                <tr>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Name</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Phone</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">State</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">District</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in contacts %}
+                                <tr>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ c.full_name }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ c.phone }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ c.state }}</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500">{{ c.district }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div><!--end card-->
+          </div>
+      </div>
+      <!-- container-fluid -->
+  </div>
+  <!-- End Page-content -->
+
+</div>
+<script>
+    function displayDateTime() {
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const hours = String(currentDate.getHours()).padStart(2, '0');
+        const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+        const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day}`;
+        const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+        document.getElementById("currentDate").textContent = formattedDate;
+        document.getElementById("currentTime").textContent = formattedTime;
+    }
+
+    // Call the function when the page loads
+    window.onload = function() {
+        displayDateTime();
+        // Update the time every second
+        setInterval(displayDateTime, 1000);
+    };
+</script>
+{% endblock %}
+

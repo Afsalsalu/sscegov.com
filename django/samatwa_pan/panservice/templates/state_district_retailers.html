@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Retailers Under {{ district_user.username }}</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid black; padding: 6px; }
+    </style>
+</head>
+<body>
+
+<h2>Retailers Under: {{ district_user.username }} ({{ district_user.profile.district }})</h2>
+
+<table>
+<tr>
+    <th>Username</th>
+    <th>Password</th>
+    <th>Name</th>
+    <th>Mobile</th>
+    <th>State</th>
+    <th>District</th>
+    <th>DOB</th>
+    <th>Gender</th>
+    <th>Aadhar</th>
+    <th>PAN</th>
+    <th>Company</th>
+    <th>Address</th>
+    <th>PIN</th>
+</tr>
+
+{% for r in retailers %}
+<tr>
+    <td>{{ r.username }}</td>
+    <td>{{ r.profile.raw_password }}</td>
+    <td>{{ r.profile.name }}</td>
+    <td>{{ r.mobile }}</td>
+    <td>{{ r.profile.state }}</td>
+    <td>{{ r.profile.district }}</td>
+    <td>{{ r.profile.dob }}</td>
+    <td>{{ r.profile.gender }}</td>
+    <td>{{ r.profile.aadhar }}</td>
+    <td>{{ r.profile.pan }}</td>
+    <td>{{ r.profile.company }}</td>
+    <td>{{ r.profile.address }}</td>
+    <td>{{ r.profile.pin_code }}</td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="13" style="text-align:center;">
+        No Retailers Found
+    </td>
+</tr>
+{% endfor %}
+
+</table>
+
+<br>
+<a href="javascript:history.back()">⬅ Back</a>
+
+</body>
+</html>

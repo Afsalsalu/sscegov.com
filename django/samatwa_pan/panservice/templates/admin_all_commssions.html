@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>All Commissions - Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+
+<h3 class="mb-4">All Users Commission Overview</h3>
+
+<table class="table table-bordered table-striped table-hover">
+  <thead class="table-dark">
+    <tr>
+      <th>#</th>
+      <th>User</th>
+      <th>Role</th>
+      <th>Total Earned Commission</th>
+      <th>Current Balance</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for row in data %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ row.user.username }}</td>
+      <td>{{ row.user.role|title }}</td>
+      <td>₹{{ row.total_commission }}</td>
+      <td>₹{{ row.wallet_balance }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<a href="{% url 'admin_dashboard' %}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+
+</body>
+</html>

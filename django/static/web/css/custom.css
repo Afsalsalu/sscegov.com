@@ -1,0 +1,57 @@
+.cos1 {
+    width: 180%;
+    margin-top: 17px;
+}
+
+.cos2 {
+    margin-top: 50px;
+}
+
+.cos {
+    background-color: #007A9B !important;
+}
+
+.cos4 {
+    background-color: white;
+    color: black;
+}
+
+.cos8{
+    color: white;
+}
+
+.bx {
+    font-size: 35px !important;
+}
+
+.cos9 {
+    width: 35%;
+}
+.cos11 {
+    background-color: white;
+    color: black !important;
+}
+
+.cos12{
+    background-color: whitesmoke;
+}
+
+.xcoc {
+    display: flex;
+} 
+
+
+.fom {
+    font-size: 20px;
+}
+
+.cos51 {
+    background: whitesmoke !important;
+}
+.costext {
+    text-align: center;
+}
+
+#id_username_helptext {
+    display: none !important;
+}

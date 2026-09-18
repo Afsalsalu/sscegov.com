@@ -1,0 +1,195 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Withdraw - SAMATWA</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --navy: #0a1628;
+            --gold: #d4a843;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --red: #dc2626;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 80px 24px 40px;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .withdraw-card {
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        .balance-box {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 18px 20px;
+            border-radius: 12px;
+            margin-bottom: 28px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .balance-box label {
+            font-size: 13px;
+            color: #64748b;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .balance-amount {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--navy);
+            font-family: 'Space Mono', monospace;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        input[type="number"] {
+            padding: 14px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 18px;
+            font-family: 'Space Mono', monospace;
+            font-weight: 600;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        }
+
+        button {
+            background: var(--red);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 28px;
+            padding: 10px 20px;
+            background: var(--navy);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: #0f1f38;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 80px 16px 30px;
+            }
+            .withdraw-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+
+        <div class="page-header">
+            <h2>Admin Withdraw 💸</h2>
+        </div>
+
+        <div class="withdraw-card">
+
+            <div class="balance-box">
+                <label>Current Wallet Balance</label>
+                <div class="balance-amount">
+                    ₹ {{ request.user.wallet.balance|default:"0" }}
+                </div>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div>
+                    <label>Enter Withdrawal Amount</label>
+                    <input type="number" name="amount" min="1" step="1" required>
+                </div>
+
+                <button type="submit">Request Withdraw</button>
+            </form>
+
+        </div>
+
+        <a href="{% url 'admin_dashboard' %}" class="back-link">
+            ⬅ Back to Dashboard
+        </a>
+
+    </div>
+
+</body>
+</html>

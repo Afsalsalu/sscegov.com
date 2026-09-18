@@ -1,0 +1,56 @@
+{% extends "web/admin_panel/base.html" %}
+
+{% load static %}
+
+{% block content %} 
+
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+    <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">        
+        <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+            <h4 class="py-5"></h4>
+
+            <div class="grid grid-cols-1 gap-x-5 md:grid-cols-2 xl:grid-cols-6">
+                {% for c in contacts %}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="flex gap-2 lg:justify-end">
+                            <a href="{% url 'web:delete_contact' c.id %}">
+                                <i class='bx bxs-trash' style="font-size: 10px;"></i>
+                            </a>
+                        </div>
+
+                        <p style="font-size: 16px;">
+                            <span style="color: red;">Name :</span>  {{ c.full_name}}
+                            <br>
+                            <span style="color: red;">Phone :</span> <a href="tel:{{ c.phone}}">{{ c.phone}}</a> 
+                            <br>
+                            <span style="color: red;">Email :</span> <a href="mailto:{{ c.email}}">{{ c.email}}</a>
+                            <br>
+                            <span style="color: red;">Centre Name :</span> {{ c.centre_name}}
+                            <br>
+                            <span style="color: red;">State :</span> {{ c.state}}
+                            <br>
+                            <span style="color: red;">District :</span> {{ c.district}}
+                            <br>
+                            <span style="color: red;">Taluk :</span> {{ c.taluk}}
+                            <br>
+                            <span style="color: red;">Subject :</span> {{ c.subject}}
+                            <br>
+                            <span style="color: red;">Comments :</span> {{ c.comments}}
+                            <br>
+                            <br>
+                            <span style="color: blue;">Submit Date & Time :</span> {{ c.created_at}}
+                        </p>
+                        
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+    
+        </div>
+    </div>
+</div>
+
+{% endblock %}

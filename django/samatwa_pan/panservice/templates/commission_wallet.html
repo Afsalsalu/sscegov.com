@@ -1,0 +1,250 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commission Wallet - SAMATWA</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --navy: #0a1628;
+            --gold: #d4a843;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --green: #16a34a;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 80px 24px 40px;
+        }
+
+        .table-card {
+            background: var(--card-bg);
+            padding: 28px;
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 24px;
+        }
+
+        /* Wallet Balance Box */
+        .wallet-box {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 24px;
+            border-radius: 14px;
+            border: 1.5px solid var(--border);
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .wallet-balance {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--green);
+            margin: 8px 0 16px 0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-withdraw {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-history {
+            background: var(--navy);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        /* Table */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            table-layout: fixed;
+            background: white;
+        }
+
+        th {
+            background: var(--navy);
+            color: white;
+            padding: 14px 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: rgba(212, 168, 67, 0.08);
+        }
+
+        /* Column Widths */
+        th:nth-child(1), td:nth-child(1) { width: 220px; }   /* From User */
+        th:nth-child(2), td:nth-child(2) { width: 100px; }   /* Level */
+        th:nth-child(3), td:nth-child(3) { width: 140px; }   /* Amount */
+        th:nth-child(4), td:nth-child(4) { width: 160px; }   /* Date */
+
+        .amount {
+            color: var(--green);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 80px 16px 30px;
+            }
+            .table-card {
+                padding: 20px;
+            }
+            .wallet-box {
+                padding: 20px;
+            }
+            .wallet-balance {
+                font-size: 28px;
+            }
+            table {
+                font-size: 13px;
+                min-width: 700px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Dynamic Topbar -->
+    {% if request.user.role == 'admin' %}
+        {% include 'partials/admin_topbar.html' %}
+    {% elif request.user.role == 'state' %}
+        {% include 'partials/state_topbar.html' %}
+    {% elif request.user.role == 'district' %}
+        {% include 'partials/district_topbar.html' %}
+    {% else %}
+        {% include 'partials/retailer_topbar.html' %}
+    {% endif %}
+
+    <div class="main-content">
+
+        <div class="table-card">
+
+            <h2>Commission Wallet</h2>
+
+            <div class="wallet-box">
+                <p style="font-size:15px; color:#64748b; margin-bottom:6px;">
+                    <strong>Current Balance</strong>
+                </p>
+                <p class="wallet-balance">
+                    ₹ {{ wallet.balance|default:"0" }}
+                </p>
+
+                <div class="btn-group">
+                    <a href="{% url 'request_commission_withdraw' %}" class="btn btn-withdraw">
+                        Request Withdraw
+                    </a>
+                    <a href="{% url 'commission_history' %}" class="btn btn-history">
+                        Full History
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>From User</th>
+                        <th>Level</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                    </tr>
+
+                    {% for t in transactions %}
+
+                    <tr>
+                        <td>
+                            {% if t.from_user %}
+                                {{ t.from_user.username }}
+                            {% else %}
+                                System
+                            {% endif %}
+                        </td>
+                        <td>{{ t.level }}</td>
+                        <td class="amount">₹ {{ t.amount }}</td>
+                        <td>
+                            {{ t.created_at|date:"d M Y H:i" }}
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="padding: 50px; text-align:center; color:#64748b;">
+                            No commission transactions yet
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

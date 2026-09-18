@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Retailers under {{ state_distributor.username }}</h2>
+
+<table border="1" cellpadding="8">
+<tr>
+    <th>Username</th>
+    <th>Name</th>
+    <th>Mobile</th>
+    <th>State</th>
+    <th>District</th>
+    <th>Aadhar</th>
+    <th>PAN</th>
+    <th>Gender</th>
+    <th>DOB</th>
+    <th>Company</th>
+    <th>Address</th>
+    <th>PIN</th>
+</tr>
+
+{% for r in retailers %}
+<tr>
+    <td>{{ r.username }}</td>
+    <td>{{ r.profile.name }}</td>
+    <td>{{ r.mobile }}</td>
+    <td>{{ r.profile.state }}</td>
+    <td>{{ r.profile.district }}</td>
+    <td>{{ r.profile.aadhar }}</td>
+    <td>{{ r.profile.pan }}</td>
+    <td>{{ r.profile.gender }}</td>
+    <td>{{ r.profile.dob }}</td>
+    <td>{{ r.profile.company }}</td>
+    <td>{{ r.profile.address }}</td>
+    <td>{{ r.profile.pin_code }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+<br>
+<a href="javascript:history.back()">Back</a>
+
+</body>
+</html>

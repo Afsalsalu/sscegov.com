@@ -1,0 +1,147 @@
+{% extends "web/admin_panel/base.html" %}
+{% load static %}
+{% block content %}
+
+
+<link rel="stylesheet" href="{% static 'web/css/form.css' %}">
+<style>
+    .reply-form textarea {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 8px;
+    resize: none;
+    width: 100%;
+    transition: box-shadow 0.3s;
+}
+
+.reply-form textarea:focus {
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+.reply-form button {
+    background-color: #007a9b;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 6px 12px;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.reply-form button:hover {
+    background-color: #0056b3;
+}
+
+.resolved-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: transform 0.3s;
+}
+
+.resolved-card:hover {
+    transform: scale(1.02);
+}
+
+.resolved-card h6 {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.resolved-card p {
+    margin: 5px 0;
+}
+.pending-complaints-table {
+    max-height: 500px; /* Increase this value for a taller table */
+    overflow-y: auto;
+}
+
+.pending-complaints-table thead {
+    position: sticky;
+    top: 0;
+    background-color: whitesmoke;
+    z-index: 1;
+}
+
+.pending-complaints-table table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+.pending-complaints-table th, 
+.pending-complaints-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+</style>
+
+
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">        
+    <div class="container-fluid mx-auto">
+
+        <h4 class="py-5">Manage Complaints</h4>
+    
+        <!-- Pending Complaints Section -->
+        <!-- Pending Complaints Section -->
+<div class="card mb-4" style="background-color: whitesmoke;">
+    <div class="card-body">
+        <h6 class="mb-4 text-15">Pending Complaints</h6>
+        <div class="table-responsive pending-complaints-table">
+            <table class="table">
+                <thead>
+                    <tr style="background-color: whitesmoke;">
+                        <th>S No</th>
+                        <th>Username</th>
+                        <th>Complaint</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for complaint in pending_complaints %}
+                    <tr>
+                        <td>{{ forloop.counter }} .</td>
+                        <td>{{ complaint.user.username }}</td>
+                        <td>{{ complaint.complaint }}</td>
+                        <td>
+                            <form method="post" class="reply-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="complaint_id" value="{{ complaint.id }}">
+                                <textarea name="reply" rows="2" placeholder="Type your reply..." required></textarea>
+                                <button type="submit">Reply</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+        
+        <!-- Resolved Complaints Section -->
+        <div class="card" style="background-color: whitesmoke;">
+            <div class="card-body">
+                <h6 class="mb-4 text-15">Resolved Complaints</h6>
+                <div class="grid grid-cols-1 gap-4">
+                    {% for complaint in resolved_complaints %}
+                    <div class="resolved-card">
+                        <h6>Resolved</h6>
+                        <p><strong>User:</strong> {{ complaint.user.username }}</p>
+                        <p><strong>Complaint:</strong> {{ complaint.complaint }}</p>
+                        <p><strong>Reply:</strong> {{ complaint.reply }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    
+    </div>
+  <!-- container-fluid -->
+</div>
+{% endblock %}

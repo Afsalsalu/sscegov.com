@@ -1,0 +1,347 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All PSA History - SAMATWA Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --navy: #0a1628;
+            --gold: #d4a843;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --text-muted: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 80px 24px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 24px;
+        }
+
+        .history-toolbar {
+            background: var(--card-bg);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .search-box i {
+            position: absolute;
+            top: 50%;
+            left: 14px;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 42px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 0 14px 0 40px;
+            font: inherit;
+            color: var(--text);
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56,189,248,0.18);
+        }
+
+        .search-btn,
+        .clear-btn {
+            height: 42px;
+            border: none;
+            border-radius: 8px;
+            padding: 0 18px;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .search-btn {
+            background: #0ea5e9;
+            color: #fff;
+        }
+
+        .clear-btn {
+            background: #e2e8f0;
+            color: var(--navy);
+        }
+
+        .psa-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .psa-header {
+            background: #f8fafc;
+            padding: 16px 24px;
+            border-bottom: 1.5px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .psa-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .psa-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 14px;
+        }
+
+        .stat-badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 14px 24px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: white;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active { background: #dcfce7; color: #166534; }
+        .status-started { background: #dbeafe; color: #1d4ed8; }
+        .status-partial { background: #fef3c7; color: #92400e; }
+        .status-complete { background: #dcfce7; color: #166534; }
+        .status-expired { background: #fee2e2; color: #991b1b; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+
+        .empty-search-state {
+            display: none;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .history-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-btn,
+            .clear-btn {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .psa-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+        <h2 class="page-title">All PSA History 📊</h2>
+
+        <form method="get" class="history-toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input
+                    type="text"
+                    name="psa_id"
+                    class="search-input"
+                    value="{{ search_query }}"
+                    placeholder="Search by PSA ID"
+                    autocomplete="off"
+                >
+            </div>
+            <button type="submit" class="search-btn">
+                <i class="fas fa-search"></i> Search
+            </button>
+            {% if search_query %}
+            <a href="{% url 'all_psa_history' %}" class="clear-btn">
+                <i class="fas fa-times"></i> Clear
+            </a>
+            {% endif %}
+        </form>
+
+        {% for item in data %}
+        <div class="psa-card" data-psa-id="{{ item.psa.psa_login_id }}">
+            <div class="psa-header">
+                <div class="psa-title">
+                    <i class="fas fa-id-card"></i> {{ item.psa.psa_login_id }}
+                </div>
+                <div class="psa-stats">
+                    <span class="stat-badge">Balance: {% if item.psa.balance %}₹{{ item.psa.balance }}{% else %}Empty{% endif %}</span>
+                    <span class="stat-badge" style="background:#dcfce7; color:#166534;"><i class="fas fa-users"></i> {{ item.active_count }} Active Users</span>
+                </div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Quantity</th>
+                            <th>Amount</th>
+                            <th>Date Assigned</th>
+                            <th>PSA Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for h in item.history %}
+                        <tr>
+                            <td>
+                                <strong>{{ h.user.username }}</strong><br>
+                                <span style="color:var(--text-muted); font-size:12px;">ID: {{ h.user.id }}</span>
+                            </td>
+                            <td>{{ h.quantity }}</td>
+                            <td>₹{{ h.total_amount }}</td>
+                            <td>{{ h.approved_at|date:"d M Y, H:i" }}</td>
+                            <td>
+                                <span class="status-badge {{ h.lifecycle_class }}">{{ h.lifecycle_label }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);">
+                                No assignment history for this PSA yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% empty %}
+        <div class="psa-card" style="padding: 40px; text-align: center; color: var(--text-muted);">
+            No PSAs available in the system.
+        </div>
+        {% endfor %}
+
+        <div class="psa-card empty-search-state" id="liveSearchEmpty">
+            No PSA found for "<span id="liveSearchTerm"></span>".
+        </div>
+
+    </div>
+    <script>
+        const searchInput = document.querySelector('.search-input');
+        const psaCards = Array.from(document.querySelectorAll('.psa-card[data-psa-id]'));
+        const emptyState = document.getElementById('liveSearchEmpty');
+        const emptyTerm = document.getElementById('liveSearchTerm');
+
+        function filterPsaCards() {
+            const query = searchInput.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            psaCards.forEach((card) => {
+                const psaId = card.dataset.psaId.toLowerCase();
+                const isMatch = !query || psaId.includes(query);
+
+                card.style.display = isMatch ? '' : 'none';
+                if (isMatch) {
+                    visibleCount += 1;
+                }
+            });
+
+            if (emptyState) {
+                emptyState.style.display = query && psaCards.length > 0 && visibleCount === 0 ? 'block' : 'none';
+            }
+
+            if (emptyTerm) {
+                emptyTerm.textContent = searchInput.value.trim();
+            }
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', filterPsaCards);
+            filterPsaCards();
+        }
+    </script>
+</body>
+</html>

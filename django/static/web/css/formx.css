@@ -1,0 +1,199 @@
+input[type=text], input[type=password], input[type=url], input[type=email] , input[type=number], input[type=file], input[type=date] {
+    height: 25px;
+    width: 70%;
+    outline: none;
+    font-size: 12px;
+    border-radius: 5px;
+    padding-left: 15px;
+    border-bottom: 1px solid #ccc;
+    border-bottom-width: 2px;
+    transition: all 0.3s ease;
+
+    }
+
+p {
+    float: left;
+    width: 50%; /* Two columns by default */
+    padding: 10px;
+    box-sizing: border-box;
+    color: black;
+    
+}
+body {
+    /* height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px; */
+    background: linear-gradient(135deg, #ececec, #d9d8d8);
+  }
+  
+.container {
+    max-width: 95%;
+    width: 100%;
+    background-color: antiquewhite;
+    padding: 25px 30px;
+    border-radius: 5px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    margin-top: 40px;
+    margin-bottom: 1.5%;
+  }
+  
+select {
+    width: 100%;
+    padding: 15px 16px;
+    margin: 16px 0;
+    display: block;
+    border: 1px solid #c8c3cf;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #F6F5F7;
+    font-size: 16px;
+    color: #4F4659;
+    outline: none !important;
+    transition: box-shadow 0.25s ease-in-out, background-image 0.25s !important;
+    line-height: 1.6; /* Adjust based on your font and design */
+    max-height: 3.2em !important; /* Approximately two lines of text */
+    overflow: hidden !important;
+}
+
+textarea {
+    width: 100%;
+    padding: 15px 16px;
+    margin: 16px 0;
+    display: block;
+    border: 1px solid #c8c3cf;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #F6F5F7;
+    font-size: 16px;
+    color: #4F4659;
+    outline: none !important;
+    transition: box-shadow 0.25s ease-in-out, background-image 0.25s !important;
+
+    overflow: hidden !important;
+
+}
+
+form .button input {
+    height: 100%;
+    width: 10%;
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ff7700, #ff7700);
+  }
+form .button input:hover {
+    /* transform: scale(0.99); */
+    background: linear-gradient(-135deg, #ff7700, #ff7700);
+  }
+form .button {
+    height: 45px;
+    margin: 35px 0;
+    background-color: #ff7700;
+    width: 200px;
+    color: white;
+  }
+form .category label .dot {
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    margin-right: 10px;
+    background: #d9d9d9;
+    border: 5px solid transparent;
+    transition: all 0.3s ease;
+  }
+  
+
+.backc {
+    background-color: aliceblue;
+}
+
+form .button input {
+    height: 100%;
+    width: 10%;
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ff7700, #ff7700);
+  }
+  
+.buttons {
+    float: right !important;
+    margin-top: 70px !important;
+}
+form .button input:hover {
+    /* transform: scale(0.99); */
+    background: linear-gradient(-135deg, #ff7700, #ff7700);
+  }
+.buttonF {
+    background-color: chocolate !important;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 50px;
+    margin-left: 10px;
+}
+ input {
+    height: 25px;
+    width: 120%;
+    outline: none;
+    font-size: 12px;
+    border-radius: 5px;
+    padding-left: 15px;
+    border-bottom: 1px solid #ccc;
+    border-bottom-width: 2px;
+    transition: all 0.3s ease;
+  }
+.user-details .input-box input {
+    height: 25px;
+    width: 130%;
+    outline: none;
+    font-size: 12px;
+    border-radius: 5px;
+    padding-left: 15px;
+    border-bottom: 1px solid #ccc;
+    border-bottom-width: 2px;
+    transition: all 0.3s ease;
+  }
+
+  
+@media(max-width: 584px) {
+    .container {
+      max-width: 100%;
+    }
+  
+    form .user-details .input-box {
+      margin-bottom: 15px;
+      width: 100%;
+    }
+  
+    form .category {
+      width: 100%;
+    }
+  
+    .content form .user-details {
+      max-height: 300px;
+      overflow-y: scroll;
+    }
+  
+    .user-details::-webkit-scrollbar {
+      width: 5px;
+    }
+  }
+  
+  @media(max-width: 459px) {
+    .container .content .category {
+      flex-direction: column;
+      text-transform: uppercase;
+    }
+  }

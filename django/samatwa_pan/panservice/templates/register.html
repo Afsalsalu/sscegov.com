@@ -1,0 +1,432 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - SAMATWA SSC</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #1e40af;
+            --accent: #22c55e;
+            --dark: #0f172a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #f8fafc, #e0e7ff);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: white;
+            width: 100%;
+            max-width: 620px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .register-header {
+            background: var(--primary);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .register-header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .register-header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .register-body {
+            padding: 40px;
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #1e2937;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
+        }
+
+        .email-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .email-group input {
+            flex: 1;
+        }
+
+        .otp-btn {
+            padding: 0 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .otp-btn:hover {
+            background: #16a34a;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .success { background: #d4edda; color: #155724; }
+        .error   { background: #f8d7da; color: #721c24; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #16a34a;
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .link {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 15px;
+        }
+
+        .link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Select2 Styling */
+        .select2-container--default .select2-selection--single {
+            height: 48px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 46px;
+            padding-left: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .register-body {
+                padding: 30px 20px;
+            }
+            .register-header {
+                padding: 25px 20px;
+            }
+            .register-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-container">
+
+        <!-- Header -->
+        <div class="register-header">
+            <h1>SAMATWA SERVICE CENTRE</h1>
+            <p>Create your account to get started</p>
+        </div>
+
+        <!-- Form Body -->
+        <div class="register-body">
+
+            <h2 class="form-title">Registration Form</h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {% if message.tags == 'success' %}success{% else %}error{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" id="registerForm">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <div class="email-group">
+                        <input type="email" name="email" id="id_email" required>
+                        <button type="button" class="otp-btn" onclick="sendOTP()">Send OTP</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Enter OTP</label>
+                    <div class="email-group">
+                        <input type="text" id="email_otp" name="email_otp">
+                        <button type="button" class="otp-btn" onclick="verifyOTP()">Verify</button>
+                    </div>
+                    <small id="verify_message" style="display:block; margin-top:6px;"></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <input type="tel" name="mobile" required maxlength="10" 
+                           oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                </div>
+
+                <div class="form-group">
+                    <label>Full Address</label>
+                    <input type="text" name="address" placeholder="Enter your complete address" required>
+                </div>
+
+                <div class="form-group">
+                    <label>PIN Code</label>
+                    <input type="text" name="pin_code" maxlength="6" 
+                           oninput="this.value=this.value.replace(/[^0-9]/g,'')" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" name="dob" required>
+                </div>
+
+                <div class="form-group">
+                    <label>State</label>
+                    <select name="state" id="state" class="search-select" required>
+                        <option value="">Select State</option>
+                        {% for state in states %}
+                        <option value="{{ state.id }}">{{ state.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>District</label>
+                    <select name="district" id="district" class="search-select" required>
+                        <option value="">Select District</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>PAN Number</label>
+                    <input type="text" name="pan" maxlength="10" 
+                           pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}"
+                           title="Enter valid PAN (e.g. ABCDE1234F)"
+                           style="text-transform:uppercase;" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Aadhaar Number</label>
+                    <input type="text" name="aadhaar" maxlength="12" 
+                           oninput="this.value=this.value.replace(/[^0-9]/g,'')" required>
+                </div>
+
+                <div class="form-group">
+                    <label>UPI ID</label>
+                    <input type="text" name="upi_id" placeholder="example@paytm" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Role</label>
+                    <select name="role" id="id_role" required>
+                        <option value="retailer">Retailer</option>
+                        <option value="district">District Distributor</option>
+                        <option value="state">State Distributor</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Registration Fee</label>
+                    <input type="text" id="registrationFee" readonly 
+                           style="background:#f1f5f9; font-weight:600;">
+                </div>
+
+                <button type="submit" id="registerBtn" class="submit-btn" disabled>
+                    Complete Registration
+                </button>
+            </form>
+
+            <div class="link">
+                Already have an account? 
+                <a href="{% url 'login' %}"><strong>Login Here</strong></a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Form validation before submit
+        document.getElementById("registerForm").addEventListener("submit", function(e) {
+            const registerBtn = document.getElementById("registerBtn");
+            if (registerBtn.disabled) {
+                alert("Please verify your email OTP before submitting.");
+                e.preventDefault();
+                return;
+            }
+        });
+
+        // Role fee update
+        document.addEventListener("DOMContentLoaded", function () {
+            const roleSelect = document.getElementById("id_role");
+            const feeInput = document.getElementById("registrationFee");
+            const roleFees = {{ role_fees|safe }};
+
+            function updateFee() {
+                const selected = roleSelect.value;
+                const price = roleFees[selected] || 0;
+                feeInput.value = price ? "₹ " + price : "Fee not configured";
+            }
+
+            updateFee();
+            roleSelect.addEventListener("change", updateFee);
+        });
+
+        // OTP Functions
+        function sendOTP() {
+            let email = document.getElementById("id_email").value;
+            if (!email) return alert("Please enter email first.");
+
+            fetch("{% url 'send_otp' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: "email=" + email
+            })
+            .then(res => res.json())
+            .then(data => alert(data.status === "success" ? "OTP sent successfully!" : data.message));
+        }
+
+        function verifyOTP() {
+            let otp = document.getElementById("email_otp").value;
+            let email = document.getElementById("id_email").value;
+
+            if (!otp) return alert("Please enter OTP.");
+
+            fetch("{% url 'verify_otp' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: "otp=" + otp + "&email=" + email
+            })
+            .then(res => res.json())
+            .then(data => {
+                let msg = document.getElementById("verify_message");
+                if (data.status === "success") {
+                    msg.innerHTML = "✅ Email Verified Successfully";
+                    msg.style.color = "green";
+                    document.getElementById("registerBtn").disabled = false;
+                } else {
+                    msg.innerHTML = "❌ " + data.message;
+                    msg.style.color = "red";
+                }
+            });
+        }
+
+        // Select2 Initialization
+        $(document).ready(function(){
+            $('#state').select2({ placeholder: "Search State", width: '100%' });
+            $('#district').select2({ placeholder: "Search District", width: '100%' });
+
+            $('#state').on('change', function(){
+                let stateId = $(this).val();
+                let districtSelect = $('#district');
+                districtSelect.empty().append('<option value="">Select District</option>');
+
+                if (!stateId) return;
+
+                fetch(`/get-districts/?state_id=${stateId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.districts.forEach(district => {
+                        districtSelect.append($('<option>', { value: district.id, text: district.name }));
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create User - SAMATWA Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --navy: #0a1628;
+            --gold: #d4a843;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ================= MAIN CONTENT (with topbar space) ================= */
+        .main-content {
+            padding: 80px 20px 40px;   /* Extra top padding for fixed topbar */
+            display: flex;
+            justify-content: center;
+        }
+
+        .form-wrapper {
+            width: 95%;
+            max-width: 920px;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 24px;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+            color: var(--navy);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Sora';
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        .full {
+            grid-column: 1 / 3;
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            background: var(--navy);
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #0f1f38;
+            transform: translateY(-2px);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 14px;
+            text-decoration: none;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: var(--gold);
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .full {
+                grid-column: auto;
+            }
+            .main-content {
+                padding: 80px 16px 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+        <div class="form-wrapper">
+            <div class="page-header">
+                <h2>Create User</h2>
+            </div>
+            <div class="form-card">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-grid">
+                        <div>
+                            <label>FullName</label>
+                            <input type="text" name="username" required>
+                        </div>
+                        <div>
+                            <label>Mobile</label>
+                            <input type="text" name="mobile" required>
+                        </div>
+                        <div>
+                            <label>Email</label>
+                            <input type="email" name="email" required>
+                        </div>
+                        <div>
+                            <label>DOB</label>
+                            <input type="date" name="dob">
+                        </div>
+                        <div>
+                            <label> Gender </label>
+                            <select name="gender">
+                                <option value=""> Select Gender </option>
+                                {% for value,label in gender %}
+                                    <option value="{{value}}">{{label}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label>Aadhaar</label>
+                            <input type="text" name="aadhaar">
+                        </div>
+                        <div>
+                            <label>PAN</label>
+                            <input type="text" name="pan">
+                        </div>
+                        <div>
+                            <label> Compnay Name </label>
+                            <input type="text" name="company">
+                        </div>
+                        <div>
+                            <label>Address</label>
+                            <input name="address"></input>
+                        </div>
+                        <div>
+                            <label>State</label>
+                            <select name="state" id="state">
+                                <option value="">Select State</option>
+                                {% for state in states %}
+                                    <option value="{{ state.id }}">{{ state.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label> District </label>
+                            <select name="district" id="district">
+                                <option value=""> Select District</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>PIN Code</label>
+                            <input type="text" name="pin_code">
+                        </div>
+                        <!-- <div>
+                            <label> UPI ID </label>
+                            <input type="text" min="0" step="1" name="upi_id">
+                        </div> -->
+                        <div>
+                            <label> Account Type </label>
+                            <select name="role" id="account_type" onchange="updateUtiPanPrice()" required>
+
+                                <option value="">------</option>
+
+                                {% for value,label in roles %}
+                                <option value="{{value}}">{{label}}</option>
+                                {% endfor %}
+
+                            </select>
+                        </div>
+                        <div>
+                            <label>Margin Slab</label>
+                            <select name="margin_slab">
+                                <option value="">-----</option>
+                                {% for value, label in margin_slab %}
+                                    <option value="{{value}}">{{label}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label> UTI PAN Price(93+) </label>
+                            <input type="number" name="uti_price" id="uti_price" min="93">
+                        </div>
+                        <div>
+                            <label>NSDL PAN Price(100+)</label>
+                            <input type="number" name="nsdl_price" min="100">
+                        </div>
+                    </div>
+                    <button type="submit">Create User</button>
+                </form>
+            </div>
+            <a href="{% url 'admin_dashboard' %}" class="back-link">
+                 Back
+            </a>
+        </div>
+    </div>
+
+<script>
+
+function updateUtiPanPrice() {
+    const accountType = document.getElementById('account_type').value;
+    const utiPrice = document.getElementById('uti_price');
+
+    const prices = {
+        state: 97,
+        district: 100,
+        retailer: 107
+    };
+
+    if (prices[accountType]) {
+        utiPrice.value = prices[accountType];
+    }
+}
+
+document.getElementById('state').addEventListener('change', function () {
+
+    let stateId = this.value;
+    let districtSelect = document.getElementById('district');
+
+    districtSelect.innerHTML = '<option value="">------</option>';
+
+    if (stateId === '') {
+        return;
+    }
+
+    fetch(`{% url 'get_districts' %}?state_id=${stateId}`)
+        .then(response => response.json())
+        .then(data => {
+
+            data.districts.forEach(function (district) {
+
+                let option = document.createElement('option');
+
+                option.value = district.id;
+                option.text = district.name;
+
+                districtSelect.appendChild(option);
+            });
+
+        });
+
+});
+</script>
+</body>
+
+</html>

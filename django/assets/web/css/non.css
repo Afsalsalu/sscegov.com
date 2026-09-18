@@ -1,0 +1,107 @@
+.service-category:hover {
+    opacity: 1 !important;
+    box-shadow: rgb(45 45 45/ 5%) 0px 0px 0px, rgb(49 49 49/ 5%) 0px 2px 2px, rgb(42 42 42/ 5%) 0px 4px 4px, rgb(32 32 32/ 5%) 0px 8px 8px, rgb(49 49 49/ 5%) 0px 16px 16px, rgb(35 35 35/ 5%) 0px 30px 30px !important;
+    transform: translate(0, -8px);
+    z-index: 1;
+    border-color: #f2f2f2;
+    border-bottom: 5px solid #002653;
+    border-top: 5px solid #002653;
+    margin-bottom: 0px;
+    height: 183px;
+}
+
+
+.service-category {
+    border: 1px solid #dbdce0;
+    width: 100%;
+    box-shadow: none !important;
+    margin-bottom: 25px;
+    border-radius: 15px;
+    overflow: hidden;
+    padding: 10px 0;
+    transition: .5s ease;
+    position: relative;
+    height: 175px;
+    position: relative;
+    background-color: whitesmoke;
+}
+
+.service-category2 {
+    border: 1px solid #dbdce0;
+    width: 100%;
+    box-shadow: none !important;
+    margin-bottom: 25px;
+    border-radius: 15px;
+    overflow: hidden;
+    padding: 10px 0;
+    transition: .5s ease;
+    position: relative;
+    position: relative;
+    background-color: whitesmoke;
+}
+
+.boll {
+    font-weight: bold;
+    font-size: 30px;
+}
+
+
+.title-5 {
+    color: black;
+}
+.cardo {
+    background-color: whitesmoke;
+}
+
+
+
+
+.marquee {
+    background-color: whitesmoke;
+    padding: 10px;
+  }
+  
+  
+  .marquee {
+      float: left;
+      position: relative;
+      width: 100%;
+      margin-bottom: 5px;
+      border: 1px solid #283897;
+      background-color: whitesmoke;
+  }
+  
+  .marquee-title {
+      position: absolute;
+      padding: 14px 13px;
+    margin-left: -10px !important;
+      font-size: 14px;
+      color: #fff;
+      background-color: #283897;
+      z-index: 1;
+      font-weight: 500;
+    margin-top: -10px !important;
+  }
+  .bax {
+    background-color: whitesmoke;
+  }
+  
+  .title-tip {
+      width: 0;
+      height: 0;
+      top: 15px;
+      right: -8px;
+      position: absolute;
+      border-style: solid;
+      border-width: 7px 0px 7px 9px;
+      border-color: transparent transparent transparent #283897;
+  }
+  
+  .marquee-txt {
+      padding: 6px;
+      line-height: 20px;
+      font-size: 14px;
+      color: #424242;
+  }
+  
+  

@@ -1,0 +1,150 @@
+{% extends "web/state/base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+
+
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+
+    <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+        <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+  
+            <div class="flex flex-col gap-2 py-4 md:flex-row md:items-center print:hidden">
+                <div class="grow">
+                    <h5 class="text-16">Admin</h5>
+                </div>
+                <ul class="flex items-center gap-2 text-sm font-normal shrink-0">
+                    <li class="relative before:content-['\ea54'] before:font-remix ltr:before:-right-1 rtl:before:-left-1  before:absolute before:text-[18px] before:-top-[3px] ltr:pr-4 rtl:pl-4 before:text-slate-400 dark:text-zink-200">
+                        <a href="#!" class="text-slate-400 dark:text-zink-200">Dashboards</a>
+                    </li>
+                    <li class="text-slate-700 dark:text-zink-100">
+                        Admin
+                    </li>
+                </ul>
+            </div>
+            <div class="grid grid-cols-12 gap-x-5">
+                <div class="order-1 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-green-100 dark:bg-green-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-green-500/20 relative overflow-hidden">
+                    <div class="card-body">
+                        <i data-lucide="kanban" class="absolute top-0 stroke-1 size-32 text-green-200/50 dark:text-green-500/20 ltr:-right-10 rtl:-left-10"></i>
+                        <div class="flex items-center justify-center bg-green-500 rounded-md size-12 text-15 text-green-50">
+                            <i data-lucide="users"></i>
+                        </div>
+                        <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{ total_centre }}">0</span></h5>
+                        <p class="text-slate-500 dark:text-slate-200">Total Centre</p>
+                    </div>
+                </div><!--end col-->
+                <div class="order-2 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-orange-100 dark:bg-orange-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-orange-500/20 relative overflow-hidden">
+                    <div class="card-body">
+                        <i data-lucide="list-filter" class="absolute top-0 stroke-1 size-32 text-orange-200/50 dark:text-orange-500/20 ltr:-right-10 rtl:-left-10"></i>
+                        <div class="flex items-center justify-center bg-orange-500 rounded-md size-12 text-15 text-orange-50">
+                          <i data-lucide="users"></i>
+                        </div>
+                        <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{ total_employees }}">0</span></h5>
+                        <p class="text-slate-500 dark:text-slate-200">Total Employee</p>
+                    </div>
+                </div><!--end col-->
+                <div class="order-3 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-sky-100 dark:bg-sky-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-sky-500/20 relative overflow-hidden">
+                    <div class="card-body">
+                        <i data-lucide="list-filter" class="absolute top-0 stroke-1 size-32 text-sky-200/50 dark:text-sky-500/20 ltr:-right-10 rtl:-left-10"></i>
+                        <div class="flex items-center justify-center rounded-md size-12 bg-sky-500 text-15 text-sky-50">
+                            <i data-lucide="coins"></i>
+                        </div>
+                        <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{complaints}}">0</span></h5>
+                        <p class="text-slate-500 dark:text-slate-200">Total Complaints</p>
+                    </div>    
+                </div><!--end col-->
+                <div class="order-4 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-purple-100 dark:bg-purple-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-purple-500/20 relative overflow-hidden">
+                    <div class="card-body">
+                        <i data-lucide="kanban" class="absolute top-0 stroke-1 size-32 text-purple-200/50 dark:text-purple-500/20 ltr:-right-10 rtl:-left-10"></i>
+                        <div class="flex items-center justify-center bg-purple-500 rounded-md size-12 text-15 text-purple-50">
+                          <i data-lucide="cog"></i>
+                        </div>
+                        <h5 class="mt-5 mb-2">{{ip}}</h5>
+                        <p class="text-slate-500 dark:text-slate-200">IP Address</p>
+                    </div>
+                </div><!--end col-->
+            </div>
+
+
+            <h1>Welcome to your State Dashboard</h1>
+            {% if user_state %}
+            <p>User State: {{ user_state.name }}</p>
+        {% else %}
+            <p>No state information available for this user.</p>
+        {% endif %}
+
+
+            <h1>Welcome to Kerala Dashboard</h1>
+    
+            {% if kerala_centres %}
+                <h2>Centers in Kerala</h2>
+                <ul>
+                    {% for centre in kerala_centres %}
+                        <li>{{ centre.center_name }}</li>
+                        <!-- Add more details about the center as needed -->
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No centers available for display.</p>
+            {% endif %}
+
+
+        
+        </div>
+        <!-- container-fluid -->
+    </div>
+    <!-- End Page-content -->
+  
+  
+    
+  </div>
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+      $(document).ready(function(){
+          // Define the district choices based on the selected state
+          var districtChoices = {
+              'kerala': [
+                  { value: 'malapuram', text: 'Malapuram' },
+                  { value: 'kozhikode', text: 'Kozhikode' },
+                  { value: 'kollam', text: 'Kollam' }
+              ],
+              'tamilnadu': [
+                  { value: 'dad', text: 'Dad' },
+                  { value: 'kjkk', text: 'Kjkk' },
+                  { value: 'olo', text: 'Olo' }
+              ]
+          };
+
+          // Function to update district choices based on the selected state
+          function updateDistrictChoices(state) {
+              var districtField = $('#id_district');
+              districtField.empty();
+              districtField.append($('<option>', { value: '', text: 'Select District' }));
+              $.each(districtChoices[state], function(index, district){
+                  districtField.append($('<option>', {
+                      value: district.value,
+                      text: district.text
+                  }));
+              });
+          }
+
+          // Event listener for state change
+          $('#id_state').change(function(){
+              var state = $(this).val();
+              updateDistrictChoices(state);
+          });
+
+          // Initialize district choices based on the initial state
+          var initialState = $('#id_state').val();
+          if (initialState) {
+              updateDistrictChoices(initialState);
+          }
+      });
+  </script>
+
+
+{% endblock %}

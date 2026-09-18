@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>State Distributor List</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --navy: #0a1628;
+            --bg: skyblue;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .main-content {
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .table-wrapper {
+            width: 95%;
+            max-width: 1200px;
+        }
+
+        .page-header {
+            margin-bottom: 18px;
+        }
+
+        .page-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .table-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            padding: 22px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: #f1f5f9;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 16px;
+            font-size: 13px;
+            text-decoration: none;
+            color: var(--navy);
+            font-weight: 600;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+
+        <div class="table-wrapper">
+
+            <div class="page-header">
+                <h2>State Distributor List</h2>
+            </div>
+
+            <div class="table-card">
+
+                <table>
+
+                    <tr>
+                        <th> User ID </th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>State</th>
+                        <th>PAN</th>
+                        <th>Aadhaar</th>
+                        <th>DOB</th>
+                        <th>Address</th>
+                        <th>PIN Code</th>
+                        <th>Status</th>
+                    </tr>
+
+                    {% for s in states %}
+
+                    <tr>
+                        <td>{{s.id}}</td>
+                        <td>{{ s.username }}</td>
+                        <td>{{ s.email }}</td>
+                        <td>{{ s.mobile }}</td>
+                        <td>{{ s.profile.state }}</td>
+                        <td>{{ s.profile.pan }}</td>
+                        <td>{{ s.profile.aadhaar }}</td>
+                        <td>{{ s.profile.dob }}</td>
+                        <td>{{ s.profile.address }}</td>
+                        <td>{{ s.profile.pin_code }}</td>
+                        <td>{{ s.status }}</td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="10" style="text-align:center;">
+                            No State Distributors Found
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </table>
+
+            </div>
+
+            <a href="{% url 'admin_dashboard' %}" class="back-link">
+                ⬅ Back
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

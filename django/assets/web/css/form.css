@@ -1,0 +1,70 @@
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.form-group {
+    flex: 1;
+}
+
+.form-group input[type=text], 
+.form-group input[type=password], 
+.form-group input[type=url], 
+.form-group input[type=email], 
+.form-group input[type=number], 
+.form-group input[type=file], 
+.form-group input[type=date], 
+.form-group select, 
+.form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #c8c3cf;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #F6F5F7;
+    font-size: 16px;
+    color: #4F4659;
+    outline: none !important;
+    transition: box-shadow 0.25s ease-in-out, background-image 0.25s !important;
+    line-height: 1.6;
+}
+
+.error {
+    color: red;
+    font-size: 0.9em;
+}
+
+
+.buttonF {
+    background-color: #007A9B  !important;
+    padding: 10px;
+    border-radius: 5px;
+    color: #fff;
+}
+.buttonN {
+    background-color: #9b0000  !important;
+    padding: 10px;
+    border-radius: 5px;
+    color: #fff;
+}
+.form-group.has-error input,
+.form-group.has-error select,
+.form-group.has-error textarea {
+    border-color: red;
+}
+
+.error {
+    color: red;
+    font-size: 0.9em;
+}
+.bx {
+    font-size: 20px !important;
+}
+
+
+.card {
+    background-color: antiquewhite; 
+    border: 1px solid #333;
+}

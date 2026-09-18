@@ -1,0 +1,162 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+{% block content %}
+
+
+<link rel="stylesheet" href="{% static 'web/css/form2.css' %}">
+
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+
+  <div
+    class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+
+      <div class="container">
+        <div class="title">Accounts Master</div>
+        <div class="content">
+            <form method="POST" action="">
+                {% csrf_token %}
+
+            <div class="user-details">
+                <div class="input-box">
+                    <span class="details">Head</span>
+                    <input style="background-color: rgb(185, 233, 246); text-transform: uppercase;" id="head" name="head" type="text"
+                      placeholder="Enter your Head "value="{{ form.head.value }}" >
+                  </div>
+                <div class="input-box2">
+                    <span class="details">Group</span>
+                    <select style="width: 120%; height: 25px; background-color: #d9f0ff;" name="group" id="group" >
+                      <option value="" selected disabled>{{ form.group.value }}</option>
+                      <option value="ASSETS">ASSETS</option>
+                      <option value="LIABILITIES">LIABILITIES</option>
+                      <option value="INCOME">INCOME</option>
+                      <option value="EXPENSES">EXPENSES</option>
+                      <option value="TRADING EXPENSES">TRADING EXPENSES</option>
+                      <option value="TRADING INCOME">TRADING INCOME</option>
+                      <option value="CURRENT ASSET">CURRENT ASSET</option>
+                      <option value="FIXED ASSETS">FIXED ASSETS</option>
+                      <option value="CURRENT LIABILITIES">CURRENT LIABILITIES</option>
+                      <option value="INDIRECT INCOME">INDIRECT INCOME</option>
+                      <option value="INDIRECT EXPENSES">INDIRECT EXPENSES</option>
+                      <option value="SUNDRY DEBTORS">SUNDRY DEBTORS</option>
+                      <option value="SUNDRY CREDITORS">SUNDRY CREDITORS</option>
+                      <option value="CASH AT BANK">CASH AT BANK</option>
+                      <option value="DUTIES AND TAXES">DUTIES AND TAXES</option>
+                      <option value="LOANS">LOANS</option>
+                      <option value="CAPITAL ACCOUNT">CAPITAL ACCOUNT</option>
+    
+                    </select>
+                  </div>
+                
+                  <div class="input-box">
+                    <span class="details">Category</span>
+                    <select style="width: 130%; height: 25px; background-color: #ffffff;" name="category" id="Category" >
+                      <option value="" selected disabled>{{ form.category.value }}</option>
+                      <option value="accounts">Accounts</option>
+                      <option value="cashbook">Cashbook</option>
+                      <option value="bank">Bank</option>
+                      <option value="customers">Customers</option>
+                      <option value="suppliers">Suppliers</option>
+                    </select>
+                  </div>
+                  <div class="input-box2">
+                    <span class="details">GST No</span>
+                    <input name="gstno" id="gstno" type="text" placeholder="Enter your GST No"  value="{{ form.gstno.value }}">
+                  </div>
+                  <div class="input-box">
+                    <span class="details">Address1</span>
+                    <input name="address1" id="address1" type="text" placeholder="Enter your Address1" value="{{ form.address1.value }}">
+                  </div>
+                  <div class="input-box2">
+                    <span class="details">State .</span>
+                    <input name="state" id="state" type="text" placeholder="Enter your State" value="{{ form.state.value }}">
+                  </div>
+                  <div class="input-box">
+                    <span class="details">Address2</span>
+                    <input name="address2" id="address2" type="text" placeholder="Enter your Address2" value="{{ form.address2.value }}">
+                  </div>
+                  <div class="input-box2">
+                    <span class="details">State Code</span>
+                    <input name="statecode" id="statecode" type="text" placeholder="Enter your State Code" value="{{ form.statecode.value }}">
+                  </div>
+                  <div class="input-box">
+                    <span class="details">Address3</span>
+                    <input name="address3" id="address3" type="text" placeholder="Enter your Address3" value="{{ form.address3.value }}">
+                  </div>
+                  <div class="input-box2">
+                    <span class="details">Pan No</span>
+                    <input name="panno" id="panno" type="text" placeholder="Enter your Pan No" value="{{ form.panno.value }}">
+                  </div>
+                  <div class="input-box">
+                    <span class="details">District</span>
+                    <input name="district" id="district" type="text" placeholder="Enter your District" value="{{ form.district.value }}">
+                  </div>
+                  <div class="input-box2">
+                    <span class="details">Credit Limit</span>
+                    <input name="creditlimit" id="creditlimit" type="text" placeholder="Enter your Credit Limit" value="{{ form.creditlimit.value }}">
+                  </div>
+                  <div class="input-box">
+                    <span class="details">E-Mail</span>
+                    <input name="email" id="email" type="text" placeholder="Enter your E-Mail" value="{{ form.email.value }}">
+                  </div>
+                  <div class="input-box2">
+                    <span class="details">Credit Days</span>
+                    <input name="creditdays" id="creditdays" type="text" placeholder="Enter your Credit Days" value="{{ form.creditdays.value }}">
+                  </div>
+                  <div class="input-box">
+                    <span class="details">Tel.No</span>
+                    <input name="telno" id="telno" type="text" placeholder="Enter your Tel.No"  value="{{ form.telno.value }}">
+                  </div>
+                  <div class="input-box2">
+                    <span class="details"> price Group</span>
+                    <select style="width: 150%; height: 25px; background-color: #ffffff;" name="pricegroup" id="pricegroup" >
+                      <option value="" selected disabled>{{ form.pricegroup.value }}</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      
+                    </select>
+                  </div>
+                  <div class="input-box">
+                    <span class="details">mobile</span>
+                    <input name="mobile" id="mobile" type="text" placeholder="Enter your mobile"  value="{{ form.mobile.value }}">
+                  </div>
+                  <div class="input-box2">
+                    <span class="details">OP.Balance</span>
+                    <input name="opbalance" id="opbalance" type="text" placeholder="Enter your OP.Balance"  value="{{ form.opbalance.value }}">
+                  </div>
+                  <div class="input-box">
+                    <span class="details">whatts App</span>
+                    <input name="whattsapp" id="whattsapp" type="text" placeholder="Enter your whatts App" value="{{ form.whattsapp.value }}">
+                  </div>
+                  <div class="input-box2">
+                    <span class="details">Debit/Credit</span>
+                    <select style="width: 145%; height: 25px; background-color: #ffffff;" name="debitcredit"
+                      id="debitcredit" >
+                      <option value="" selected disabled>{{ form.debitcredit.value }}</option>
+                      <option value="Debit">Debit</option>
+                      <option value="Credit">Credit</option>
+                    </select>
+                  </div>
+                  <div class="input-box2">
+                    <span class="details">Current Balance</span>
+                    <input name="currentbalance" id="currentbalance" type="text" placeholder="Current Balance" value="{{ form.opbalance.value }}">
+                  </div>
+            </div>
+
+            <button type="submit">Submit</button>
+            <a class="all-button" href="{% url 'web:acc_master' %}">Cancel</a>
+            <a class="all-button" href="{% url 'web:acc_master_list' %}">Search</a>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+{% endblock %}

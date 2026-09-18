@@ -1,0 +1,90 @@
+body{
+    margin:0;
+    font-family:Poppins, sans-serif;
+    background:#f4f6f9;
+}
+
+/* HEADER */
+.top-header{
+    background:linear-gradient(135deg,#ff6a88,#ff8fa3);
+    color:#fff;
+    padding:18px 30px;
+    display:flex;
+    justify-content:space-between;
+}
+
+/* MENU */
+.menu-bar{
+    background:#222;
+}
+.menu-bar ul{
+    list-style:none;
+    display:flex;
+    margin:0;
+    padding:0;
+}
+.menu-bar li{
+    color:#fff;
+    padding:12px 20px;
+    cursor:pointer;
+    position:relative;
+}
+.menu-bar li:hover{
+    background:#444;
+}
+
+/* DROPDOWN */
+.dropdown-menu{
+    display:none;
+    position:absolute;
+    top:100%;
+    left:0;
+    background:#fff;
+    min-width:220px;
+    box-shadow:0 5px 20px rgba(0,0,0,.2);
+    z-index:99;
+}
+.dropdown-menu a{
+    display:block;
+    padding:10px 15px;
+    text-decoration:none;
+    color:#333;
+}
+.dropdown-menu a:hover{
+    background:#f1f1f1;
+}
+.dropdown:hover .dropdown-menu{
+    display:block;
+}
+
+/* OVERVIEW */
+.overview-card{
+    background:#fff;
+    padding:25px;
+    border-radius:14px;
+    display:flex;
+    justify-content:space-between;
+    box-shadow:0 10px 25px rgba(0,0,0,.1);
+}
+
+/* CARDS */
+.card-box{
+    color:#fff;
+    padding:25px;
+    border-radius:14px;
+}
+.card-box a{
+    color:#fff;
+    text-decoration:none;
+    border:1px solid #fff;
+    padding:6px 14px;
+    border-radius:20px;
+    display:inline-block;
+    margin-top:10px;
+}
+
+/* COLORS */
+.green{background:#8bc34a;}
+.red{background:#f44336;}
+.teal{background:#1abc9c;}
+.purple{background:#9c27b0;}

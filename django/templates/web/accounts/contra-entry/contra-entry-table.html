@@ -1,0 +1,192 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+  table, td, th {
+    text-align: center;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  td {
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .search-container {
+    margin-left: 35px;
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .search-container input[type="text"] {
+    padding: 5px;
+    font-size: 14px;
+    width: 125px;
+    border: 1px solid rgb(93, 93, 93);
+  }
+
+  .search-container button {
+    padding: 6px 12px;
+    font-size: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .search-container button:hover {
+    background-color: #0056b3;
+  }
+
+  .center {
+    margin: auto;
+    border: 3px solid #007a9b;
+    padding: 10px;
+    text-align: center;
+    background-color: antiquewhite !important;
+    height: 82vh;
+    overflow-y: scroll;
+  }
+</style>
+
+<div style="background-color: antiquewhite;">
+  <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+      <div class="py-3"></div>
+      <div class="center">
+        <div style="display: flex; gap: 10px; margin-bottom: 50px;">
+          <div class="search-container">
+            <input type="checkbox" id="serial-no-checkbox" onclick="toggleInput('serial-no')">
+            <label for="serial-no">Serial No:</label>
+            <input type="text" id="serial-no" name="serial-no" disabled>
+            <button type="button" onclick="filterTable()">Search</button>
+          </div>
+          <div class="search-container">
+            <input type="checkbox" id="date-checkbox" onclick="toggleInput('date-from', 'date-to')">
+            <label for="date-from">Date From:</label>
+            <input type="text" id="date-from" name="date-from" disabled>
+            <label for="date-to">Date To:</label>
+            <input type="text" id="date-to" name="date-to" disabled>
+            <button type="button" onclick="filterTable()">Search</button>
+          </div>
+        </div>
+
+        <table id="account-table">
+          <thead>
+            <tr>
+              <th>Series</th>
+              <th>Serial No</th>
+              <th>Date</th>
+              <th>Account Code</th>
+              <th>Narration</th>
+              <th>DrAmount</th>
+              <th>CrAmount</th>
+            </tr>
+          </thead>
+          <tbody style="background-color: rgb(255, 255, 255); color: black;">
+            {% for contraentry in contraentrys %}
+            <tr>
+              <td>{{ contraentry.series }}</td>
+              <td>{{ contraentry.voucher_no }}</td>
+              <td>{{ contraentry.vdate|date:"d/m/Y" }}</td>
+              <td>{{ contraentry.accountcode }}</td>
+              <td>{{ contraentry.narration }}</td>
+              <td>{{ contraentry.dramount }}</td>
+              <td>{{ contraentry.cramount }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</div>
+
+<script>
+  $(function() {
+    $("#date-from").datepicker({ dateFormat: "dd-mm-yy" });
+    $("#date-to").datepicker({ dateFormat: "dd-mm-yy" });
+    setDefaultDates();
+  });
+
+  function setDefaultDates() {
+    const today = new Date();
+    const formattedDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+    document.getElementById('date-from').value = formattedDate;
+    document.getElementById('date-to').value = formattedDate;
+  }
+
+  function filterTable() {
+    const serialNoCheckbox = document.getElementById("serial-no-checkbox").checked;
+    const dateCheckbox = document.getElementById("date-checkbox").checked;
+    const serialNoInput = document.getElementById("serial-no").value.toUpperCase();
+    const dateFromInput = document.getElementById("date-from").value;
+    const dateToInput = document.getElementById("date-to").value;
+    const table = document.getElementById("account-table");
+    const tr = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < tr.length; i++) {
+      let serialNoTd = tr[i].getElementsByTagName("td")[1];
+      let ndateTd = tr[i].getElementsByTagName("td")[2];
+
+      if (serialNoTd && ndateTd) {
+        const serialNoValue = serialNoTd.textContent || serialNoTd.innerText;
+        const ndateValue = ndateTd.textContent || ndateTd.innerText;
+
+        const [day, month, year] = ndateValue.split('/');
+        const ndate = new Date(`${year}-${month}-${day}`);
+
+        let displayRow = true;
+
+        if (serialNoCheckbox && serialNoValue.toUpperCase().indexOf(serialNoInput) === -1) {
+          displayRow = false;
+        }
+
+        if (dateCheckbox) {
+          if (dateFromInput) {
+            const [dayFrom, monthFrom, yearFrom] = dateFromInput.split('-');
+            const dateFrom = new Date(`${yearFrom}-${monthFrom}-${dayFrom}`);
+            if (ndate < dateFrom) {
+              displayRow = false;
+            }
+          }
+
+          if (dateToInput) {
+            const [dayTo, monthTo, yearTo] = dateToInput.split('-');
+            const dateTo = new Date(`${yearTo}-${monthTo}-${dayTo}`);
+            if (ndate > dateTo) {
+              displayRow = false;
+            }
+          }
+        }
+
+        tr[i].style.display = displayRow ? "" : "none";
+      }
+    }
+  }
+
+  function toggleInput(...inputIds) {
+    inputIds.forEach(id => {
+      const input = document.getElementById(id);
+      input.disabled = !input.disabled;
+      if (input.disabled) {
+        input.value = '';
+      }
+    });
+  }
+</script>
+
+{% endblock %}

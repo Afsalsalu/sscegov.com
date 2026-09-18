@@ -1,0 +1,357 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Create User</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== RESET ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===== ROOT ===== */
+:root {
+    --navy: #0a1628;
+    --primary: #0ea5e9;
+    --bg: linear-gradient(135deg, #e0f2fe, #f8fafc);
+    --card-bg: #ffffff;
+    --border: #e2e8f0;
+    --text: #1a2a3a;
+    --muted: #64748b;
+}
+
+/* ===== BODY ===== */
+body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* ===== MAIN CONTENT (FIX SIDEBAR) ===== */
+.main-content {
+    margin-left: 260px;   /* 🔥 sidebar fix */
+    padding: 90px 20px 40px;
+    display: flex;
+    justify-content: center;
+}
+
+/* ===== WRAPPER ===== */
+.form-wrapper {
+    width: 100%;
+    max-width: 950px;
+}
+
+/* ===== HEADER ===== */
+.page-header {
+    margin-bottom: 20px;
+}
+
+.page-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+}
+
+/* ===== CARD ===== */
+.form-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 30px;
+
+    /* MODERN SHADOW */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+}
+
+/* ===== GRID ===== */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+/* ===== LABEL ===== */
+label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* ===== INPUT ===== */
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Sora';
+    font-size: 13px;
+    transition: 0.3s;
+    background: #f8fafc;
+}
+
+/* FOCUS */
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(14,165,233,0.15);
+    background: #fff;
+}
+
+/* TEXTAREA */
+textarea {
+    resize: none;
+    height: 70px;
+}
+
+/* FULL WIDTH */
+.full {
+    grid-column: 1/3;
+}
+
+/* ===== BUTTON ===== */
+button {
+    margin-top: 20px;
+    padding: 12px;
+    /* width: 100%; */
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--navy), #1e2937);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* HOVER */
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* ===== BACK LINK ===== */
+.back-link {
+    display: inline-block;
+    margin-top: 18px;
+    font-size: 13px;
+    text-decoration: none;
+    color: var(--navy);
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px) {
+
+    .main-content {
+        margin-left: 0;   /* 🔥 remove sidebar spacing */
+        padding: 90px 15px 30px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full {
+        grid-column: auto;
+    }
+}
+    </style>
+
+</head>
+
+<body>
+
+    {% include 'partials/district_topbar.html' %}
+
+    <div class="main-content">
+
+        <div class="form-wrapper">
+
+            <div class="page-header">
+                <h2>Create User</h2>
+            </div>
+
+            <div class="form-card">
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+                    <div class="form-grid">
+
+                        <div>
+                            <label>Full Name</label>
+                            <input type="text" name="username" required>
+                        </div>
+
+                        <div>
+                            <label>Mobile</label>
+                            <input type="text" name="mobile" required>
+                        </div>
+
+                        <div>
+                            <label>Email</label>
+                            <input type="email" name="email" required>
+                        </div>
+
+                        <div>
+                            <label>DOB</label>
+                            <input type="date" name="dob">
+                        </div>
+
+                        <div>
+                            <label>Gender</label>
+                            <select name="gender">
+                                <option value="">Select Gender</option>
+                                {% for value,label in gender %}
+                                <option value="{{value}}">{{label}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label>Aadhaar</label>
+                            <input type="text" name="aadhaar">
+                        </div>
+
+                        <div>
+                            <label>PAN</label>
+                            <input type="text" name="pan">
+                        </div>
+
+                        <div>
+                            <label>Company Name</label>
+                            <input type="text" name="company">
+                        </div>
+
+                        <div>
+                            <label>Address</label>
+                            <input name="address">
+                        </div>
+
+                        <div>
+                            <label>State</label>
+                            <select name="state" id="state">
+                                <option value="">Select State</option>
+
+                                {% for state in states %}
+                                <option value="{{state.id}}">{{state.name}}</option>
+                                {% endfor %}
+
+                            </select>
+                        </div>
+
+                        <div>
+                            <label>District</label>
+
+                            <select name="district" id="district">
+
+                                <option value="">Select District</option>
+
+                            </select>
+
+                        </div>
+
+                        <div>
+                            <label>PIN Code</label>
+                            <input type="text" name="pin_code">
+                        </div>
+
+                        <div>
+                            <label>UPI ID</label>
+                            <input type="text" name="upi_id">
+                        </div>
+
+                        <div>
+                            <label>Account Type</label>
+
+                            <select name="role" required>
+
+                                <option value="">------</option>
+
+                                {% for value,label in roles %}
+                                <option value="{{value}}">{{label}}</option>
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                        <div>
+                            <label>UTI PAN Price (93+)</label>
+                            <input type="number" name="uti_price" min="93">
+                        </div>
+
+                        <div>
+                            <label>NSDL PAN Price (100+)</label>
+                            <input type="number" name="nsdl_price" min="100">
+                        </div>
+
+                    </div>
+
+                    <button type="submit">Create User</button>
+
+                </form>
+
+            </div>
+
+            <a href="{% url 'state_dashboard' %}" class="back-link">
+                ⬅ Back
+            </a>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        document.getElementById('state').addEventListener('change', function () {
+
+            let stateId = this.value;
+            let districtSelect = document.getElementById('district');
+
+            districtSelect.innerHTML = '<option value="">------</option>';
+
+            if (stateId === "") { return; }
+
+            fetch(`/get-districts/?state_id=${stateId}`)
+                .then(response => response.json())
+                .then(data => {
+
+                    data.districts.forEach(function (district) {
+
+                        let option = document.createElement('option')
+
+                        option.value = district.id
+                        option.text = district.name
+
+                        districtSelect.appendChild(option)
+
+                    })
+
+                })
+
+        })
+
+    </script>
+
+</body>
+
+</html>

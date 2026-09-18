@@ -1,0 +1,127 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'web/css/style.css' %}" />
+<link href="{% static 'web/css/edit-dr-cr-note.css' %}" rel="stylesheet">
+
+<style>
+    .center {
+        width: 35%;
+    }
+
+    .search-dropdown-container {
+        position: relative;
+        width: 100%;
+    }
+
+    #headSearch {
+        width: 75%;
+        box-sizing: border-box;
+        padding: 8px;
+        margin-bottom: 15px;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-top: none;
+        background-color: white;
+        max-height: 150px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+    }
+
+    .dropdown-item {
+        padding: 8px;
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f0f0f0;
+    }
+</style>
+
+<div class="container-fluid">
+    <h4 class="py-5" style="padding-top: 6%;"></h4>
+    <div class="center">
+        <h2>Bank Book</h2>
+        <div class="py-5"></div>
+
+        <form method="post" action="{% url 'web:bankbook_search' %}" class="mb-5">
+            {% csrf_token %}
+            <div class="search-dropdown-container" style="display: flex; flex-direction: row;">
+                <label>Select Head:</label>
+                <input type="text" id="headSearch" placeholder="Search head..." onkeyup="filterOptions(this)">
+                <input type="hidden" name="Accountcode" class="selectedAccountCode">
+                <div class="dropdown-menu" style="margin-top: 30px; width: 380px; margin-left: 102px;">
+                    {% for account in head_accounts %}
+                    <div class="dropdown-item" data-value="{{ account.account_code }}">{{ account.head }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: row;">
+                <label for="start_date">Start Date:</label>
+                <input style="margin-left: 33px;" type="date" id="start_date" name="start_date" required value="{{ finyearfrom|date:'Y-m-d' }}">
+            </div>
+            <div style="display: flex; flex-direction: row; margin-top: 10px;">
+                <label for="end_date">End Date:</label>
+                <input style="margin-left: 43px;" type="date" id="end_date" name="end_date" required>
+            </div>
+
+            <div class="button-manager" style="display: flex; justify-content: center; margin-top: 30px; gap: 20px;">
+                <button type="submit" class="addbutton"><i class='bx bx-search-alt-2'></i> Search</button>
+                <button type="button" class="exitbutton"><i class='bx bx-exit'></i> Cancel</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% if messages %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        {% for message in messages %}
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "{{ message }}",
+            confirmButtonText: 'OK'
+        });
+        {% endfor %}
+    });
+</script>
+{% endif %}
+
+<script>
+    function filterOptions(input) {
+        let filter = input.value.toLowerCase();
+        let dropdown = document.querySelector('.dropdown-menu');
+        let items = dropdown.querySelectorAll('.dropdown-item');
+        dropdown.style.display = filter ? 'block' : 'none';
+
+        items.forEach(item => {
+            let text = item.textContent.toLowerCase();
+            item.style.display = text.includes(filter) ? 'block' : 'none';
+        });
+
+        items.forEach(item => {
+            item.addEventListener('click', function () {
+                document.querySelector('#headSearch').value = this.textContent;
+                document.querySelector('.selectedAccountCode').value = this.getAttribute('data-value');
+                dropdown.style.display = 'none';
+            });
+        });
+    }
+
+    // Set the current date as default value for the end_date input field
+    document.addEventListener('DOMContentLoaded', function () {
+        const endDateInput = document.getElementById('end_date');
+        const today = new Date().toISOString().split('T')[0];
+        endDateInput.value = today;
+    });
+</script>
+{% endblock %}

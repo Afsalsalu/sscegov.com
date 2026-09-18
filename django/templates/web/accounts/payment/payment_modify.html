@@ -1,0 +1,57 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'web/css/style.css' %}" />
+<link href="{% static 'web/css/edit-dr-cr-note.css' %}" rel='stylesheet'>
+
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+        <h4 class="py-5"></h4>
+        <div class="center">
+            <h2>MODIFY PAYMENT VOUCHER</h2>
+            <div class="py-3"></div>
+            
+            <form method="get" action="{% url 'web:edit_payment' %}" class="mb-5">
+                <div class="box">
+                    <label for="Series">Select Series :</label>
+                    <select name="Series" id="Series" required>
+                        <option value="" selected disabled>--Select--</option>
+                        {% for voucher in vouchers %}
+                        <option value="{{ voucher.series }}">{{ voucher.series }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <span id="series-error" style="color: red; display: none;">This combination of category and series already exists.</span>
+                <div class="box">
+                    <label style="margin-right: 28px;" for="serialNo">Serial No :</label>
+                    <input type="text" name="VoucherNo" id="voucher_no" required>
+                </div>
+                <div class="box btns">
+                    <button type="submit" class="addbutton"><i class='bx bx-search-alt-2'></i> OK</button>
+                    <a href="{% url 'web:payment' %}"> <button type="button" class="exitbutton"><i class='bx bx-exit'></i> Cancel</button></a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% if error_message %}
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '{{ error_message }}',
+        showCancelButton: true,
+        confirmButtonText: 'Check',
+        cancelButtonText: 'OK'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "{% url 'web:payment_list' %}";
+        }
+    });
+</script>
+{% endif %}
+
+{% endblock %}

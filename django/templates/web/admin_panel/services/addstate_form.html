@@ -1,0 +1,37 @@
+{% extends "web/admin_panel/base.html" %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'web/css/form.css' %}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">        
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+      <h4 class="py-3"></h4>
+        
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group{% if form.state_name.errors %} has-error{% endif %}">
+                    {{ form.state_name.label_tag }}
+                    {{ form.state_name }}
+                    {% if form.state_name.errors %}
+                        <span class="error">{{ form.state_name.errors|striptags }}</span>
+                    {% endif %}
+                </div>
+                <div class="form-group{% if form.logo.errors %} has-error{% endif %}">
+                    {{ form.logo.label_tag }}
+                    {{ form.logo }}
+                    {% if form.logo.errors %}
+                        <span class="error">{{ form.logo.errors|striptags }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style=" background-color: #007a9b; color: white;">Save</button>
+            <a href="{% url 'web:addstate_list' %}" class="btn btn-secondary" style=" background-color: red; color: white;">Cancel</a>        </form>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,257 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commission History - SAMATWA</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --navy: #0a1628;
+            --gold: #d4a843;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --green: #16a34a;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 80px 24px 40px;
+        }
+
+        .table-card {
+            background: var(--card-bg);
+            padding: 28px;
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            width: 100%;
+            max-width: 1050px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 20px;
+        }
+
+        /* Filter Box */
+        .filter-box {
+            background: var(--card-bg);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .filter-box form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .filter-box input {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-box input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        }
+
+        .filter-box button {
+            padding: 10px 20px;
+            background: var(--navy);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-box button:hover {
+            background: #0f1f38;
+        }
+
+        /* Table */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            table-layout: fixed;
+            background: white;
+        }
+
+        th {
+            background: var(--navy);
+            color: white;
+            padding: 14px 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: rgba(212, 168, 67, 0.08);
+        }
+
+        /* Column Widths */
+        th:nth-child(1), td:nth-child(1) { width: 180px; }   /* Date */
+        th:nth-child(2), td:nth-child(2) { width: 140px; }   /* Amount */
+        th:nth-child(3), td:nth-child(3) { width: 220px; }   /* From User */
+        th:nth-child(4), td:nth-child(4) { width: 100px; }   /* Level */
+
+        .amount {
+            color: var(--green);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+            padding: 10px 20px;
+            background: var(--navy);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #0f1f38;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 80px 16px 30px;
+            }
+            .table-card {
+                padding: 20px;
+            }
+            .filter-box form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            table {
+                font-size: 13px;
+                min-width: 700px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Dynamic Topbar -->
+    {% if request.user.role == 'admin' %}
+        {% include 'partials/admin_topbar.html' %}
+    {% elif request.user.role == 'state' %}
+        {% include 'partials/state_topbar.html' %}
+    {% elif request.user.role == 'district' %}
+        {% include 'partials/district_topbar.html' %}
+    {% else %}
+        {% include 'partials/retailer_topbar.html' %}
+    {% endif %}
+
+    <div class="main-content">
+
+        <div class="table-card">
+
+            <h2>Commission Earned History</h2>
+
+            <div class="filter-box">
+                <form method="GET">
+                    <input type="text" name="search" placeholder="Search From User" value="{{ request.GET.search }}">
+                    <input type="date" name="start_date" value="{{ request.GET.start_date }}">
+                    <input type="date" name="end_date" value="{{ request.GET.end_date }}">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>From User</th>
+                        <th>Level</th>
+                    </tr>
+
+                    {% for t in txns %}
+
+                    <tr>
+                        <td>{{ t.created_at|date:"d M Y H:i" }}</td>
+                        <td class="amount">₹ {{ t.amount }}</td>
+                        <td>
+                            {% if t.from_user %}
+                                {{ t.from_user.username }}
+                            {% else %}
+                                System
+                            {% endif %}
+                        </td>
+                        <td>{{ t.level }}</td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="padding: 50px; text-align:center; color:#64748b;">
+                            No commissions yet
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <a href="{% url 'my_commission_wallet' %}" class="back-btn">
+                ← Back to Wallet
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

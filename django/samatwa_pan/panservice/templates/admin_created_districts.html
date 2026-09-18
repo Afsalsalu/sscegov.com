@@ -1,0 +1,199 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Created District Distributors</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --navy: #0a1628;
+            --bg: skyblue;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --green: #16a34a;
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* PAGE */
+
+        .main-content {
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* WRAPPER */
+
+        .table-wrapper {
+            width: 95%;
+            max-width: 1200px;
+        }
+
+        /* HEADER */
+
+        .page-header {
+            margin-bottom: 18px;
+        }
+
+        .page-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        /* CARD */
+
+        .table-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            padding: 22px;
+        }
+
+        /* TABLE */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: #f1f5f9;
+        }
+
+        /* BACK */
+
+        .back-link {
+            display: inline-block;
+            margin-top: 16px;
+            font-size: 13px;
+            text-decoration: none;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+
+        <div class="table-wrapper">
+
+            <div class="page-header">
+                <h2>District Distributors Created by Admin</h2>
+            </div>
+
+            <div class="table-card">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Mobile</th>
+                            <th>PAN</th>
+                            <th>Aadhaar</th>
+                            <th>DOB</th>
+                            <th>State</th>
+                            <th>Address</th>
+                            <th>PIN Code</th>
+                            <th>Status</th>
+                            <th>Created By</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for d in districts %}
+
+                        <tr>
+
+                            <td>{{ d.username }}</td>
+
+                            <td>{{ d.mobile }}</td>
+
+                            <td>{{ d.profile.pan }}</td>
+
+                            <td>{{ d.profile.aadhaar }}</td>
+
+                            <td>{{ d.profile.dob }}</td>
+
+                            <td>{{ d.profile.state }}</td>
+
+                            <td>{{ d.profile.address }}</td>
+
+                            <td>{{ d.profile.pin_code }}</td>
+
+                            <td>{{ d.status }}</td>
+
+                            <td>{{ d.created_by.username }}</td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="10" style="text-align:center;">
+                                No District Distributors Created by Admin Yet
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <a href="javascript:history.back()" class="back-link">
+                ⬅ Back
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,61 @@
+{% extends "web/home/base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+
+			<!-- BLOG POSTS LISTING
+			============================================= -->
+			<section class="blog-page-section">
+				<div class="container">
+                    <h1 class="pt-5"></h1>
+                    <h1 class="pt-5"></h1>
+					<!-- BLOG POSTS CATEGORY --> 
+					<div class="row">
+						<div class="col">
+							<div class="posts-category ico-20 wow fadeInUp">
+								<h4 class="s-34 w-700">Latest News <span class="flaticon-next"></span></h4>
+							</div>
+						</div>
+					</div>
+
+					<!-- POSTS WRAPPER -->
+					<div class="posts-wrapper">
+						<div class="row">
+
+							{% for m in media %}
+					 		<div class="col-md-12 col-lg-4">
+					 			<div class="blog-post mb-40 wow fadeInUp clearfix">	
+					 				<div class="blog-post-img mb-35">
+										<img class="img-fluid r-16" src="{{ m.image.url }}" alt="blog-post-image">
+									</div>	
+									<div class="blog-post-txt">
+										<span class="post-tag color--blue-400">{{ m.sub_title }}</span>	
+										<h6 class="s-20 w-700">
+											<a href="#!">{{ m.title }}
+											</a>
+										</h6>
+										<p>{{ m.content}}</p>
+										<div class="blog-post-meta mt-20">
+											<ul class="post-meta-list ico-10">
+												<li><p class="p-sm w-500">{{ m.place }}</p></li>
+												<li class="meta-list-divider"><p><span class="flaticon-minus"></span></p></li>
+												<li><p class="p-sm">{{ m.today_date }}</p></li>
+											</ul>
+										</div>
+									</div>
+					 			</div>
+					 		</div>
+                            {% endfor %}
+
+						</div>  <!-- End row -->
+					</div>	<!-- END POSTS WRAPPER -->
+
+				</div>	   <!-- End container -->	
+			</section>	<!-- END BLOG POSTS LISTING -->
+
+
+
+
+{% endblock %}

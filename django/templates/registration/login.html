@@ -1,0 +1,40 @@
+{% extends "registration/registration_base.html" %}
+{% load i18n %}
+{% load static %}
+{% block title %}{% trans "Log in" %}{% endblock %}
+
+{% block content %}
+<div class="grid">
+    <div class="order__left centered">
+       <div class="form">
+          <div class="logo" style="text-align: center;">
+            <img class="img" style="width: 100px;" src="{% static 'web/file/images/logoSSC-blue.png' %}" alt="picture">
+          </div>
+
+          <h4 style="margin-top: 0px !important;">Samatwa Service Centre E-Governance LTD</h4>
+
+          <form method="post" action="" style="margin-top: 30px !important;">
+            {% csrf_token %}
+            {{ form.as_p }}
+                
+            <input type="submit" class="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm" value="{% trans 'Log in' %}" />
+            
+            <input type="hidden" name="next" value="{{ next }}" />
+          </form>
+
+          {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                {% trans "Invalid username or password. Please try again or" %} <a href="{% url 'web:password_reset' %}">{% trans "reset your password" %}</a>.
+            </div>
+          {% endif %}
+
+          <img class="img" style="width:100px;" src="{% static 'web/assets/img/DigitalIndia.png' %}" alt="picture">
+       </div>
+    </div><!-- order__left centered -->
+    
+    <div class="order__right centered no__overflow" style="background-color: #1d3b6f;">
+       <img class="img" src="{% static 'web/images/modi1.png' %}" alt="picture">
+    </div><!-- order__right centered no__overflow -->
+
+ </div><!-- end grid -->
+{% endblock %}

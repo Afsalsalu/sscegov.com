@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ action }} PSA Master - SAMATWA Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --navy: #0a1628;
+            --gold: #d4a843;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --text-muted: #64748b;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 80px 24px 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Sora', sans-serif;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--navy);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .submit-btn.delete {
+            background: #ef4444;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .cancel-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .cancel-link:hover {
+            color: var(--navy);
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+        .alert {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+        <div class="form-card">
+            
+            <h2>{{ action }} PSA Master</h2>
+
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if action == 'Delete' %}
+            <form method="POST">
+                {% csrf_token %}
+                <p style="text-align:center; margin-bottom: 20px; font-size: 15px;">
+                    Are you sure you want to delete PSA ID <strong>{{ psa.psa_login_id }}</strong>?
+                </p>
+                <button type="submit" class="submit-btn delete">Confirm Delete</button>
+                <a href="{% url 'psa_master_list' %}" class="cancel-link">Cancel</a>
+            </form>
+            {% else %}
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label>PSA Login ID</label>
+                    <input type="text" name="psa_login_id" required value="{{ psa.psa_login_id|default:'' }}" placeholder="Enter PSA Login ID">
+                </div>
+
+                <div class="form-group">
+                    <label>PSA Password</label>
+                    <input type="text" name="psa_password" required value="{{ psa.psa_password|default:'' }}" placeholder="Enter PSA Password">
+                </div>
+
+                <button type="submit" class="submit-btn">{{ action }} PSA</button>
+                <a href="{% url 'psa_master_list' %}" class="cancel-link">Cancel</a>
+            </form>
+            {% endif %}
+
+        </div>
+    </div>
+
+</body>
+</html>

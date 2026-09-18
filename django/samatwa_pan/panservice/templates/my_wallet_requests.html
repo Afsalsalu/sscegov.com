@@ -1,0 +1,278 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wallet Requests</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== RESET ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ===== BODY ===== */
+        body {
+            font-family: 'Sora', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+            min-height: 100vh;
+        }
+
+        /* ===== MAIN CONTENT FIX (IMPORTANT) ===== */
+        .page-wrapper {
+            margin-left: 260px;   /* 🔥 FIX: prevent sidebar overlap */
+            min-height: calc(100vh - 60px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 100px 20px 40px; /* space for topbar */
+        }
+
+        /* ===== CARD ===== */
+        .box {
+            background: #ffffff;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 850px;
+            padding: 35px;
+
+            /* MODERN SHADOW */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+
+            /* CENTER */
+            margin: auto;
+
+            /* ANIMATION */
+            animation: fadeUp 0.4s ease;
+        }
+
+        /* ANIMATION */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== TITLE ===== */
+        h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0a1628;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        /* ===== BALANCE ===== */
+        .balance-box {
+            background: linear-gradient(135deg, #0a1628, #1e2937);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+        }
+
+        /* ===== TABLE ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        /* HEADER */
+        thead {
+            background: #f1f5f9;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+
+        /* ROW */
+        td {
+            padding: 14px 12px;
+            font-size: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        /* HOVER */
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        /* ===== STATUS ===== */
+        .status {
+            font-weight: 600;
+        }
+
+        .pending {
+            color: #f59e0b;
+        }
+
+        .approved {
+            color: #16a34a;
+        }
+
+        .rejected {
+            color: #dc2626;
+        }
+
+        /* EMPTY */
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+
+        /* ===== BUTTON ===== */
+        .btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            background: linear-gradient(135deg, #0a1628, #1e2937);
+            color: white;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+
+            .page-wrapper {
+                margin-left: 0;  /* 🔥 remove sidebar spacing */
+                padding: 90px 15px 30px;
+            }
+
+            .box {
+                padding: 25px 18px;
+                border-radius: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Dynamic Topbar -->
+
+    {% if request.user.role == 'admin' %}
+    {% include 'partials/admin_topbar.html' %}
+    {% elif request.user.role == 'state' %}
+    {% include 'partials/state_topbar.html' %}
+    {% elif request.user.role == 'district' %}
+    {% include 'partials/district_topbar.html' %}
+    {% else %}
+    {% include 'partials/retailer_topbar.html' %}
+    {% endif %}
+
+    <div class="page-wrapper">
+
+        <div class="box">
+
+            <h2>My Wallet Requests</h2>
+            <p class="subtitle">Track your wallet recharge requests</p>
+
+            <div class="balance-box">
+                Current Wallet Balance: ₹{{ wallet.balance }}
+            </div>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for req in requests %}
+
+                    <tr>
+
+                        <td>{{ req.created_at|date:"Y-m-d H:i" }}</td>
+
+                        <td>₹{{ req.amount }}</td>
+
+                        <td class="status
+{% if req.status == 'pending' %}pending
+{% elif req.status == 'approved' %}approved
+{% else %}rejected
+{% endif %}">
+
+                            {% if req.status == 'pending' %}
+                            ⏳ Pending
+
+                            {% elif req.status == 'approved' %}
+                            🟢 Approved
+
+                            {% else %}
+                            ❌ Rejected
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="3" class="no-data">No requests found</td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% if user.role == 'admin' %}
+            <a href="{% url 'admin_dashboard' %}" class="btn">⬅ Back to Dashboard</a>
+
+            {% elif user.role == 'state' %}
+            <a href="{% url 'state_dashboard' %}" class="btn">⬅ Back to Dashboard</a>
+
+            {% elif user.role == 'district' %}
+            <a href="{% url 'district_dashboard' %}" class="btn">⬅ Back to Dashboard</a>
+
+            {% else %}
+            <a href="{% url 'retailer_dashboard' %}" class="btn">⬅ Back to Dashboard</a>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

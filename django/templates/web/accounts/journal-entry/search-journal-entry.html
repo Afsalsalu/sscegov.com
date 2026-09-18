@@ -1,0 +1,62 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'web/css/style.css' %}" />
+<link href="{% static 'web/css/edit-dr-cr-note.css' %}" rel='stylesheet'>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+  
+      <h4 class="py-5"></h4>
+      <div class="center">
+          <h2>Modify Journal Entry</h2>
+
+          <form method="get" action="{% url 'web:edit_journal_entry' %}" class="mb-5">
+              <div class="form-group box" style="margin-top: 20px;">
+                  <label style="margin-right: 35px;" for="Series">Series</label>
+                  <select name="Series" id="series" class="form-control" required>
+                      <option value="" disabled selected>Select</option>
+                      {% for voucher in vouchers %}
+                      <option value="{{ voucher.series }}">{{ voucher.series }}</option>
+                      {% endfor %}
+                  </select>
+              </div>
+              <div class="formgroup" style="display: flex; flex-direction: row; margin-bottom: 20px;">
+                  <label style="margin-bottom: 0px; margin-top: 10px;" for="VoucherNo">Voucher No</label>
+                  <input type="text" name="VoucherNo" id="voucher_no" class="form-control" required>
+              </div>
+              <div class="box btns">
+                  <button type="submit" class="addbutton"><i class='bx bx-search-alt-2'></i> OK</button>
+                  <a href="{% url 'web:account_journal_table' %}"><button type="button" class="exitbutton"><i class='bx bx-exit'></i> Cancel</button></a>
+              </div>
+          </form>
+
+      </div>
+    </div>
+</div>
+
+<!-- {% if error_message %}
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: '{{ error_message }}'
+    });
+</script>
+{% endif %} -->
+
+{% if messages %}
+<script>
+    {% for message in messages %}
+        Swal.fire({
+            title: "{{ message.tags|capfirst }}!",
+            text: "{{ message }}",
+            icon: "{% if 'error' in message.tags %}error{% elif 'success' in message.tags %}success{% else %}info{% endif %}",
+            confirmButtonText: 'OK'
+        });
+    {% endfor %}
+</script>
+{% endif %}
+
+{% endblock %}

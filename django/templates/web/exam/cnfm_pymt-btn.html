@@ -1,0 +1,340 @@
+{% extends "web/home/base.html" %} {% load static %} {% block content %}
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+  />
+  <link
+  rel="stylesheet"
+  href="{% static 'web/dashboard/assets/css/register.css' %}"
+  />
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<style>
+  .form-wrap {
+    position: relative;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+  }
+
+  .form-wrap::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("{% static 'web/file/images/logoSSC-blue.png' %}");
+    background-size: 300px;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.1; /* Lower the opacity for a more transparent image */
+    z-index: -1;
+  }
+
+  .form-wrap h4 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #284478;
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #555;
+  }
+
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+    margin-top: 8px;
+    background-color: transparent;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: #284478;
+    outline: none;
+    background-color: #ffffff;
+  }
+
+  .form-group .error {
+    font-size: 12px;
+    color: red;
+    margin-top: 5px;
+  }
+
+  .form-group select {
+    height: 45px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-right: 30px;
+  }
+
+  .form-group select:focus {
+    border-color: #284478;
+  }
+
+  .form-group button {
+    background-color: #284478;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  .form-group button:hover {
+    background-color: #1d3a6c;
+  }
+
+  .form-group .has-error input,
+  .form-group .has-error select {
+    border-color: red;
+  }
+
+  .form-group .has-error label {
+    color: red;
+  }
+
+  /* .container {
+      background-color: #284478;
+      padding: 50px 15px;
+    } */
+
+  .py-5 {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
+  .login-link {
+    color: #284478;
+    font-weight: bold;
+  }
+
+  .login-link:hover {
+    color: #1d3a6c;
+  }
+
+  #rzp-button {
+    background-color: #284478;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 25px;
+    border-radius: 5px;
+    /* margin-top: 20px; */
+    width: 100%;
+    cursor: pointer;
+  }
+
+  #rzp-button:hover {
+    background-color:  #192b4d;
+  }
+
+  .labal-star {
+    color: red;
+  }
+
+  .buttonn {
+    background-color: #041ca6;
+    width: 150px;
+    padding: 14px 14px 14px 14px;
+    color: #ffffff;
+    font-size: 12px;
+  }
+
+  .parentbutton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+</style>
+
+<div
+  style="
+    background-color: white;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  "
+>
+  <div class="container">
+    <div class="py-5"></div>
+
+
+    <div style="display: flex; justify-content: center; gap: 10px;">
+      <div class="parentbutton">
+          {% csrf_token %}
+          <button style="text-transform: uppercase;" id="rzp-button" class="buttonn">
+            <img src="{% static 'web/images/razorpay-logo-removebg-preview.png' %}" alt="Razorpay" style="height: 26px; margin-right: 8px;">
+            Pay with Razorpay
+          </button>
+      </div>
+
+      
+      <button id="rzp-button12" onclick="sbiPay()" class="buttonn">
+      <img src="{% static 'web/images/sbi-logo-removebg-preview.png' %}" alt="SBI" style="height: 26px; margin-right: 8px;">Pay With SBI
+    </button>
+    
+
+    </div>
+    
+
+
+    <div class="py-5"></div>
+  </div>
+</div>
+
+
+
+<script type="text/javascript">
+//   var options = {
+//       "key": "{{ razorpay_key_id }}",  
+//       "amount": "{{ amount }}",  // Amount in paise (1000 represents ₹10)
+//       "currency": "INR",
+//       "order_id": "{{ razorpay_order_id }}",  // Razorpay Order ID
+//       "name": "{{ user.name }}",  // User name passed from backend
+//       "description": "Registration Payment",
+//       "image": "{% static 'web/file/images/logoSSC-blue.png' %}",  // Company Logo
+//       "handler": function (response) {
+//                     console.log("Payment Successful:", response);
+//                     alert("Payment Successful!");
+
+//     // Send only payment ID
+//     fetch(window.location.href, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//             "X-CSRFToken": "{{ csrf_token }}",
+//             "X-Requested-With": "XMLHttpRequest"
+//         },
+//         body: JSON.stringify({
+//             payment_id: response.razorpay_payment_id
+//         })
+//     })
+//     .then(res => res.json())
+//     .then(data => {
+//         if (data.success) {
+//             window.location.href = data.redirect_url;
+//         } else {
+//             alert(data.message);
+//         }
+//     })
+//     .catch(error => {
+//         console.error("Error:", error);
+//         alert("Something went wrong..", e);
+//     });
+// },
+//       "prefill": {
+//           "name": "{{ user.name }}",
+//           "email": "{{ user.email }}",
+//           "contact": "{{ user.mobile }}"
+//       },
+//       "notes": {
+//           "address": "{{ user.address }}"
+//       },
+//       "theme": {
+//           "color": "#284478"
+//       }
+//   };
+document.getElementById("rzp-button").addEventListener('click', function () {
+  fetch('/exam/create_payment_order/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': '{{ csrf_token }}'
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    const options = {
+      "key": "{{ razorpay_key_id }}",
+      "amount": data.amount,
+      "currency": "INR",
+      "order_id": data.razorpay_order_id,
+      "name": "Payment",
+      "handler": function (response) {
+        fetch('/exam/payment_success/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: JSON.stringify({
+            payment_id: response.razorpay_payment_id,
+            razorpay_order_id: data.razorpay_order_id
+          })
+        })
+        .then(res => res.json())
+        .then(responseData => {
+          if (responseData.success) {
+            alert('Payment Successful!');
+            window.location.href = responseData.redirect_url;
+          } else {
+            alert(responseData.message);
+          }
+        });
+      },
+      "prefill": {
+        "name": "{{ user.name }}",
+        "email": "{{ user.email }}",
+        "contact": "{{ user.mobile }}"
+      },
+      "theme": {
+        "color": "#284478"
+      }
+    };
+    var rzp = new Razorpay(options);
+    rzp.open();
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Something went wrong. Please try again.');
+  });
+});
+</script>
+
+<script>
+  function sbiPay() {
+    alert('paying with sbi')
+    fetch('/exam/register/sbi/')
+    .then(response => response.json())  // Convert response to JSON
+    .then(data => {
+        console.log(data);  // Log JSON response
+        alert("Response: " + JSON.stringify(data.message)); // Show data in an alert
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+</script>
+
+
+<script>
+  function razorPay() {
+    alert('paying with razorpay')
+
+  }
+</script>
+
+{% endblock %}

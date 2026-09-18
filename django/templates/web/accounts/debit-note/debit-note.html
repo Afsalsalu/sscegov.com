@@ -1,0 +1,510 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'web/css/acc_debit_credit.css' %}">
+<link rel="stylesheet" href="{% static 'web/js/search.js' %}">
+<link rel="stylesheet" href="{% static 'web/css/style.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+
+
+    #printsection {
+        display: none;
+        padding-top: 100px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #000; 
+        box-sizing: border-box;
+    }
+
+    .header h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .header p {
+        margin: 5px 0;
+        text-align: center;
+    }
+
+    .content .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 10px 0;
+    }
+
+    .content .row span:first-child {
+        flex: 1;
+        font-weight: bold;
+    }
+
+    .content .row span:last-child {
+        flex: 2;
+    }
+
+    .footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .signature, .cashier, .payee {
+        text-align: center;
+        flex: 1;
+        min-width: 150px;
+        margin: 10px;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+        .header h1 {
+            font-size: 20px;
+        }
+        .content .row {
+            flex-direction: row;
+        }
+        .content .row span {
+            display: block;
+            margin-bottom: 5px;
+        }
+    }
+
+    /* Print styles */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #printsection {
+            display: block;
+        }
+
+        #printsection, #printsection * {
+            visibility: visible;
+        }
+        #printsection {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        .box.btns, .box.btns * {
+            display: none;
+        }
+    }
+</style>
+
+
+<section id="printsection">
+    <div class="container">
+        <div class="header">
+            <h1>{{ company_name }}</h1>
+            <p>{{ address1 }}<br>{{ address2 }}</p>
+            <p>Tel: {{ phoneno }}</p>
+            <!-- <p>MP Associates</p> -->
+            <br><br>
+        </div>
+        <div class="content">
+            <div class="row">
+                <span>Date:</span>
+                <span id="dateSpan">{% if matched_note_dr %}{{ matched_note_dr.ndate }}{% endif %}</span>
+            </div>
+            <div class="row">
+                <span>Trans. No:</span>
+                <span id="printSerialNo">{{ serial_no }}</span>
+            </div>
+            
+            <div class="row">
+                <span>Dr. A/C:</span><br>
+                <!-- <span> {% if matched_note_dr %}{{ matched_note_dr.head }}{% endif %}</span><br> -->
+                <!-- <span>Pathanapuram pathanamthitta</span> -->
+
+            </div>
+            <div class="row">
+                <span id="selected-head1">
+                    {% if matched_note_dr %}{{ matched_note_dr.head }}{% endif %}
+                </span><br>
+                            </div>
+            <div class="row">
+                <span>Amount Debited:</span>
+                <span id="amountDebited">
+                    {% if matched_note_cr %}{{ matched_note_cr.cramount }}{% endif %} /-  Amount Debited as per details given below / attached.
+                </span>
+            </div>
+            <!-- <div class="row">
+                <span>With Cheque No:</span>
+                <span>0</span>
+            </div> -->
+            <!-- <div class="row">
+                <span>Dated:</span>
+                <span></span>
+            </div> -->
+            <div class="row">
+                <span>the sum of Rs:</span>
+                <span id="amountDebited2">
+                    {% if matched_note_cr %}{{ matched_note_cr.cramount }}{% endif %} /-
+                </span>            </div>
+                <div class="row">
+                    <span id="amountDebitedDisplay">
+                        {% if matched_note_cr %}({{ matched_note_cr.cramount }})/- Being Amount Debited{% endif %}
+                    </span>
+                </div>
+                
+            <div class="row">
+                <span>Rs:</span>
+                <span id="dynamicAmount">
+                    {% if matched_note_cr %}{{ matched_note_cr.cramount }}{% endif %} /-
+                </span>
+                
+                        </div>
+        </div>
+        <div class="footer">
+            <div class="signature">
+                <p>Thanking You</p>
+                <p>Yours Faithfully</p>
+                <p>Manager</p>
+            </div>
+            <div class="cashier">
+                <p>Cashier</p>
+            </div>
+            <div class="payee">
+                <p>Payee's Signature</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+
+        <h4 class="py-5"></h4>
+        <div class="center">
+            <h2>Debit Note</h2>
+            <h4 class="py-5"></h4>
+
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="firstdiv">
+                    <div class="firstdivright">
+                        <label for="series">Series</label>
+                        <select style="width: 60%;" name="series" id="series" onchange="updateSerialNumber()" required {% if series_disabled %}disabled{% endif %}>
+                            <option value="" selected disabled>--Select--</option>
+                            {% for option in series_options %}
+                            <option id="serial_no_to_delete" value="{{ option.series }}" data-serial="{{ option.serial_no }}" {% if option.series == series %}selected{% endif %}>{{ option.series }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="firstdivright">
+                        <label for="serial_no" style="margin-right: 3px;">Serial No</label>
+                        <input style="width: 50%; margin: 0;" type="text" class="newinput" name="serial_no" id="serial_no" value="{{ serial_no }}" readonly>
+                    </div>
+                    <div class="firstdivright">
+                        <label style="margin-right: 3px;" for="date">Date</label>
+                        <input style="width: 50%; margin: 0;" type="date" class="newinput" name="date" id="date" {% if matched_note_dr %}value="{{ matched_note_dr.ndate }}" {% endif %} required>
+                    </div>
+                    
+                    
+                </div>
+
+                <br><br><br>
+
+                <table id="dynamicTable" style="background-color: white !important;">
+                    <thead>
+                        <tr>
+                            <th>Sl No</th>
+                            <th>Head</th>
+                            <th>Narration</th>
+                            <th>Debit</th>
+                            <th>Credit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="py-1">
+                            <td style="width: 2%;">1</td>
+                            <td style="width: 30%;">
+                                <select name="head1" id="head1" class="lefttext" onchange="updateAccountCode(this)" data-span-id="selected-head1"  required>
+                                    {% if matched_note_dr %}
+                                        <option value="{{ matched_note_dr.accountcode }}" selected>{{ matched_note_dr.head }}</option>
+                                    {% else %}
+                                        <option value="" selected disabled>---select---</option>
+                                    {% endif %}
+                                    {% for head_option in head_options %}
+                                        <option value="{{ head_option.account_code }}" data-head="{{ head_option.head }}">{{ head_option.head }}</option>
+                                    {% endfor %}
+                                </select>
+                                
+                            </td>
+                            <td style="width: 25%;"><input type="text" class="newinputt" name="narration1" id="narration1" {% if matched_note_dr %}value="{{ matched_note_dr.narration }}" {% endif %}></td>
+                            <td style="width: 9%;"><input type="text" class="newinput" name="debit1" id="debit1" oninput="updateCreditAndTotal()" {% if matched_note_dr %}value="{{ matched_note_dr.dramount }}" {% endif %}></td>
+                            <td style="width: 9%;"><input type="text" class="newinput" name="credit1" id="credit1" readonly></td>
+                        </tr>
+                        <tr class="py-1">
+                            <td>2</td>
+                            <td style="width: 30%;">
+                                <select name="head2" id="head2" class="lefttext" onchange="updateAccountCode(this)" required>
+                                    {% if matched_note_cr %}
+                                        <option value="{{ matched_note_cr.accountcode }}" selected>{{ matched_note_cr.head }}</option>
+                                    {% else %}
+                                        <option value="" selected disabled>---select---</option>
+                                    {% endif %}
+                                    {% for head_option in head_options %}
+                                        <option value="{{ head_option.account_code }}">{{ head_option.head }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td style="width: 25%;"><input type="text" class="newinputt" name="narration2" id="narration2" {% if matched_note_cr %}value="{{ matched_note_cr.narration }}" {% endif %}></td>
+                            <td style="width: 9%;"><input type="text" class="newinput" name="debit2" id="debit2" readonly></td>
+                            <td style="width: 9%;"><input type="text" class="newinput" name="credit2" id="credit2" {% if matched_note_cr %}value="{{ matched_note_cr.cramount }}" {% endif %} readonly></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <br><br><br>
+
+                <div class="lastdiv">
+                    <div class="series">
+                    </div>
+                    <div class="lastdivright">
+                        <label for="total_amount">Total Amount</label>
+                        <input style="margin-right: 55px; width: 25%; text-align: center; background-color: rgb(86, 251, 251);" type="text" name="total_amount" id="total_amount" {% if matched_note_dr %}value="{{ matched_note_dr.dramount }}" {% endif %} readonly>
+                    </div>
+                </div>
+
+                <br><br><br>
+                <div class="box btns" style="display: flex; justify-content: center;">
+                   
+                   
+                    {% if matched_note_cr and matched_note_dr %}
+                    <button type="submit" class="addbutton"><i class='bx bxs-edit'></i> Save</button>
+                    <a href="{% url 'web:account_debit_note' %}"><button type="button" class="exitbutton"><i class='bx bx-exit'></i> Cancel</button></a>
+                    <a href="{% url 'web:delete_debit_note' matched_note_cr.id matched_note_dr.noteno %}" id="deleteLink">
+                        <button type="button" class="exitbutton" onclick="confirmDelete(event)">
+                            <i class='bx bx-trash'></i> Delete
+                        </button>
+                    </a>
+                    
+                    
+                    
+                    
+                    <button style="background-color: blueviolet; color: white; padding: 7px; border-radius: 5px;" type="button" onclick="window.print()">
+                        <i class="fa fa-print"></i> Print
+                    </button>
+                    
+
+                    
+                {% else %}
+                    <button type="submit" class="addbutton"><i class='bx bx-plus-medical'></i> Save</button>
+                    <a href=""><button type="button" class="exitbutton"><i class='bx bx-exit'></i> Clear</button></a>
+                    <a href="{% url 'web:account_debit_table' %}"><button type="button" class="addbutton"><i class='bx bx-search-alt-2'></i> Search</button></a>
+                    <button style="background-color: blueviolet; color: white; padding: 7px; border-radius: 5px;" type="submit" onclick="window.print()">
+                        <i class="fa fa-print"></i> Print
+                    </button>
+                    
+                {% endif %}
+                                  <!-- <button type="submit" class="addbutton"><i class='bx bxs-edit'></i> Edit</button> -->
+                    <!-- <button type="button" class="exitbutton"><i class='bx bx-trash'></i> Delete</button> -->
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- container-fluid -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // Set default date value
+        let dateInput = document.getElementById('date');
+        let defaultDate = "{{ matched_note_dr.ndate }}" || new Date().toISOString().split('T')[0];
+        dateInput.value = defaultDate;
+
+        // Show messages from the backend
+        {% if messages %}
+        {% for message in messages %}
+        Swal.fire({
+            title: "{{ message.tags|capfirst }}",
+            text: "{{ message }}",
+            icon: "{{ message.tags }}",
+            confirmButtonText: 'OK'
+        });
+        {% endfor %}
+        {% endif %}
+
+        // Initialize display for serial number
+        let serialNoDisplay = document.getElementById('printSerialNo');
+        if (serialNoDisplay) {
+            serialNoDisplay.textContent = document.getElementById('serial_no').value;
+        }
+
+        // Initialize credit and total calculation
+        updateCreditAndTotal();
+    });
+
+    function updateSerialNumber() {
+        let seriesSelect = document.getElementById('series');
+        let serialNoInput = document.getElementById('serial_no');
+        let serialNoDisplay = document.getElementById('printSerialNo');
+        let selectedOption = seriesSelect.options[seriesSelect.selectedIndex];
+
+        serialNoInput.value = selectedOption.dataset.serial;
+        if (serialNoDisplay) {
+            serialNoDisplay.textContent = serialNoInput.value;
+        }
+    }
+
+    function updateAccountCode(selectElement) {
+        let selectedOption = selectElement.options[selectElement.selectedIndex];
+        let narrationInput = selectElement.id.replace('head', 'narration');
+        let debitInput = selectElement.id.replace('head', 'debit');
+        let creditInput = selectElement.id.replace('head', 'credit');
+
+        document.getElementById(narrationInput).value = selectedOption.dataset.narration || '';
+        document.getElementById(debitInput).value = selectedOption.dataset.dramount || '';
+        document.getElementById(creditInput).value = selectedOption.dataset.cramount || '';
+        updateCreditAndTotal();
+    }
+
+    function numberToWords(num) {
+        if (num === 0) return 'zero';
+        
+        const ones = ['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+        const tens = ['','', 'twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+        const thousands = ['','thousand','million','billion','trillion'];
+        
+        function convertToWords(num) {
+            let words = '';
+            let i = 0;
+            
+            while (num > 0) {
+                if (num % 1000 !== 0) {
+                    words = convertHundreds(num % 1000) + thousands[i] + ' ' + words;
+                }
+                num = Math.floor(num / 1000);
+                i++;
+            }
+            
+            return words.trim();
+        }
+        
+        function convertHundreds(num) {
+            let str = '';
+            
+            if (num > 99) {
+                str += ones[Math.floor(num / 100)] + ' hundred ';
+                num %= 100;
+            }
+            
+            if (num > 0) {
+                if (num < 20) {
+                    str += ones[num];
+                } else {
+                    str += tens[Math.floor(num / 10)] + ' ';
+                    str += ones[num % 10];
+                }
+            }
+            
+            return str;
+        }
+        
+        return convertToWords(num);
+    }
+
+    function updateCreditAndTotal() {
+        let debit1 = parseFloat(document.getElementById('debit1').value) || 0;
+        let debit2 = parseFloat(document.getElementById('debit2').value) || 0;
+        let total = debit1 + debit2;
+        let totalFixed = total.toFixed(2);
+
+        document.getElementById('total_amount').value = totalFixed;
+        document.getElementById('credit2').value = totalFixed;
+
+        // Update the amount displayed dynamically
+        document.getElementById('amountDebited').textContent = `${totalFixed} /-  Amount Debited as per details given below / attached.`;
+        document.getElementById('dynamicAmount').textContent = `${totalFixed} /-`;
+        document.getElementById('amountDebited2').textContent = `${totalFixed} /-`;
+        document.getElementById('amountDebitedDisplay').textContent = `(${numberToWords(total)})/- Being Amount Debited`;
+    }
+
+    function confirmDelete(event) {
+        event.preventDefault(); // Prevent the default anchor action
+        
+        // Use SweetAlert for confirmation dialog
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to recover this item!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // User confirmed deletion, proceed with the deletion
+                var deleteLink = document.getElementById('deleteLink');
+                if (deleteLink) {
+                    window.location.href = deleteLink.href; // Navigate to the delete URL
+                }
+            }
+        });
+    }
+
+
+
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // Get all select elements with the class 'lefttext'
+        var selectElements = document.querySelectorAll('select.lefttext');
+    
+        // Add change event listener to each select element
+        selectElements.forEach(function(selectElement) {
+            selectElement.addEventListener('change', function() {
+                // Get the span element ID from data-span-id attribute
+                var spanId = this.getAttribute('data-span-id');
+                
+                // Get the selected option
+                var selectedOption = this.options[this.selectedIndex];
+                
+                // Get the corresponding head from the data attribute
+                var selectedHead = selectedOption.getAttribute('data-head');
+                
+                // Update the content of the corresponding span element
+                document.getElementById(spanId).innerText = selectedHead;
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const dateInput = document.getElementById('date');
+        const dateSpan = document.getElementById('dateSpan');
+    
+        // Update the span when the page loads with the initial value
+        dateSpan.textContent = dateInput.value;
+    
+        // Add event listener to update the span when the date input changes
+        dateInput.addEventListener('input', function() {
+            dateSpan.textContent = this.value;
+        });
+    });
+</script>
+
+{% endblock %}

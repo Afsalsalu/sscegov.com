@@ -1,0 +1,281 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupon Purchase Requests - SAMATWA Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --navy: #0a1628;
+            --gold: #d4a843;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --green: #16a34a;
+            --red: #dc2626;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 80px 24px 40px;
+        }
+
+        .page-header h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 24px;
+        }
+
+        /* Filter Card */
+        .filter-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            margin-bottom: 24px;
+        }
+
+        .filter-card form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .filter-card input,
+        .filter-card select {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-card input:focus,
+        .filter-card select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        }
+
+        .filter-card button {
+            background: var(--navy);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-card button:hover {
+            background: #0f1f38;
+        }
+
+        /* Table Card */
+        .table-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            table-layout: fixed;   /* Important for column widths */
+            min-width: 800px;
+        }
+
+        th {
+            background: var(--navy);
+            color: white;
+            padding: 14px 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: rgba(212, 168, 67, 0.08);
+        }
+
+        /* Column Widths */
+        th:nth-child(1), td:nth-child(1) { width: 100px; }   /* User ID */
+        th:nth-child(2), td:nth-child(2) { width: 180px; }   /* User */
+        th:nth-child(3), td:nth-child(3) { width: 110px; }   /* Quantity */
+        th:nth-child(4), td:nth-child(4) { width: 120px; }   /* Total */
+        th:nth-child(5), td:nth-child(5) { width: 130px; }   /* Status */
+        th:nth-child(6), td:nth-child(6) { width: 140px; }   /* Action */
+
+        /* Status Badges */
+        .status {
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: inline-block;
+        }
+
+        .pending {
+            background: #fef9c3;
+            color: #a16207;
+        }
+
+        .approved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .rejected {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* Action Button */
+        .btn-approve {
+            background: var(--green);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-approve:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 80px 16px 30px;
+            }
+            .filter-card form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            table {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+
+        <div class="page-header">
+            <h3>Coupon Purchase Requests 🎟</h3>
+        </div>
+
+        <div class="filter-card">
+            <form method="GET">
+                <input type="text" name="search" placeholder="Search User ID or Username"
+                       value="{{ request.GET.search }}">
+
+                <select name="action">
+                    <option value="">All Status</option>
+                    <option value="pending" {% if request.GET.action == "pending" %}selected{% endif %}>Pending</option>
+                    <option value="approved" {% if request.GET.action == "approved" %}selected{% endif %}>Approved</option>
+                    <option value="rejected" {% if request.GET.action == "rejected" %}selected{% endif %}>Rejected</option>
+                </select>
+
+                <input type="date" name="start_date" value="{{ request.GET.start_date }}">
+                <input type="date" name="end_date" value="{{ request.GET.end_date }}">
+
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>User</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                    <tr>
+                        <td>{{ req.user.id }}</td>
+                        <td>{{ req.user.username }}</td>
+                        <td>{{ req.quantity }}</td>
+                        <td>₹ {{ req.total_amount }}</td>
+
+                        <td>
+                            {% if req.status == 'pending' %}
+                                <span class="status pending">Pending</span>
+                            {% elif req.status == 'approved' %}
+                                <span class="status approved">Approved</span>
+                            {% else %}
+                                <span class="status rejected">Rejected</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if req.status == 'pending' %}
+                                <a href="{% url 'approve_coupon_psa' req.id %}" class="btn-approve">
+                                    Approve
+                                </a>
+                            {% elif req.status == 'approved' %}
+                                Approved
+                            {% else %}
+                                Rejected
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="padding: 40px; text-align: center;">
+                            No Requests Found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</body>
+</html>

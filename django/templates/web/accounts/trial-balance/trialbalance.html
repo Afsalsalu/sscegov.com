@@ -1,0 +1,159 @@
+{% extends "web/franchise/base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    html {
+        font-family: sans-serif;
+    }
+    h1 {
+        text-align: center;
+    }
+    table {
+        border-collapse: collapse;
+        border: 2px solid rgb(200,200,200);
+        letter-spacing: 1px;
+        font-size: 0.8rem;
+        margin: auto;
+    }
+    td, th {
+        border: 1px solid rgb(190,190,190);
+        padding: 7px 55px;
+    }
+    th {
+        background-color: rgb(235,235,235);
+    }
+    td {
+        text-align: center;
+        font-weight: 500;
+    }
+    tr:nth-child(even) td {
+        background-color: rgb(255, 255, 255);
+    }
+    tr:nth-child(odd) td {
+        background-color: rgb(255, 255, 255);
+    }
+    caption {
+        padding: 10px;
+    }
+    .bala {
+        font-size: 17px;
+        font-weight: bold;
+        text-align: center;
+        padding-top: 10px;
+        margin-left: 20%;
+    }
+    .ob {
+        font-weight: bold;
+        text-align: end;
+        margin-right: 8%;
+        font-size: 15px;
+    }
+    .amount-green {
+        color: green;
+        font-weight: bold;
+    }
+    .amount-red {
+        color: red;
+    }
+    .balancecd {
+        text-align: end;
+        font-weight: bold;
+    }
+    .left-align {
+        text-align: end;
+        font-weight: bold;
+    }
+    .print-button{
+        background: #007A9B ;
+        padding: 10px;
+        color: white;
+        border-radius: 5px;
+        position: fixed;
+        float: right;
+    }
+    .bxs-printer{
+        font-size: 18px !important;
+    }
+    @media print {
+        body {
+            width: 210mm;
+            height: 297mm;
+            margin: 0;
+            padding: 0;
+        }
+        table {
+            width: 100%;
+        }
+        .print-button {
+            display: none;
+        }
+    }
+</style>
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+<div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+    <h4 class="py-5"></h4>
+    <button onclick="window.print()" class="print-button"><i class='bx bxs-printer'></i> Print</button>
+
+    <h1 style="text-transform: uppercase; font-size: 30px;">{{ company_name }}</h1>
+    <div class="date-titel" style="display: flex; justify-content: center; align-items: center; gap: 0px; flex-direction: column;">
+        <h6 style="font-size: 12px;">Tell : {{ company_phone }}</h6>
+        <h6 style="font-size: 12px;">Address : {{ company_address }}</h6>
+        <h6 style="font-size: 12px;">Gst : {{ company_gst }}</h6>
+    </div>
+    <!-- <br> -->
+ 
+
+    <h4 class="py-1"></h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Group</th>
+                <th>Account Head</th>
+                <th></th>
+                <th>Debit</th>
+                <th>Credit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% regroup entries by group as grouped_entries %}
+            {% for group in grouped_entries %}
+                <tr>
+                    <td style="background-color: rgb(245,245,245);"><strong>{{ group.grouper }}</strong></td>
+                    <td style="background-color: rgb(245,245,245);">{{ group.list.0.head }}</td>
+                    <td style="background-color: rgb(245,245,245);">{{ group.list.0.current_balance|floatformat:2 }}</td>
+                    <td style="background-color: rgb(245,245,245);">{{ group.list.0.debit|floatformat:2 }}</td>
+                    <td style="background-color: rgb(245,245,245);">{{ group.list.0.credit|floatformat:2 }}</td>
+                </tr>
+                {% for entry in group.list|slice:"1:" %}
+                    <tr>
+                        <td></td>
+                        <td>{{ entry.head }}</td>
+                        <td>{{ entry.current_balance|floatformat:2 }}</td>
+                        <td>{{ entry.debit|floatformat:2 }}</td>
+                        <td>{{ entry.credit|floatformat:2 }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"><strong>Total</strong></td>
+                <td style="font-weight:bold;">{{ total_group_debit|floatformat:2 }}</td>
+                <td style="font-weight:bold;">{{ total_group_credit|floatformat:2 }}</td>
+            </tr>
+        </tfoot>
+        
+        
+    </table>
+    
+    
+    
+    
+    
+    
+    
+    
+    <h4 class="py-3"></h4>
+</div>
+{% endblock %}

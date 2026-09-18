@@ -1,0 +1,97 @@
+{% extends "web/franchise/base.html" %}{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'web/css/receipt.css' %}">
+<link rel="stylesheet" href="{% static 'web/js/search.js' %}">
+<link rel="stylesheet" href="{% static 'web/css/style.css' %}" />
+
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+  <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+
+    <h4 class="py-5"></h4>
+    <div class="center">
+      <h2>Receipt</h2>
+      <h4 class="py-5"></h4>
+
+      <form action="" class="mb-5">
+        <div class="firstdiv">
+            <div class="series">
+                <label for="Series">Series</label>
+                <input type="text" value="{{ voucher.Series }}" style="width: 40%;" readonly>
+            </div>
+            
+            <div class="firstdivright">
+                <label for="Headcode">Book Head</label>
+                <input type="text" value="" style="width: 60%;" readonly>
+            </div>
+        </div>
+        <br>
+        <div class="secondediv grid-container">
+            <div class="grid-item">
+                <label for="VoucherNo">Payment Voucher No</label>
+                <input type="text" value="{{ voucher.VoucherNo }}" style="width: 40%;" readonly>
+            </div>
+            <div class="date grid-item">
+                <label for="Vdate">Date</label>
+                <input type="text" value="{{ voucher.Vdate }}" style="width:50%;" id="date" readonly>
+            </div>
+            <div class="secndedivright grid-item">
+                <label for="Headcode">Book Code</label>
+                <input type="text" value="{{ voucher.Accountcode }}" id="account_code" readonly>
+            </div>
+        </div>
+        <br>  
+        <div class="grid-item" style="justify-content: end;">
+            <label for="current_balance">Current Balance</label>
+            <input type="text" name="current_balance" id="current_balance" style="width: 16.7%;" readonly>
+        </div>
+        <br>
+        <table id="dynamicTable" style="background-color: white !important;">
+            <thead>
+                <tr>
+                    <th>Sl No</th>
+                    <th>Head</th>
+                    <th>Narration</th>
+                    <th>Cash/RTGS.</th>
+                    <th>Payment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="py-1">
+                    <td>1</td>
+                    <td><input type="text" class="newinput" value="{{ voucher.Headcode }}"></td>
+                    <td><input type="text" class="newinput" value="{{ voucher.Narration }}"></td>
+                    <td style="width:13%;">
+                       <input type="text" class="newinput" value="{{ voucher.VType }}">
+                    </td>
+                    <td style="width:10%;"><input type="text" name="payment" step="0.01" onkeydown="checkEnter(event)" class="newinput" readonly ></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <br><br>
+        <div class="lastdiv">
+            <div class="series">
+            </div>
+            <div class="lastdivright">
+                <label for="VAmount">Total Amount</label>
+                <input type="text" value="{{ voucher.VAmount }}" readonly>
+            </div>
+        </div>
+        <br> 
+        
+        <br>
+        <div class="box btns" style="display: flex; justify-content: center;">
+            <a href="{% url 'web:voucher_table_list' %}"><button type="button" class="addbutton"><i class='bx bx-exit'></i> Back</button></a>
+            <button type="button" class="addbutton"><i class='bx bxs-edit'></i> Edit</button>
+            <button type="button" class="exitbutton"><i class='bx bx-trash'></i> Delete</button>
+        </div>
+      </form>
+      
+      
+  </div>
+</div>
+<!-- container-fluid -->
+</div>
+
+
+{% endblock %}

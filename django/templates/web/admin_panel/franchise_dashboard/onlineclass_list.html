@@ -1,0 +1,142 @@
+{% extends "web/admin_panel/base.html" %}
+
+{% load static %}
+
+{% block content %}
+<style>
+  .online-class-management {
+    --oc-ink: #172033;
+    --oc-muted: #6b7280;
+    --oc-line: #e8edf5;
+    --oc-brand: #4f46e5;
+    --oc-brand-soft: #eef2ff;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 2rem clamp(1rem, 2.5vw, 2.5rem) 3rem;
+  }
+  .online-class-heading { align-items: flex-end; display: flex; gap: 1rem; justify-content: space-between; margin-bottom: 1.5rem; }
+  .online-class-eyebrow { color: var(--oc-brand); font-size: .72rem; font-weight: 800; letter-spacing: .12em; margin-bottom: .45rem; text-transform: uppercase; }
+  .online-class-heading h1 { color: var(--oc-ink); font-size: clamp(1.45rem, 2vw, 2rem); font-weight: 750; letter-spacing: -.03em; margin: 0; }
+  .online-class-heading p { color: var(--oc-muted); font-size: .92rem; margin: .45rem 0 0; }
+  .online-class-add { align-items: center; background: linear-gradient(135deg, #5b5cf0, #4338ca); border-radius: .75rem; box-shadow: 0 10px 24px rgba(79, 70, 229, .2); color: #fff; display: inline-flex; flex-shrink: 0; font-size: .875rem; font-weight: 700; gap: .5rem; padding: .72rem 1rem; transition: transform .2s ease, box-shadow .2s ease; }
+  .online-class-add:hover { box-shadow: 0 13px 28px rgba(79, 70, 229, .3); color: #fff; transform: translateY(-1px); }
+  .online-class-toolbar { align-items: center; background: #fff; border: 1px solid var(--oc-line); border-radius: 1rem; box-shadow: 0 8px 30px rgba(25, 35, 55, .05); display: flex; gap: .75rem; justify-content: space-between; margin-bottom: 1.5rem; padding: .75rem; }
+  .online-class-search { flex: 1 1 24rem; position: relative; }
+  .online-class-search svg { color: #94a3b8; left: .9rem; position: absolute; top: 50%; transform: translateY(-50%); }
+  .online-class-search input { background: #f8fafc; border: 1px solid transparent; border-radius: .7rem; color: var(--oc-ink); font-size: .9rem; outline: none; padding: .7rem .9rem .7rem 2.65rem; width: 100%; }
+  .online-class-search input:focus { background: #fff; border-color: #a5b4fc; box-shadow: 0 0 0 3px rgba(99, 102, 241, .1); }
+  .online-class-clear { color: var(--oc-muted); font-size: .82rem; font-weight: 700; padding: .6rem .75rem; white-space: nowrap; }
+  .online-class-clear:hover { color: var(--oc-brand); }
+  .online-class-results { color: var(--oc-muted); font-size: .82rem; white-space: nowrap; }
+  .online-class-grid { display: grid; gap: 1.25rem; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .online-class-card { background: #fff; border: 1px solid var(--oc-line); border-radius: 1rem; box-shadow: 0 8px 25px rgba(25, 35, 55, .05); display: flex; flex-direction: column; min-width: 0; overflow: hidden; transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+  .online-class-card:hover { border-color: #c7d2fe; box-shadow: 0 16px 35px rgba(25, 35, 55, .1); transform: translateY(-2px); }
+  .online-class-media { aspect-ratio: 16 / 9; background: #e8edf5; overflow: hidden; position: relative; }
+  .online-class-media img { display: block; height: 100%; object-fit: cover; width: 100%; }
+  .online-class-placeholder { align-items: center; background: radial-gradient(circle at 80% 15%, rgba(129, 140, 248, .45), transparent 34%), linear-gradient(135deg, #111827, #3730a3); color: #fff; display: flex; flex-direction: column; gap: .4rem; height: 100%; justify-content: center; }
+  .online-class-placeholder-icon { align-items: center; background: rgba(255, 255, 255, .16); border: 1px solid rgba(255, 255, 255, .25); border-radius: 999px; display: flex; height: 3rem; justify-content: center; width: 3rem; }
+  .online-class-placeholder small { color: rgba(255,255,255,.72); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
+  .online-class-body { display: flex; flex: 1; flex-direction: column; padding: 1rem; }
+  .online-class-title { color: var(--oc-ink); font-size: 1rem; font-weight: 750; line-height: 1.35; margin: 0 0 .5rem; overflow-wrap: anywhere; }
+  .online-class-description { color: var(--oc-muted); font-size: .82rem; line-height: 1.55; margin: 0 0 .85rem; }
+  .online-class-meta { align-items: center; display: flex; flex-wrap: wrap; gap: .45rem; margin-top: auto; }
+  .online-class-badge { border-radius: 999px; font-size: .68rem; font-weight: 750; padding: .28rem .55rem; }
+  .online-class-badge-uploaded { background: #ecfdf5; color: #047857; }
+  .online-class-badge-link { background: #eff6ff; color: #1d4ed8; }
+  .online-class-badge-unavailable { background: #fff7ed; color: #c2410c; }
+  .online-class-date { color: #94a3b8; font-size: .72rem; }
+  .online-class-actions { border-top: 1px solid #f1f5f9; display: flex; gap: .6rem; padding: .8rem 1rem 1rem; }
+  .online-class-action { align-items: center; border: 1px solid var(--oc-line); border-radius: .6rem; display: inline-flex; flex: 1; font-size: .78rem; font-weight: 750; gap: .35rem; justify-content: center; padding: .55rem .65rem; transition: background .2s ease, border-color .2s ease, color .2s ease; }
+  .online-class-edit { color: var(--oc-brand); }
+  .online-class-edit:hover { background: var(--oc-brand-soft); border-color: #c7d2fe; color: #3730a3; }
+  .online-class-delete { color: #dc2626; }
+  .online-class-delete:hover { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+  .online-class-empty { background: #fff; border: 1px dashed #cbd5e1; border-radius: 1rem; color: var(--oc-muted); padding: 3.5rem 1.5rem; text-align: center; }
+  .online-class-empty strong { color: var(--oc-ink); display: block; font-size: 1rem; margin-bottom: .35rem; }
+  @media (max-width: 1200px) { .online-class-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 850px) { .online-class-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 600px) {
+    .online-class-management { padding: 1.25rem .9rem 2rem; }
+    .online-class-heading { align-items: flex-start; flex-direction: column; }
+    .online-class-add { justify-content: center; width: 100%; }
+    .online-class-toolbar { align-items: stretch; flex-direction: column; }
+    .online-class-results { padding: 0 .25rem; }
+    .online-class-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+  <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:md:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)]">
+    <main class="online-class-management">
+      <div class="online-class-heading">
+        <div>
+          <div class="online-class-eyebrow">Learning library</div>
+          <h1>Online Classes</h1>
+          <p>Manage uploaded lessons and external class videos from one place.</p>
+        </div>
+        <a class="online-class-add" href="{% url 'web:add_online_class' %}">
+          <i data-lucide="plus" class="size-4"></i>
+          <span>Add Class</span>
+        </a>
+      </div>
+
+      <form method="get" class="online-class-toolbar" role="search">
+        <label class="online-class-search" for="online-class-search">
+          <i data-lucide="search" class="size-4"></i>
+          <input id="online-class-search" type="search" name="q" value="{{ search_query }}" placeholder="Search classes by title" autocomplete="off">
+        </label>
+        {% if search_query %}<a class="online-class-clear" href="{% url 'web:onlineclass_list' %}">Clear search</a>{% endif %}
+        <span class="online-class-results">{{ onlineclass|length }} class{{ onlineclass|length|pluralize }}</span>
+      </form>
+
+      {% if onlineclass %}
+        <div class="online-class-grid">
+          {% for c in onlineclass %}
+            <article class="online-class-card">
+              <div class="online-class-media">
+                {% if c.admin_thumbnail_url %}
+                  <img src="{{ c.admin_thumbnail_url }}" alt="Thumbnail for {{ c.title }}" loading="lazy">
+                {% else %}
+                  <div class="online-class-placeholder" aria-label="No thumbnail available">
+                    <span class="online-class-placeholder-icon"><i data-lucide="play" class="size-5 fill-current"></i></span>
+                    <small>Video class</small>
+                    <span class="text-xs text-white/70">No thumbnail</span>
+                  </div>
+                {% endif %}
+              </div>
+              <div class="online-class-body">
+                <h2 class="online-class-title">{{ c.title }}</h2>
+                <p class="online-class-description">{{ c.description|default:"No description added."|truncatechars:150 }}</p>
+                <div class="online-class-meta">
+                  {% if c.video_file %}
+                    <span class="online-class-badge online-class-badge-uploaded">Uploaded video</span>
+                  {% elif c.class_video_link %}
+                    <span class="online-class-badge online-class-badge-link">External link</span>
+                  {% else %}
+                    <span class="online-class-badge online-class-badge-unavailable">Video unavailable</span>
+                  {% endif %}
+                  {% if c.created_at %}<span class="online-class-date">{{ c.created_at|date:"M j, Y" }}</span>{% endif %}
+                </div>
+              </div>
+              <div class="online-class-actions">
+                <a class="online-class-action online-class-edit" href="{% url 'web:edit_onlineclass' c.id %}">
+                  <i data-lucide="pencil" class="size-3.5"></i><span>Edit</span>
+                </a>
+                <a class="online-class-action online-class-delete" href="{% url 'web:delete_onlineclass' c.id %}" onclick="return confirm('Delete this online class?');">
+                  <i data-lucide="trash-2" class="size-3.5"></i><span>Delete</span>
+                </a>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="online-class-empty">
+          <i data-lucide="video-off" class="mx-auto mb-3 size-8 text-slate-400"></i>
+          <strong>{% if search_query %}No classes match your search{% else %}No online classes yet{% endif %}</strong>
+          <span>{% if search_query %}Try a different title or description.{% else %}Add your first class to begin building the library.{% endif %}</span>
+        </div>
+      {% endif %}
+    </main>
+  </div>
+</div>
+{% endblock %}

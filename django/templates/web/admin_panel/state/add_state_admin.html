@@ -1,0 +1,179 @@
+{% extends "web/admin_panel/base.html" %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'web/css/form.css' %}">
+
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">        
+<div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+    <h4 class="py-5"></h4>
+    <div class="card" style="background-color: antiquewhite; border: 1px solid #333;">
+        <div class="card-body">
+            <h4 class="py-5" style="text-align:center; color:#007A9B; font-size:30px;">State User</h4>
+            <form method="post" enctype="multipart/form-data" id="add-centre-form">
+              {% csrf_token %}
+              
+              <!-- Username and Password -->
+              <div class="form-row">
+                  <div class="form-group{% if form.username.errors %} has-error{% endif %}">
+                      {{ form.username.label_tag }}
+                      {{ form.username }}
+                      {% if form.username.errors %}
+                          <span class="error">{{ form.username.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+                  <div class="form-group{% if form.password.errors %} has-error{% endif %}">
+                      {{ form.password.label_tag }}
+                      {{ form.password }}
+                      {% if form.password.errors %}
+                          <span class="error">{{ form.password.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+              </div>
+
+              <!-- Center Owner Name and Mobile -->
+              <div class="form-row">
+                <div class="form-group{% if form.photo.errors %} has-error{% endif %}">
+                  {{ form.photo.label_tag }}
+                  {{ form.photo }}
+                  {% if form.photo.errors %}
+                      <span class="error">{{ form.photo.errors|striptags }}</span>
+                  {% endif %}
+              </div>
+                  <div class="form-group{% if form.mobile.errors %} has-error{% endif %}">
+                      {{ form.mobile.label_tag }}
+                      {{ form.mobile }}
+                      {% if form.mobile.errors %}
+                          <span class="error">{{ form.mobile.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+              </div>
+              
+              <!-- Photo and Aadhaar Uploading -->
+              <div class="form-row">
+
+                  <div class="form-group{% if form.aadhaar_uploading.errors %} has-error{% endif %}">
+                      {{ form.aadhaar_uploading.label_tag }}
+                      {{ form.aadhaar_uploading }}
+                      {% if form.aadhaar_uploading.errors %}
+                          <span class="error">{{ form.aadhaar_uploading.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+                  <div class="form-group{% if form.aadhaar_number.errors %} has-error{% endif %}">
+                    {{ form.aadhaar_number.label_tag }}
+                    {{ form.aadhaar_number }}
+                    {% if form.aadhaar_number.errors %}
+                        <span class="error">{{ form.aadhaar_number.errors|striptags }}</span>
+                    {% endif %}
+                </div>
+              </div>
+              
+              <!-- Aadhaar Number and Pan Card Uploading -->
+              <div class="form-row">
+
+                  <div class="form-group{% if form.pan_card_uploading.errors %} has-error{% endif %}">
+                      {{ form.pan_card_uploading.label_tag }}
+                      {{ form.pan_card_uploading }}
+                      {% if form.pan_card_uploading.errors %}
+                          <span class="error">{{ form.pan_card_uploading.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+                  <div class="form-group{% if form.pan_card_number.errors %} has-error{% endif %}">
+                    {{ form.pan_card_number.label_tag }}
+                    {{ form.pan_card_number }}
+                    {% if form.pan_card_number.errors %}
+                        <span class="error">{{ form.pan_card_number.errors|striptags }}</span>
+                    {% endif %}
+                </div>
+              </div>
+              
+              <!-- Pan Card Number and Sign Uploading -->
+              <div class="form-row">
+                  <div class="form-group{% if form.sign_uploading.errors %} has-error{% endif %}">
+                      {{ form.sign_uploading.label_tag }}
+                      {{ form.sign_uploading }}
+                      {% if form.sign_uploading.errors %}
+                          <span class="error">{{ form.sign_uploading.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+                  <div class="form-group{% if form.email.errors %} has-error{% endif %}">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <span class="error">{{ form.email.errors|striptags }}</span>
+                    {% endif %}
+                </div>
+              </div>
+              
+
+              <!-- Centre Phone Number and State -->
+              <div class="form-row">
+                  <div class="form-group{% if form.state.errors %} has-error{% endif %}">
+                      {{ form.state.label_tag }}
+                      {{ form.state }}
+                      {% if form.state.errors %}
+                          <span class="error">{{ form.state.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+                  <div class="form-group{% if form.District.errors %} has-error{% endif %}">
+                    {{ form.District.label_tag }}
+                    {{ form.District }}
+                    {% if form.District.errors %}
+                        <span class="error">{{ form.District.errors|striptags }}</span>
+                    {% endif %}
+                </div>
+              </div>
+
+              <!-- District and Taluk -->
+              <div class="form-row">
+                  <div class="form-group{% if form.taluk.errors %} has-error{% endif %}">
+                      {{ form.taluk.label_tag }}
+                      {{ form.taluk }}
+                      {% if form.taluk.errors %}
+                          <span class="error">{{ form.taluk.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+                  <div class="form-group{% if form.pin_code.errors %} has-error{% endif %}">
+                    {{ form.pin_code.label_tag }}
+                    {{ form.pin_code }}
+                    {% if form.pin_code.errors %}
+                        <span class="error">{{ form.pin_code.errors|striptags }}</span>
+                    {% endif %}
+                </div>
+              </div>
+
+              <!-- Pin Code and Address -->
+              <div class="form-row">
+
+                  <div class="form-group{% if form.address.errors %} has-error{% endif %}">
+                      {{ form.address.label_tag }}
+                      {{ form.address }}
+                      {% if form.address.errors %}
+                          <span class="error">{{ form.address.errors|striptags }}</span>
+                      {% endif %}
+                  </div>
+              </div>
+
+              <div class="buttons">
+                <button type="submit" class="buttonF"><i class='bx bx-plus-medical'></i> Submit</button>
+                <a href="{% url 'web:admin_state_list' %}"><button type="button" class="buttonN"><i class='bx bx-arrow-back'></i> Cancel</button></a>
+                <a href=""><button type="button" class="buttonN"><i class='bx bx-refresh'></i> Clear Form</button></a>
+              </div>
+          </form>
+        </div>
+    </div>
+</div>
+
+</div>
+{% if messages %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+  {% for message in messages %}
+  Swal.fire({
+    icon: "{% if 'success' in message.tags %}success{% elif 'error' in message.tags %}error{% else %}info{% endif %}",
+    title: "{{ message.message }}",
+  });
+  {% endfor %}
+</script>
+{% endif %}
+{% endblock %}

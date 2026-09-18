@@ -1,0 +1,46 @@
+{% extends "web/admin_panel/base.html" %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'web/css/form.css' %}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">        
+    <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+    
+    <div class="container mt-5">
+        <a href="{% url 'web:addstate_add' %}">
+            <button
+              data-modal-target="addUserModal"
+              type="button"
+              class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20 float-right"
+            >
+              <i data-lucide="plus" class="inline-block size-4"></i>
+              <span class="align-middle">Add State</span>
+            </button>
+          </a>
+          
+        <h2 class="mb-4">List of States</h2>
+        
+        <ul class="list-group">
+            {% for state in states %}
+                <li class="list-group-item" style="background-color: #007a9b; height: 5vh; margin-bottom: 4px;">
+                    <a style="color: white; float: left;  margin-top: 2px;" class="btn btn-sm btn-primary ml-2">{{ state.state_name }}</a>
+                    <a style="color: white; float: right; background-color: #ff0000; margin-top: 2px; margin-right: 10px;" href="{% url 'web:addstate_delete' state.pk %}" class="btn btn-sm btn-danger ml-2 delete-state-btn">Delete</a>
+                    <a style="color: white; float: right; background-color: #00b2c1; margin-top: 2px;" href="{% url 'web:addstate_update' state.pk %}" class="btn btn-sm btn-primary ml-2">Edit</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+</div>
+</div>
+
+<!-- SweetAlert2 Script -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'web/js/delete_state.js' %}"></script>
+<script src="{% static 'web/js/state-list.js' %}"></script>
+
+{% endblock %}

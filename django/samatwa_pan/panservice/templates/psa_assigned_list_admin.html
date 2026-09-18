@@ -1,0 +1,316 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSA Assigned List</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --navy:#0a1628;
+    --bg:skyblue;
+    --card:#ffffff;
+    --border:#e2e8f0;
+    --text:#1a2a3a;
+}
+
+body{
+    font-family:'Sora',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+.main-content{ padding:32px 36px; }
+
+.page-header{ margin-bottom:24px; }
+
+.page-header h3{
+    font-size:20px;
+    font-weight:700;
+    color:var(--navy);
+}
+
+.section-title{
+    margin:30px 0 14px;
+    font-weight:600;
+    font-size:16px;
+}
+
+.table-card{
+    background:var(--card);
+    border-radius:16px;
+    border:1.5px solid var(--border);
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+    min-width:1180px;
+}
+
+thead{
+    background:var(--navy);
+    color:white;
+}
+
+th,td{
+    padding:14px;
+    text-align:center;
+    border-bottom:1px solid var(--border);
+}
+
+tbody tr:hover{ background:rgba(0,0,0,0.03); }
+
+.badge{
+    padding:4px 10px;
+    border-radius:6px;
+    font-size:12px;
+    font-weight:600;
+    display:inline-block;
+}
+
+.badge-info{ background:#e0f2fe; color:#0369a1; }
+.badge-success{ background:#dcfce7; color:#166534; }
+.badge-danger{ background:#fee2e2; color:#991b1b; }
+.badge-muted{ background:#e2e8f0; color:#334155; }
+
+.psa-pass{ font-family:monospace; }
+
+.table-card .btn,
+.modal .btn {
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.btn-primary { background:#2563eb; color:#ffffff; }
+.btn-success { background:#16a34a; color:#ffffff; }
+.btn-light { background:#e2e8f0; color:#0f172a; }
+
+.messages { margin-bottom:14px; }
+.message {
+    padding:10px 12px;
+    border-radius:6px;
+    margin-bottom:8px;
+    background:#e0f2fe;
+    color:#075985;
+    font-size:13px;
+}
+
+@media (max-width:768px){
+    .main-content{ padding:70px 16px; }
+}
+</style>
+</head>
+
+<body>
+
+{% include 'partials/admin_topbar.html' %}
+
+<div class="main-content">
+
+    <div class="page-header">
+        <h3>PSA Assigned List</h3>
+    </div>
+
+    <div class="section-title">Pending PSA Work</div>
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="table-card">
+        <form method="GET" style="padding:15px;">
+            <input type="text" name="q" placeholder="Search user..."
+                value="{{ query }}"
+                style="padding:6px;border:1px solid #ccc;border-radius:6px;">
+            <button class="btn btn-primary">Search</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>User</th>
+                    <th>PSA Username</th>
+                    <th>Password</th>
+                    <th>Balance</th>
+                    <th>PSA Status</th>
+                    <th>Submission ID</th>
+                    <th>Deduction</th>
+                    <th>Request</th>
+                    <th>Expiry</th>
+                    <th>Password Action</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for req in requests %}
+                <tr>
+                    <td>{{ req.user.id }}</td>
+                    <td>{{ req.user.username }}</td>
+                    <td>{{ req.psa_username }}</td>
+                    <td class="psa-pass">{{ req.psa_password }}</td>
+                    <td>{% if req.psa_balance %}Rs. {{ req.psa_balance }}{% else %}-{% endif %}</td>
+                    <td>
+                        {% if req.psa_is_expired %}
+                            <span class="badge badge-danger" id="psa-status-{{ req.id }}">Expired</span>
+                        {% else %}
+                            <span class="badge badge-info" id="psa-status-{{ req.id }}">{{ req.get_psa_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ req.submission_id|default:"-" }}</td>
+                    <td>
+                        {% if req.amount_deducted %}
+                            <span class="badge badge-success">Deducted</span>
+                        {% else %}
+                            <span class="badge badge-muted">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if req.request_again %}
+                            <span class="badge badge-danger">Requested Again</span>
+                        {% else %}
+                            <span class="badge badge-success">No Request</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if req.approved_at %}
+                            {{ req.approved_at|date:"d-m-Y H:i" }}<br>
+                            {% if req.psa_status == 'issued' %}
+                                {% with expiry=req.approved_at|date:"U"|add:"1800" %}
+                                    <span class="countdown" data-expiry="{{ expiry }}" id="timer-{{ req.id }}"></span>
+                                {% endwith %}
+                            {% else %}
+                                <span class="badge badge-success">Stopped</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button type="button"
+                            class="btn btn-primary edit-password-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#passwordModal"
+                            data-psa-id="{{ req.psa_username }}"
+                            data-current-password="{{ req.psa_password|default:'' }}">
+                            Edit Password
+                        </button>
+                    </td>
+                    <td>
+                        {% if req.request_again %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="req_id" value="{{ req.id }}">
+                                <button class="btn btn-success">Accept</button>
+                            </form>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="12">No data found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST" action="{% url 'update_psa_assigned_password' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordModalLabel">Edit PSA Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="modalPsaLoginId" class="form-label">PSA Login ID</label>
+                        <input type="text" class="form-control" id="modalPsaLoginId" name="psa_login_id" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalCurrentPassword" class="form-label">Current Password</label>
+                        <input type="text" class="form-control" id="modalCurrentPassword" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modalNewPassword" class="form-label">New Password</label>
+                        <input type="text" class="form-control" id="modalNewPassword" name="new_password" minlength="4" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function startCountdown() {
+    const timers = document.querySelectorAll('.countdown');
+
+    timers.forEach(timer => {
+        const expiry = parseInt(timer.getAttribute('data-expiry')) * 1000;
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const distance = expiry - now;
+
+            if (distance <= 0) {
+                timer.innerHTML = "Expired";
+                timer.style.color = "red";
+                const id = timer.id.split('-')[1];
+                const status = document.getElementById('psa-status-' + id);
+                if (status) {
+                    status.innerHTML = "Expired";
+                    status.classList.remove('badge-info');
+                    status.classList.add('badge-danger');
+                }
+                return;
+            }
+
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            timer.innerHTML = minutes + "m " + seconds + "s";
+        }
+
+        updateTimer();
+        setInterval(updateTimer, 1000);
+    });
+}
+
+startCountdown();
+
+document.querySelectorAll('.edit-password-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        document.getElementById('modalPsaLoginId').value = this.dataset.psaId || '';
+        document.getElementById('modalCurrentPassword').value = this.dataset.currentPassword || '';
+        document.getElementById('modalNewPassword').value = '';
+    });
+});
+</script>
+</body>
+</html>

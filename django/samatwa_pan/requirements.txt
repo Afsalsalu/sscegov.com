@@ -1,0 +1,10 @@
+asgiref==3.11.1
+colorama==0.4.6
+django-phonenumber-field==8.4.0
+phonenumbers==9.0.23
+pillow==12.1.1
+PyMySQL==1.1.2
+qrcode==8.2
+sqlparse==0.5.5
+typing_extensions==4.15.0
+tzdata==2025.3

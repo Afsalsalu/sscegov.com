@@ -1,0 +1,670 @@
+{% load static %}
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title> SSC Pan Service </title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    </head>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --accent: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: #f8fafc;
+        }
+
+        /* ================= TOP CONTACT BAR ================= */
+        .top-bar {
+            background: #0f172a;
+            color: white;
+            padding: 12px 5%;
+            font-size: 14px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .top-bar a:hover {
+            color: var(--accent);
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 52px;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 16px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #1e2937;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .login-btn {
+            background: #c1c5d1;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #9aaee6;
+            transform: translateY(-2px);
+        }
+
+        /* Hamburger Menu */
+        .menu-toggle {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        /* ================= TERMS SECTION ================= */
+        .terms-section {
+            margin-top: 120px;
+            padding: 100px 5%;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .terms-section h2 {
+            font-size: 38px;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .terms-card {
+            background: white;
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .terms-card h4 {
+            font-size: 20px;
+            color: var(--primary);
+            margin: 35px 0 15px 0;
+        }
+
+        .terms-card p,
+        .terms-card li {
+            font-size: 17px;
+            color: #444;
+            margin-bottom: 18px;
+            line-height: 1.75;
+        }
+
+        .terms-card ul {
+            padding-left: 22px;
+        }
+
+        .terms-card ul li {
+            margin-bottom: 14px;
+        }
+
+        /* ================= FOOTER ================= */
+        .footer {
+            background: #0f172a;
+            color: #cbd5e1;
+            padding: 80px 5% 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-col h3 {
+            color: white;
+            margin-bottom: 22px;
+        }
+
+        .footer-col a {
+            color: #94a3b8;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .footer-col a:hover {
+            color: white;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 26px;
+            cursor: pointer;
+            z-index: 2000;
+        }
+
+        @media (max-width: 768px) {
+
+            .top-bar {
+                position: fixed;
+                top: 0;
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px 20px;
+                gap: 6px;
+                font-size: 13px;
+            }
+
+            .navbar {
+                position: fixed;
+                top: 80px;
+                width: 100%;
+                padding: 14px 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding-left: 20px;
+                width: 100%;
+                border-bottom: 1px solid #eee;
+            }
+
+            .login-btn {
+                margin: 10px 20px;
+                padding: 10px;
+                text-align: center;
+                border-radius: 30px;
+            }
+
+            .hero {
+                margin-top: 160px;
+                height: auto;
+                padding: 80px 20px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .service-grid,
+            .role-grid {
+                grid-template-columns: 1fr;
+            }
+
+            section {
+                padding: 60px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .hero h1 {
+                font-size: 26px;
+            }
+
+            .cta-button {
+                width: 100%;
+            }
+        }
+    </style>
+    <body>
+        <div class="top-bar">
+            <a href="https://www.google.co.in/maps/dir//4VF2%2B2MP+Amrita+Buildings,+Kalanjoor" target="_blank">
+                <i class="fa-solid fa-location-dot"></i> AMRUTHA BUILDING, KALANJOOR
+            </a>
+            <a href="mailto:SSC.SAMATWASERVICECENTER@GMAIL.COM">
+                <i class="fa-solid fa-envelope"></i> SSC.SAMATWASERVICECENTER@GMAIL.COM
+            </a>
+            <a href="tel:8547928316">
+                <i class="fa-solid fa-phone"></i> +91 85479 28316
+            </a>
+        </div>
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fa-solid fa-shield-halved"></i> SAMATWA SSC
+            </div>
+
+            <div class="menu-toggle" id="menu-toggle">☰</div>
+
+            <div class="nav-links" id="nav-links">
+                <a href="{% url 'home' %}">Home</a>
+                <a href="{% url 'home' %}#services">Services</a>
+                <a href="{% url 'home' %}#roles">Pricing</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'login' %}" class="login-btn">Login</a>
+            </div>
+        </nav>
+        <div class="terms-section">
+            <h2> Terms & Conditions </h2>
+            <ul class="terms-card">
+                <li>
+                    This document is an electronic record in terms of Information Technology Act, 
+                    2000 and rules there under as applicable and the amended provisions pertaining to electronic records in various statutes as amended by the Information Technology Act, 2000. 
+                    This electronic record is generated by a computer system and does not require any physical or digital signatures.
+                </li>
+                <li>
+                    This document is published in accordance with the provisions of Rule 3 (1) of the Information Technology (Intermediaries guidelines) Rules, 2011 that require publishing the rules and regulations, 
+                    privacy policy and Terms of Use for access or usage of Spencers.in website through computer, tab or mobile or through any electronic aid that support the Website .
+                </li>
+                <li>
+                    Your use of the Website and services and tools are governed by the following terms and conditions ("Terms of Use") as applicable including the policies which are incorporated, amended from time to time. 
+                    By use of the Website You shall be contracting with SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED and all such terms and conditions including the policies constitute your binding obligations, with SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED.
+                </li>
+                <li>
+                    For the purpose of these Terms of Use, wherever the context so requires "You" or "User" shall mean any natural or legal person who has agreed to become a buyer thorugh the Website by providing Registration Data 
+                    while registering on the Website as Registered User using the computer systems/tab or mobile application. SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED allows the User to surf the Website or making purchases after registering on the Website. The term "We", "Us", "Our" shall mean SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED.
+                </li>
+                <li>
+                    When You use any of the services provided by us through the Website, including but not limited to, (e.g. Product Reviews, Seller Reviews), You will be subject to the rules, guidelines, policies, amendments, terms, 
+                    and conditions applicable to such service, and they shall be deemed to be incorporated into this Terms of Use and shall be considered as part and parcel of this Terms of Use. We reserve the right, at Our sole discretion, to change, modify, 
+                    add or remove any portions of these Terms of Use, at any time without any prior notice to You. It is Your responsibility to review these Terms of Use periodically for updates / changes. Your continued use of the Website following the posting of changes will mean that You accept and agree to the revisions. 
+                    As long as You comply with these Terms of Use, We grant You a personal, non-exclusive, non-transferable, limited privilege to enter and use the Website.
+                </li>
+                <li>
+                    <ul>
+                        <h4> Services overview </h4>
+                        <li>
+                            As part of the registration process on the Website, SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED may collect the following details personally identifiable information about you: Name including first and last name, alternate email address, mobile phone number and contact details, present and permanent address, 
+                            Postal code, Demographic profile (like your age, gender, occupation, education, address etc.) and information about the pages on the site you visit/access, the links you click on the site, the number of times you access the page and any such browsing information.
+                        </li>
+                        <li>
+                            Eligibility Services of the Site would be available to only select geographies in India. Persons who are "incompetent to contract" within the meaning of the Indian Contract Act, 1872 are not eligible to use the Site. If you are age is less than 18 years they you should not register as member.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> License & Site access </h4>
+                        <li>
+                            SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED grants you a limited sub-license to access and make personal use of this Website and not to download (other than page caching) or modify it, or any portion of it, except with express written consent of SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED. 
+                            The Website and its source code is exclusive property of SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED. This license does not include any resale or commercial use of this site or its contents; any collection and use of any product listings, descriptions, or prices; any derivative use of this site or its contents; 
+                            any downloading or copying of account information for the benefit of another merchant; or any use of data mining, robots, or similar data gathering and extraction tools. This site or any portion of this site may not be reproduced, duplicated, copied, sold, resold, visited, or otherwise exploited for any purpose without express written consent of SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED. 
+                            You may not frame or utilize framing techniques to enclose any trademark, logo, or other proprietary information (including images, text, page layout, or form) of the Site or of SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED and its affiliates without express written consent. You may not use any meta tags or any other "hidden text" utilizing the Site’s or SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED’s name or trademarks without the express written consent of SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED. 
+                            Any unauthorized use terminates the permission or license granted by SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Account & Registration Obligations </h4>
+                        <li>
+                            All User/ You/shoppers have to register and login for placing orders on the Site. You have to keep your account and registration details current and correct for communications related to your purchases from the Website. By agreeing to the terms and conditions, 
+                            the You/ User /shopper agrees to receive promotional communication upon registration. The customer can opt out by contacting the customer service.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Pricing </h4>
+                        <li>
+                            All the products listed on the Website will be sold at competitive price . The prices mentioned at the time of ordering will be the prices charged on the date of the delivery. The prices of most of the products do fluctuate on a periodical basis. Prices prevailing at the time of delivery is the final pricing and additional charges will be collected or refunded as the case may be at the time of the delivery of the order. 
+                            The sale of products listed on the Website/Mobileapp is subject to availability. SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED shall not be held liable in case, the product chosen by You cannot be supplied for the reasons beyond SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED’s control.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Cancellation by Site / Customer </h4>
+                        <li>
+                            You as a customer can cancel your order at least 2 hours before the start time of your delivery slot, you can simply call our call center & request this change. Refunds will be credited to your ‘My Wallet’ account. 
+                            If we suspect any fraudulent transaction by any customer or any transaction which defies the terms & conditions of using the Website, we at our sole discretion could cancel such orders. We will maintain a negative list of all fraudulent transactions and customers and would deny access to them or cancel any orders placed by them.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Return & Refunds </h4>
+                        <li>
+                            We take every measure to safeguard health, safety and wellbeing of our customers and employees during these Covid 19 times and we temporarily suspend the return policy and NO returns will be accepted.  
+                            In case of any returns due to damage or otherwise, the same may be verified at the time of delivery and return it to the delivery person and not afterwards.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> You Agree and Confirm </h4>
+                        <li>
+                            That in the event that a non-delivery occurs on account of a mistake by you (i.e. wrong name or address or any other wrong information) any extra cost incurred by SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED for redelivery shall be claimed from you.
+                        </li>
+                        <li>
+                            That you will use the services provided by the SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED, Stores/Website, its affiliates, consultants and contracted companies, are for lawful purposes only and comply with all applicable laws and regulations while using and transacting on the Site.
+                        </li>
+                        <li>
+                            You will provide authentic and true information in all instances where such information is requested of you. SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED reserves the right to confirm and validate the information and other details provided by you at any point of time. 
+                            If upon confirmation your details are found not to be true (wholly or partly), it has the right in its sole discretion to reject the registration and debar you from using the Services and / or other affiliated Websites without prior intimation whatsoever.
+                        </li>
+                        <li>
+                            That you are accessing the services available on this Website and transacting at your sole risk and are using your best and prudent judgment before entering into any transaction through this Site.
+                        </li>
+                        <li>
+                            That the address at which delivery of the product ordered by you is to be made will be correct and proper in all respects.
+                        </li>
+                        <li>
+                            That before placing an order you will check the product description carefully. By placing an order for a product you agree to be bound by the conditions of sale included in the item's description.
+                        </li>
+                        <li>
+                            <p> You may not use the Website for any of the following purposes: </p>
+                            <ul>
+                                <li>
+                                    Disseminating any unlawful, harassing, libellous, abusive, threatening, harmful, vulgar, obscene, or otherwise objectionable material
+                                </li>
+                                <li>
+                                    Transmitting material that encourages conduct that constitutes a criminal offence or results in civil liability or otherwise breaches any relevant laws, regulations or code of practice.
+                                </li>
+                                <li>
+                                    Gaining unauthorized access to other computer systems.
+                                </li>
+                                <li>
+                                    Interfering with any other person's use or enjoyment of the Website.
+                                </li>
+                                <li>
+                                    Breaching any applicable laws;
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            Interfering or disrupting networks or web Website connected to the Website Making, 
+                            transmitting or storing electronic copies of materials protected by copyright without the permission of the owner.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Products </h4>
+                        <li>
+                            We have made every effort to display the products that appear on the Website as accurately as possible. However, 
+                            as the actual image you see will depend on your monitor/gadget screen, we cannot guarantee that your gadget’s display of any colour will be accurate.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Modification of Terms & Conditions of Service </h4>
+                        <li>
+                            SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED may at any time modify the Terms & Conditions of Use of the Website without any prior notification to you. 
+                            You can access the latest version of these Terms & Conditions at any given time on the Site. You should regularly review the Terms & Conditions on the Site. 
+                            In the event the modified Terms & Conditions is not acceptable to you, you should discontinue using the Service. However, 
+                            if you continue to use the Service you shall be deemed to have agreed to accept and abide by the modified Terms & Conditions of Use of this Website.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Governing Law and Jurisdiction </h4>
+                        <li>
+                            This User Agreement shall be construed in accordance with the applicable laws of India. The Courts at Kolkata shall have exclusive jurisdiction in any proceedings arising out of this agreement. 
+                            Any dispute or difference either in interpretation or otherwise, of any terms of this User Agreement between the parties hereto, 
+                            the same shall be referred to an independent arbitrator who will be appointed by SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED and his decision shall be final and binding on the parties hereto. 
+                            The above arbitration shall be in accordance with the Arbitration and Conciliation Act, 1996 as amended from time to time. The arbitration shall be held in Kolkata. The High Court of judicature at Kolkata alone shall have the jurisdiction and the Laws of India shall apply.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Reviews, Feedback, Submissions </h4>
+                        <li>
+                            All reviews, comments, feedback, postcards, suggestions, ideas, and other submissions disclosed, submitted or offered to the Site on or by this Website or otherwise disclosed, 
+                            submitted or offered in connection with your use of this Site (collectively, the "Comments") shall be and remain the property of SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED.
+                        </li>
+                        <li>
+                            Such disclosure, submission or offer of any Comments shall constitute an assignment to SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED of all worldwide rights, titles and interests in all copyrights and other intellectual properties in the Comments. 
+                            Thus, SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED owns exclusively all such rights, titles and interests and shall not be limited in any way in its use, commercial or otherwise, of any Comments.
+                        </li>
+                        <li>
+                            SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED will be entitled to use, reproduce, disclose, modify, adapt, create derivative works from, publish, display and distribute any Comments you submit for any purpose whatsoever, 
+                            without restriction and without compensating you in any way. SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED is and shall be under no obligation (1) to maintain any Comments in confidence; (2) to pay you any compensation for any Comments; 
+                            or (3) to respond to any Comments. You agree that any Comments submitted by you to the Website will not violate this policy or any right of any third party, including copyright, trademark, privacy or other personal or proprietary right(s), 
+                            and will not cause injury to any person or entity. You further agree that no Comments submitted by you to the Website will be or contain libellous or otherwise unlawful, threatening, abusive or obscene material, or contain software viruses, 
+                            political campaigning, commercial solicitation, chain letters, mass mailings or any form of "spam".
+                        </li>
+                        <li>
+                            SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED does not regularly review posted Comments, but does reserve the right (but not the obligation) to monitor and edit or remove any Comments submitted to the Website. 
+                            You grant SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED the right to use the name that you submit in connection with any Comments.
+                        </li>
+                        <li>
+                            You agree not to use a false email address, impersonate any person or entity, or otherwise mislead as to the origin of any Comments you submit. You are and shall remain solely responsible for the content of any Comments you make and you agree to indemnify SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED and its affiliates for all claims resulting from any Comments you submit. 
+                            SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED and its affiliates take no responsibility and assume no liability for any Comments submitted by you or any third party.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Copyright & Trademark </h4>
+                        <li>
+                            SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED, its suppliers and licensors expressly reserve all intellectual property rights in all text, programs, products, processes, technology, 
+                            content and other materials, which appear on this Website Access to this Website does not confer and shall not be considered as conferring upon anyone any license under any of SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED or any third party's intellectual property rights.
+                        </li>
+                        <li>
+                            All rights, including copyright, in this Website are owned by or licensed to SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED. Any use of this Website or its contents, including copying or storing it or them in whole or part, 
+                            other than for your own personal, non-commercial use is prohibited without the permission of SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED.
+                        </li>
+                        <li>
+                            You may not modify, distribute or re-post anything on this Website for any purpose. The names and logos and all related product and service names, 
+                            design marks and slogans are the trademarks or service marks of SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED, its affiliates, its partners or its suppliers.
+                        </li>
+                        <li>
+                            All other marks are the property of their respective companies. No trademark or service mark license is granted in connection with the materials contained on this Website. 
+                            Access to this Website does not authorize anyone to use any name, logo or mark in any manner. References on this Website to any names, marks, 
+                            products or services of third parties or hypertext links to third party Website or information are provided solely as a convenience to you and do not in any way constitute or imply SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED endorsement, 
+                            sponsorship or recommendation of the third party, information, product or service. SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED is not responsible for the content of any third party Website and does not make any representations regarding the content or accuracy of material on such Website.
+                        </li>
+                        <li>
+                            If you decide to link to any such third party Website, you do so entirely at your own risk. All materials, including images, text, illustrations, designs, icons, photographs, programs, music clips or downloads, 
+                            video clips and written and other materials that are part of this Website (collectively, the "Contents") are intended solely for personal, non-commercial use. You may download or copy the Contents and other downloadable materials displayed on the Website for your personal use only. 
+                            No right, title or interest in any downloaded materials or software is transferred to you as a result of any such downloading or copying. You may not reproduce (except as noted above), publish, transmit, distribute, display, modify, create derivative works from, 
+                            sell or participate in any sale of or exploit in any way, in whole or in part, any of the Contents, the Website or any related software.
+                        </li>
+                        <li>
+                            All software used on this Website is the property of SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED or its licensees and suppliers and protected by Indian and international copyright laws. The Contents and software on this Website may be used only as a shopping resource.
+                            Any other use, including the reproduction, modification, distribution, transmission, republication, display, or performance, of the Contents on this Website is strictly prohibited.
+                        </li>
+                        <li>
+                            Unless otherwise noted, all Contents are copyrights, trademarks, trade dress and/or other intellectual property owned, controlled or licensed by SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED, 
+                            one of its affiliates or by third parties who have licensed their materials to SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED and are protected by Indian and international copyright laws. The compilation (meaning the collection, arrangement, and assembly) of all Contents on this Website is the exclusive property of SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED and is also protected by Indian and international copyright laws.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Objectionable Material </h4>
+                        <li>
+                            You understand that by using this Website or any services provided on the Website, you may encounter Content that may be deemed by some to be offensive, indecent, or objectionable, which Content may or may not be identified as such. 
+                            You agree to use the Website and any service at your sole risk and that to the fullest extent permitted under applicable law, SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED and its affiliates shall have no liability to you for Content that may be deemed offensive, indecent, or objectionable to you.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Warranties and Liabilities </h4>
+                        <li>
+                            SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED shall make no representation with regard to quality, 
+                            colour, specifications, image, performance, material, ingredients etc. SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED’s endeavours to make available the products ‘as is’ where basis. 
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Indemnity </h4>
+                        <li>
+                            You agree to defend, indemnify and hold harmless SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED, its employees, directors, officers, 
+                            agents and their successors and assigns from and against any and all claims, liabilities, damages, losses, costs and expenses, 
+                            including attorney's fees, caused by or arising out of claims based upon your actions or inactions, which may result in any loss or liability to SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED or any third party including but not limited to breach of any warranties, 
+                            representations or undertakings or in relation to the non-fulfilment of any of your obligations under this User Agreement or arising out of the your violation of any applicable laws, regulations including but not limited to Intellectual Property Rights, 
+                            payment of statutory dues and taxes, claim of libel, defamation, violation of rights of privacy or publicity, loss of service by other subscribers and infringement of intellectual property or other rights. This clause shall survive the expiry or termination of this User Agreement.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Termination </h4>
+                        <li>
+                            This User Agreement is effective unless and until terminated by either you or SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED. You may terminate this User Agreement at any time, provided that you discontinue any further use of this Website. 
+                            SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED may terminate this User Agreement at any time and may do so immediately without notice, and accordingly deny you access to the Website, Such termination will be without any liability to SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED. 
+                            Upon any termination of the User Agreement by either you or SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED, you must promptly destroy all materials downloaded or otherwise obtained from this Website, as well as all copies of such materials, whether made under the User Agreement or otherwise. 
+                            SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED's right to any Comments shall survive any termination of this User Agreement. Any such termination of the User Agreement shall not cancel your obligation to pay for the product already ordered from the Website or affect any liability that may have arisen under the User Agreement.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <ul>
+                        <h4> Coupon Usage - Terms & Conditions </h4>
+                        <li>
+                            No two offers can be clubbed together
+                        </li>
+                        <li>
+                            Coupon discount will be only to the maximum amount mentioned in the coupon
+                        </li>
+                        <li>
+                            Coupon discount is not applicable to Promotional Items and the value of coupon discount will reduce by proportionate sale amount of Promotional Items.
+                        </li>
+                        <li>
+                            The Value and Duration of the Coupon may change at the sole discretion of spencers.in
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <footer class="footer" id="footer">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Our Office</h3>
+                    <a class="location"
+                        href="https://www.google.co.in/maps/dir//4VF2%2B2MP+Amrita+Buildings,+Kalanjoor,+Kalanjoor,+Kerala+689694/@9.1225797,76.8491164,17z/data=!4m16!1m7!3m6!1s0x3b0673e97c3aab8f:0xfcd6195bdfb63152!2sAmrita+Buildings,+Kalanjoor!8m2!3d9.1225797!4d76.8516913!16s%2Fg%2F11s9c5mn4d!4m7!1m0!1m5!1m1!1s0x3b0673e97c3aab8f:0xfcd6195bdfb63152!2m2!1d76.8516913!2d9.1225797?entry=ttu&g_ep=EgoyMDI2MDIxOC4wIKXMDSoASAFQAw%3D%3D"
+                        target="_blank">
+                        <i class="fa-solid fa-location-dot"></i>
+                        AMRUTHA BUILDING, KALANJOOR
+                    </a>
+                    <a class = 'gmail' href="mailto:SSC.SAMATWASERVICECENTER@GMAIL.COM">
+                        ✉ SSC.SAMATWASERVICECENTER@GMAIL.COM
+                    </a>
+                    <a class="phone" href="tel:8547928316">
+                        📞 +91 8547928316
+                    </a>
+                </div>
+                <div class="footer-col">
+                    <h3>Services</h3>
+                    <a href="#"> Mobile & DTH Recharge </a>
+                    <a href="#"> NSDL Paperless PAN </a>
+                    <a href="#"> UTI PSA PAN Center </a>
+                </div>
+                <div class="footer-col"> 
+                    <h3> Quick Links </h3>
+                    <a href="{% url 'about' %}"> About </a>
+                    <a href="{% url 'privacy_policy' %}"> Privacy Policy </a>
+                    <a href="{% url 'terms_condition' %}"> Terms & Conditions </a>
+                </div>
+                <div class="footer-col">
+                    <h3>SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED</h3>
+                    <a href="https://sscpanservice.com/files/utiho.pdf">
+                        UTI PHYSICAL APPLICATION SENDING ADDRESS 
+                    </a>
+                </div>
+            </div>
+        </footer>
+        <script>
+            const toggle = document.getElementById("menu-toggle");
+            const navLinks = document.getElementById("nav-links");
+
+            toggle.addEventListener("click", () => {
+                navLinks.classList.toggle("active");
+            });
+
+            // Close menu when clicking a link (optional improvement)
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove("active");
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,111 @@
+/* General Styles */
+input[type=text], input[type=password], input[type=url], input[type=email], input[type=number], input[type=file], input[type=date] {
+    width: 100%;
+    padding: 12px 16px;
+    margin: 16px 0;
+    display: block;
+    border: 1px solid #c8c3cf;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #F6F5F7;
+    font-size: 16px;
+    color: #4F4659;
+    outline: none !important;
+    transition: box-shadow 0.25s ease-in-out, background-image 0.25s !important;
+    line-height: 1.6;
+    max-height: 3.2em !important;
+    overflow: hidden !important;
+}
+
+p {
+    width: 70%;
+    padding: 10px;
+    box-sizing: border-box;
+    color: black;
+}
+        
+
+
+
+.buttonF {
+    background-color: #007A9B !important;
+    color: #FFF;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    margin-left: 10px;
+}
+
+/* Form Center */
+.form-center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%; /* Adjusted for responsiveness */
+    max-width: 650px; /* Ensures it doesn't exceed a certain width */
+    padding: 20px;
+    background-color: antiquewhite;
+    border: 1px solid #007A9B;
+}
+
+.form {
+    width: 100%; /* Adjusted to fit within .form-center */
+    padding: 1px 0px 0px 25px;
+}
+
+.button {
+    width: auto; /* Adjusted for responsiveness */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .form-center {
+        width: 90%;
+        padding: 15px;
+    }
+    
+    .form {
+        width: 100%;
+        padding: 0;
+    }
+    
+    .buttonF {
+        padding: 10px;
+        font-size: 14px;
+        margin-top: 30px;
+    }
+    
+    .buttons {
+        float: none;
+        text-align: center;
+        margin-top: 30px;
+    }
+    
+    input[type=text], input[type=password], input[type=url], input[type=email], input[type=number], input[type=file], input[type=date], select, textarea {
+        font-size: 14px;
+        max-height: none; /* Remove height restriction for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .form-center {
+        width: 100%;
+        padding: 10px;
+    }
+    
+    .buttonF {
+        padding: 8px;
+        font-size: 12px;
+        margin-top: 20px;
+    }
+    
+    .buttons {
+        margin-top: 20px;
+    }
+    
+    input[type=text], input[type=password], input[type=url], input[type=email], input[type=number], input[type=file], input[type=date], select, textarea {
+        font-size: 12px;
+    }
+}

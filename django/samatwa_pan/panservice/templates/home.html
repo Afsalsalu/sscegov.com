@@ -1,0 +1,616 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAMATWA SSC - PAN Card & E-Governance Services</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #1e40af;
+            --accent: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* ================= TOP CONTACT BAR ================= */
+        .top-bar {
+            background: #0f172a;
+            color: white;
+            padding: 12px 5%;
+            font-size: 14.5px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .top-bar a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .top-bar a:hover {
+            color: var(--accent);
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 45px;
+            width: 100%;
+            z-index: 1000;
+            padding: 16px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #1e2937;
+            font-weight: 500;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .login-btn {
+            background: #c1c5d1;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #9aaee6;
+            transform: translateY(-2px);
+        }
+
+        /* ================= HERO ================= */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)),
+                        url('{% static "images/Blog-Inside-Pic.jpg" %}') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin-top: 52px;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 850px;
+            padding: 20px;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: 21px;
+            margin-bottom: 35px;
+            opacity: 0.95;
+        }
+
+        .cta-button {
+            background: var(--accent);
+            color: white;
+            padding: 16px 38px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.4s;
+        }
+
+        .cta-button:hover {
+            background: #16a34a;
+            transform: scale(1.06);
+        }
+
+        /* ================= SECTIONS ================= */
+        section {
+            padding: 100px 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 38px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        /* Services */
+        .services {
+            background: #f8fafc;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .service-card {
+            background: white;
+            padding: 45px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+        }
+
+        .service-card i {
+            font-size: 52px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .service-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #0f172a;
+        }
+
+        /* Roles */
+        .roles {
+            background: white;
+        }
+
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .role-card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.06);
+            transition: all 0.4s;
+        }
+
+        .role-card:hover {
+            border: 2px solid var(--primary);
+            transform: translateY(-8px);
+        }
+
+        .role-card h3 {
+            text-align: center;
+            font-size: 26px;
+            color: var(--primary);
+            margin-bottom: 25px;
+        }
+
+        .role-card ul li {
+            padding: 12px 0;
+            font-size: 15.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .role-card ul li i {
+            color: var(--accent);
+        }
+
+        /* White Label */
+        .white-label {
+            background: linear-gradient(135deg, #0f172a, #1e40af);
+            color: white;
+        }
+
+        .white-label h2 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 50px;
+        }
+
+        .white-label-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 18px;
+            max-width: 1100px;
+            margin: 0 auto;
+            list-style: none;
+        }
+
+        .white-label-list li {
+            background: rgba(255,255,255,0.1);
+            padding: 18px 22px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Footer */
+        .footer {
+            background: #0f172a;
+            color: #cbd5e1;
+            padding: 80px 5% 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 40px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .footer-col h3 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .footer-col a {
+            color: #94a3b8;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .footer-col a:hover {
+            color: white;
+        }
+        .menu-toggle {
+            display: none;
+            font-size: 26px;
+            cursor: pointer;
+            z-index: 2000;
+        }
+
+        @media (max-width: 768px) {
+
+            .top-bar {
+                position: fixed;
+                top: 0;
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px 20px;
+                gap: 6px;
+                font-size: 13px;
+            }
+
+            .navbar {
+                position: fixed;
+                top: 80px;
+                width: 100%;
+                padding: 14px 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding-left: 20px;
+                width: 100%;
+                border-bottom: 1px solid #eee;
+            }
+
+            .login-btn {
+                margin: 10px 20px;
+                padding: 10px;
+                text-align: center;
+                border-radius: 30px;
+            }
+
+            .hero {
+                margin-top: 160px;
+                height: auto;
+                padding: 80px 20px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .service-grid,
+            .role-grid {
+                grid-template-columns: 1fr;
+            }
+
+            section {
+                padding: 60px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .hero h1 {
+                font-size: 26px;
+            }
+
+            .cta-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <a href="https://www.google.co.in/maps/dir//4VF2%2B2MP+Amrita+Buildings,+Kalanjoor" target="_blank">
+            <i class="fa-solid fa-location-dot"></i> AMRUTHA BUILDING, KALANJOOR
+        </a>
+        <a href="mailto:SSC.SAMATWASERVICECENTER@GMAIL.COM">
+            <i class="fa-solid fa-envelope"></i> SSC.SAMATWASERVICECENTER@GMAIL.COM
+        </a>
+        <a href="tel:8547928316">
+            <i class="fa-solid fa-phone"></i> +91 85479 28316
+        </a>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-shield-halved"></i> SAMATWA SSC
+        </div>
+        <div class="menu-toggle" id="menu-toggle"> ☰ </div>
+        <div class="nav-links" id="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="#services">Services</a>
+            <a href="#roles">Pricing</a>
+            <a href="{% url 'about' %}">About</a>
+            <a href="{% url 'login' %}" class="login-btn">Login</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to SAMATWA SERVICE CENTER</h1>
+            <p>E-Governance Services | PAN Card | Mobile Recharge | DTH Recharge</p>
+            <a href="{% url 'register' %}" class="cta-button">Create Account Now</a>
+        </div>
+    </section>
+
+    <!-- Join / Business Opportunity -->
+    <section style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; text-align: center;">
+        <div style="max-width: 800px; margin: 0 auto; padding: 90px 20px;">
+            <h2 style="font-size: 36px; margin-bottom: 20px;">Perfect Solution for Your Small Business</h2>
+            <p style="font-size: 19px; opacity: 0.95;">
+                Become a PAN Card Agent and start your own business with high commission. 
+                Authorized for NSDL Paperless PAN, UTI PSA PAN & Recharge Services across India.
+            </p>
+            <a href="{% url 'register' %}" class="cta-button" style="background: white; color: #1e40af; margin-top: 30px;">
+                Join Now
+            </a>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section class="services" id="services">
+        <div class="section-title">
+            <h2>Our Services</h2>
+        </div>
+        <div class="service-grid">
+            <div class="service-card">
+                <i class="fa-solid fa-id-card"></i>
+                <h3>NSDL Paperless PAN</h3>
+                <p>Instant e-KYC PAN in 30 minutes using Aadhaar OTP or Biometric. Also supports PAN Correction & e-Sign.</p>
+            </div>
+            <div class="service-card">
+                <i class="fa-solid fa-building-columns"></i>
+                <h3>UTI PSA PAN</h3>
+                <p>Authorized PAN Center with instant coupon facility, correction, and fully secured portal.</p>
+            </div>
+            <div class="service-card">
+                <i class="fa-solid fa-mobile-screen"></i>
+                <h3>Mobile & DTH Recharge</h3>
+                <p>All operators available. Instant recharge with high commission and instant success.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roles -->
+    <section class="roles" id="roles">
+        <div class="section-title">
+            <h2>Choose Your Role</h2>
+        </div>
+        <div class="role-grid">
+            <div class="role-card">
+                <h3>Retailer</h3>
+                <ul>
+                    <li><i class="fa-solid fa-check"></i> NSDL & UTI PSA PAN Agent</li>
+                    <li><i class="fa-solid fa-check"></i> Mobile & DTH Recharge</li>
+                    <li><i class="fa-solid fa-check"></i> Instant ID Activation</li>
+                    <li><i class="fa-solid fa-check"></i> High Margin</li>
+                    <li><i class="fa-solid fa-check"></i> 24/7 WhatsApp Support</li>
+                </ul>
+                <a href="{% url 'register' %}" class="cta-button" style="margin-top:30px; display:block; text-align:center; padding:12px 20px; font-size:16px;">Register as Retailer</a>
+            </div>
+
+            <div class="role-card">
+                <h3>Distributor</h3>
+                <ul>
+                    <li><i class="fa-solid fa-check"></i> Unlimited Retailers</li>
+                    <li><i class="fa-solid fa-check"></i> All PAN & Recharge Services</li>
+                    <li><i class="fa-solid fa-check"></i> Higher Commission</li>
+                    <li><i class="fa-solid fa-check"></i> Full Business Support</li>
+                </ul>
+                <a href="{% url 'register' %}" class="cta-button" style="margin-top:30px; display:block; text-align:center; padding:12px 20px; font-size:16px;">Register as Distributor</a>
+            </div>
+
+            <div class="role-card">
+                <h3>Super Distributor</h3>
+                <ul>
+                    <li><i class="fa-solid fa-check"></i> Create Distributors & Retailers</li>
+                    <li><i class="fa-solid fa-check"></i> Highest Margin</li>
+                    <li><i class="fa-solid fa-check"></i> Complete Control Panel</li>
+                    <li><i class="fa-solid fa-check"></i> Full Branding Support</li>
+                </ul>
+                <a href="{% url 'register' %}" class="cta-button" style="margin-top:30px; display:block; text-align:center; padding:12px 20px; font-size:16px;">Register as Super Distributor</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- White Label -->
+    <section class="white-label">
+        <h2>White Label - Your Own Brand PAN Portal</h2>
+        <ul class="white-label-list">
+            <li><i class="fa-solid fa-check"></i> Free Super / Distributor / Retailers </li>
+            <li><i class="fa-solid fa-check"></i> All Mobile Recharge </li>
+            <li><i class="fa-solid fa-check"></i> All DTH Recharge </li>
+            <li><i class="fa-solid fa-check"></i> Instant PSA Wallet Transfer </li>
+            <li><i class="fa-solid fa-check"></i> Instant Automatic PSA Create </li>
+            <li><i class="fa-solid fa-check"></i> High Commission </li>
+            <li><i class="fa-solid fa-check"></i> Free Calling Support </li>
+            <li><i class="fa-solid fa-check"></i> Free 24/7 WhatsApp Support </li>
+            <li><i class="fa-solid fa-check"></i> Use Your Owen Paytm Payment Gateway </li>
+            <li><i class="fa-solid fa-check"></i> Your Own Brand Domain </li>
+            <li><i class="fa-solid fa-check"></i> Your Logo </li>
+            <li><i class="fa-solid fa-check"></i> Your Company Name </li>
+            <li><i class="fa-solid fa-check"></i> No Server Rental </li>
+            <li><i class="fa-solid fa-check"></i> Low Investment</li>
+            <li><i class="fa-solid fa-check"></i> No Minimum Balance Required </li>
+            <li><i class="fa-solid fa-check"></i> Instant 24/7 Online Wallet Load/Billing </li>
+            <li><i class="fa-solid fa-check"></i> Instant PSA Wallet Purchase </li>
+        </ul>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>Our Office</h3>
+                <a href="https://www.google.co.in/maps/dir//4VF2%2B2MP+Amrita+Buildings,+Kalanjoor" target="_blank">
+                    <i class="fa-solid fa-location-dot"></i> AMRUTHA BUILDING, KALANJOOR, KERALA
+                </a>
+                <a href="mailto:SSC.SAMATWASERVICECENTER@GMAIL.COM">
+                    <i class="fa-solid fa-envelope"></i> SSC.SAMATWASERVICECENTER@GMAIL.COM
+                </a>
+                <a href="tel:8547928316">
+                    <i class="fa-solid fa-phone"></i> +91 85479 28316
+                </a>
+            </div>
+            <div class="footer-col">
+                <h3>Services</h3>
+                <a href="#">NSDL Paperless PAN</a>
+                <a href="#">UTI PSA PAN</a>
+                <a href="#">Mobile & DTH Recharge</a>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <a href="{% url 'about' %}">About Us</a>
+                <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+                <a href="{% url 'terms_condition' %}">Terms & Conditions</a>
+            </div>
+            <div class="footer-col">
+                <h3>SAMATWA SERVICE CENTER</h3>
+                <a href="https://sscpanservice.com/files/utiho.pdf" target="_blank">UTI Physical Application Address</a>
+            </div>
+        </div>
+        <p style="text-align: center; margin-top: 70px; opacity: 0.6; font-size: 14px;">
+            © 2026 SAMATWA SERVICE CENTER E-GOVERNANCE LIMITED. All Rights Reserved.
+        </p>
+    </footer>
+    <script>
+        const toggle = document.getElementById("menu-toggle");
+        const nav = document.getElementById("nav-links");
+
+        toggle.addEventListener("click", () => {
+            nav.classList.toggle("active");
+        });
+    </script>
+</body>
+</html>

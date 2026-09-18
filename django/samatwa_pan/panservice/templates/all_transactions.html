@@ -1,0 +1,334 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Wallet Transactions - SAMATWA Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --navy: #0a1628;
+            --gold: #d4a843;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --text-muted: #64748b;
+            --green: #16a34a;
+            --red: #dc2626;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 80px 24px 40px;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 24px;
+        }
+
+        /* Filter Box */
+        .filter-box {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            margin-bottom: 28px;
+        }
+
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .filter-form input,
+        .filter-form select {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-form input:focus,
+        .filter-form select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        }
+
+        .filter-form button {
+            background: var(--navy);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-form button:hover {
+            background: #0f1f38;
+        }
+
+        /* Table Card */
+        .table-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            table-layout: fixed;
+            min-width: 900px;
+        }
+
+        th {
+            background: var(--navy);
+            color: white;
+            padding: 14px 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        td {
+            padding: 14px 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: rgba(212, 168, 67, 0.08);
+        }
+
+        /* ✅ Column Width Control */
+        th:nth-child(1), td:nth-child(1) { width: 14%; } /* Date */
+        th:nth-child(2), td:nth-child(2) { width: 8%; }  /* User ID */
+        th:nth-child(3), td:nth-child(3) { width: 12%; } /* Username */
+        th:nth-child(4), td:nth-child(4) { width: 12%; } /* Opening */
+        th:nth-child(5), td:nth-child(5) { width: 12%; } /* Amount */
+        th:nth-child(6), td:nth-child(6) { width: 10%; } /* Type */
+        th:nth-child(7), td:nth-child(7) { width: 12%; } /* Closing */
+        th:nth-child(8), td:nth-child(8) { width: 20%; } /* Description */
+
+        .credit {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .debit {
+            color: var(--red);
+            font-weight: 600;
+        }
+
+        .empty-row {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        /* Pagination */
+        .pagination {
+            margin-top: 28px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .pagination a {
+            padding: 8px 14px;
+            background: var(--navy);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .pagination span {
+            font-size: 14px;
+            font-weight: 600;
+            padding: 0 10px;
+        }
+
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 28px;
+            padding: 10px 20px;
+            background: var(--navy);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: #0f1f38;
+            transform: translateY(-2px);
+        }
+
+        /* Print Styles */
+        .print-header {
+            display: none;
+        }
+
+        @media print {
+            body { background: white; margin: 0; }
+            .admin-topbar, .filter-box, .pagination, .back-link, button { display: none !important; }
+            
+            .print-header {
+                display: block;
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            
+            .table-card { box-shadow: none; border: none; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #000; padding: 10px; }
+            thead { background: white !important; color: black !important; }
+            tr { page-break-inside: avoid; }
+        }
+
+        @media (max-width: 768px) {
+            .main-content { padding: 80px 16px 30px; }
+            .filter-form { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+
+<body>
+
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+
+        <div class="page-header">
+            <h2>All Wallet Transactions 🧾</h2>
+        </div>
+
+        <!-- FILTER -->
+        <div class="filter-box">
+            <form method="GET" class="filter-form">
+                <input type="text" name="search" placeholder="Search" value="{{ request.GET.search }}">
+
+                <select name="txn_type">
+                    <option value="">All Transactions</option>
+                    <option value="credit" {% if request.GET.txn_type == 'credit' %}selected{% endif %}>Credit</option>
+                    <option value="debit" {% if request.GET.txn_type == 'debit' %}selected{% endif %}>Debit</option>
+                </select>
+
+                <input type="date" name="start_date" value="{{ request.GET.start_date }}">
+                <input type="date" name="end_date" value="{{ request.GET.end_date }}">
+
+                <button type="submit">Search</button>
+                <button type="button" onclick="window.print()">🖨️ Print</button>
+            </form>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-card">
+            <div class="print-header">
+                <h2>ABC Digital Services Pvt Ltd</h2>
+                <p>Address: Kochi, Kerala, India | Phone: +91 9876543210 | Email: info@abcdigital.com</p>
+                <h3>Wallet Transaction Report</h3>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>User ID</th>
+                        <th>User</th>
+                        <th>Opening</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Closing</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in transactions %}
+                    <tr>
+                        <td>{{ t.created_at|date:"d M Y H:i" }}</td>
+                        <td>{{ t.user.id }}</td>
+                        <td>{{ t.user.username }}</td>
+                        <td>{{ t.opening_balance }}</td>
+                        <td>{{ t.amount }}</td>
+                        <td>
+                            {% if t.txn_type == 'credit' %}
+                                <span style="color: green;">Credit</span>
+                            {% else %}
+                                <span style="color: red;">Debit</span>
+                            {% endif %}
+                        </td>
+                         <td>{{ t.closing_balance }}</td>
+                        <td>{{ t.description|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="empty-row">
+                            No Transactions Found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination">
+            {% if transactions.has_previous %}
+                <a href="?page=1&search={{ request.GET.search }}&txn_type={{ request.GET.txn_type }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}">« First</a>
+                <a href="?page={{ transactions.previous_page_number }}&search={{ request.GET.search }}&txn_type={{ request.GET.txn_type }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}">Previous</a>
+            {% endif %}
+
+            <span>Page {{ transactions.number }} of {{ transactions.paginator.num_pages }}</span>
+
+            {% if transactions.has_next %}
+                <a href="?page={{ transactions.next_page_number }}&search={{ request.GET.search }}&txn_type={{ request.GET.txn_type }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}">Next</a>
+                <a href="?page={{ transactions.paginator.num_pages }}&search={{ request.GET.search }}&txn_type={{ request.GET.txn_type }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}">Last »</a>
+            {% endif %}
+        </div>
+
+        <a href="{% url 'admin_dashboard' %}" class="back-link">
+            ⬅ Back to Dashboard
+        </a>
+
+    </div>
+
+</body>
+</html>

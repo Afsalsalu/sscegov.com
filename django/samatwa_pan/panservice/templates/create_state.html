@@ -1,0 +1,334 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create State Distributor</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --navy: #0a1628;
+            --bg: skyblue;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a2a3a;
+            --green: #16a34a;
+            --blue: #2563eb;
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* PAGE */
+
+        .main-content {
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* WRAPPER */
+
+        .form-wrapper {
+            width: 520px;
+        }
+
+        /* HEADER */
+
+        .page-header {
+            margin-bottom: 16px;
+        }
+
+        .page-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        /* CARD */
+
+        .form-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            padding: 22px;
+        }
+
+        /* FORM */
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        /* INPUT */
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1.5px solid var(--border);
+            font-size: 13px;
+        }
+
+        /* INPUT ROW (OTP) */
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* BUTTON */
+
+        button {
+            margin-top: 8px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            background: var(--green);
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: .9;
+        }
+
+        /* OTP BUTTON */
+
+        .otp-btn {
+            background: var(--blue);
+            padding: 7px 10px;
+            font-size: 12px;
+            width: 90px;
+            margin-top: 0;
+        }
+
+        /* OTP MESSAGE */
+
+        .otp-message {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        /* BACK */
+
+        .back-link {
+            display: inline-block;
+            margin-top: 14px;
+            font-size: 12px;
+            text-decoration: none;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* MOBILE */
+
+        @media(max-width:768px) {
+
+            .form-wrapper {
+                width: 100%;
+            }
+
+            .input-row {
+                flex-direction: column;
+            }
+
+            .otp-btn {
+                width: 100%;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    {% include 'partials/admin_topbar.html' %}
+
+    <div class="main-content">
+
+        <div class="form-wrapper">
+
+            <div class="page-header">
+                <h2>Create State Distributor</h2>
+            </div>
+
+            <div class="form-card">
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <!-- USERNAME -->
+
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" name="username" required>
+                    </div>
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+                        <label>Email</label>
+
+                        <div class="input-row">
+                            <input type="email" id="email" name="email" required>
+                            <button type="button" class="otp-btn" onclick="sendOTP()">Send OTP</button>
+                        </div>
+
+                    </div>
+
+                    <!-- OTP -->
+
+                    <div class="form-group">
+                        <label>Enter OTP</label>
+
+                        <div class="input-row">
+                            <input type="text" id="otp">
+                            <button type="button" class="otp-btn" onclick="verifyOTP()">Verify</button>
+                        </div>
+
+                        <p id="otp-msg" class="otp-message"></p>
+
+                    </div>
+
+                    <!-- MOBILE -->
+
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="text" name="mobile" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <input type="date" name="dob">
+                    </div>
+
+                    <div class="form-group">
+                        <label>PAN</label>
+                        <input type="text" name="pan">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Aadhaar</label>
+                        <input type="text" name="aadhaar">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea name="address"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>PIN Code</label>
+                        <input type="text" name="pin_code">
+                    </div>
+
+                    <div class="form-group">
+                        <label>State</label>
+                        <select name="state" required>
+                            <option value="">Select State</option>
+                            {% for s in states %}
+                            <option value="{{ s.id }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit">Create State Distributor</button>
+
+                </form>
+
+            </div>
+
+            <a href="{% url 'admin_dashboard' %}" class="back-link">
+                ⬅ Back to Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        function sendOTP() {
+
+            let email = document.getElementById("email").value
+
+            if (!email) {
+                document.getElementById("otp-msg").innerText = "Enter email first"
+                return
+            }
+
+            fetch("{% url 'send_otp' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: "email=" + email
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status == "success") {
+                        document.getElementById("otp-msg").innerText = "OTP sent to email"
+                    } else {
+                        document.getElementById("otp-msg").innerText = data.message
+                    }
+                })
+
+        }
+
+        function verifyOTP() {
+
+            let otp = document.getElementById("otp").value
+
+            fetch("{% url 'verify_otp' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: "otp=" + otp
+            })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("otp-msg").innerText = data.message
+                })
+
+        }
+
+    </script>
+
+</body>
+
+</html>

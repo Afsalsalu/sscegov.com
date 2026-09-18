@@ -1,0 +1,107 @@
+{% extends "web/exam/base.html" %}
+{% load static %}
+{% block content %}
+
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+<div class="page-body">
+    <div class="container-fluid">
+      <div class="page-title">
+        <div class="row">
+          <div class="col-6">
+            <h4>Complaints</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Chat Section -->
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header pb-0 card-no-border">
+                        <h6 class="mb-4 mt-4">Complaint Messages</h6>
+                        <hr>
+                    </div>
+                    <div class="card-body">
+                        <div class="chat-box custom-scrollbar" id="chat-box">
+                            <!-- Displaying Messages -->
+                            {% for message in messages %}
+                                <!-- Display User Complaint -->
+                                <div class="message-right">
+                                    <p>{{ message.complaint }}</p>
+                                    <span class="time">You - {{ message.timestamp|date:"H:i" }}</span>
+                                </div>
+                        
+                                <!-- Display Admin Reply (if available) -->
+                                {% if message.reply %}
+                                    <div class="message-left">
+                                        <p>{{ message.reply }}</p>
+                                        <span class="time">Admin - {{ message.timestamp|date:"H:i" }}</span>
+                                    </div>
+                                {% endif %}
+                            {% empty %}
+                            No Messages Available, Send a Complaint
+                            {% endfor %}
+                        </div>
+                        
+                    </div>
+                    <div class="card-footer">
+                        <form method="post" action="{% url 'exam:complaints' %}">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="message" placeholder="Type your complaint..." required>
+                                <button class="btn btn-primary" type="submit">
+                                    <i class='bx bx-send'></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<style>
+    .chat-box {
+        height: 400px;
+        overflow-y: scroll;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .message-left {
+        text-align: left;
+        background: #ffffff;
+        color: #006668;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 10px 0;
+        max-width: 70%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .message-right {
+        text-align: right;
+        background: #006668;
+        color: #ffffff;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 10px 0;
+        max-width: 70%;
+        margin-left: auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .time {
+        display: block;
+        font-size: 10px;
+        color: #999;
+        margin-top: 5px;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,230 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Dashboard</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --gold: #d4a843;
+            --navy: #0a1628;
+            --text: #1a2a3a;
+            --text-muted: #7a90aa;
+            --bg: #f0f7ff;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ================= MAIN CONTENT (space for fixed topbar) ================= */
+        .main-content {
+            padding: 80px 32px 40px;
+            /* Top padding for topbar */
+        }
+
+        /* Dashboard Styles */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .date-badge {
+            font-family: 'Space Mono', monospace;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .overview {
+            background: var(--card-bg);
+            padding: 26px;
+            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            display: flex;
+            gap: 50px;
+            margin-bottom: 36px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .stat-box span {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .stat-box strong {
+            font-size: 26px;
+            display: block;
+            margin-top: 8px;
+            color: var(--navy);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 26px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            border: 1.5px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--gold);
+            box-shadow: 0 12px 30px rgba(212, 168, 67, 0.15);
+        }
+
+        .card-emoji {
+            font-size: 42px;
+            margin-bottom: 14px;
+        }
+
+        .card-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--navy);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 80px 16px 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    {% include 'partials/state_topbar.html' %}
+
+    <div class="main-content">
+
+        <div class="page-header">
+            <h1>Welcome, {{ request.user.username }} 🌍</h1>
+            <div class="date-badge" id="dateBadge"></div>
+        </div>
+
+        <div class="overview">
+            <div class="stat-box">
+                <span> Amount </span>
+                <strong>₹ {{ state_wallet }}</strong>
+            </div>
+
+            <div class="stat-box">
+                <span>Commission Wallet</span>
+                <strong>₹ {{ wallet_balance }}</strong>
+            </div>
+
+            <div class="stat-box">
+                <span>Total Retailers</span>
+                <strong>{{ total_retailers }}</strong>
+            </div>
+
+            <div class="stat-box">
+                <span>Total Districts</span>
+                <strong>{{ total_districts }}</strong>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+
+            <a href="#" class="card">
+                <div class="card-emoji">🏙️</div>
+                <div class="card-label">Create District</div>
+            </a>
+
+            <a href="{% url 'district_list' %}" class="card">
+                <div class="card-emoji">📋</div>
+                <div class="card-label">District List</div>
+            </a>
+
+            <a href="#" class="card">
+                <div class="card-emoji">🏪</div>
+                <div class="card-label">Create Retailer</div>
+            </a>
+
+            <a href="{% url 'list_retailers' %}" class="card">
+                <div class="card-emoji">👥</div>
+                <div class="card-label">Retailer List</div>
+            </a>
+
+            <a href="{% url 'my_commission_wallet' %}" class="card">
+                <div class="card-emoji">💰</div>
+                <div class="card-label">Commission Wallet</div>
+            </a>
+
+            <a href="{% url 'commission_history' %}" class="card">
+                <div class="card-emoji">📊</div>
+                <div class="card-label">Commission History</div>
+            </a>
+
+            <a href="{% url 'add_money' %}" class="card">
+                <div class="card-emoji">💳</div>
+                <div class="card-label">Add Money</div>
+            </a>
+
+            <a href="{% url 'my_wallet_requests' %}" class="card">
+                <div class="card-emoji">📨</div>
+                <div class="card-label">Wallet Requests</div>
+            </a>
+
+            <a href="{% url 'buy_coupons' %}" class="card">
+                <div class="card-emoji">🎟️</div>
+                <div class="card-label">Buy Coupons</div>
+            </a>
+
+            <a href="{% url 'my_coupon_requests' %}" class="card">
+                <div class="card-emoji">📄</div>
+                <div class="card-label">Coupon Requests</div>
+            </a>
+
+        </div>
+
+    </div>
+
+    <script>
+        const d = new Date();
+        document.getElementById('dateBadge').textContent =
+            d.toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+    </script>
+
+</body>
+
+</html>

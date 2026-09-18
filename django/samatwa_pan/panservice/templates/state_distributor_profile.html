@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State Distributor Profile</title>
+    <style>
+        .info-box {
+            border: 2px solid #000;
+            padding: 12px;
+            margin-bottom: 15px;
+            width: fit-content;
+            background-color: #f3f3f3;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        table th, table td {
+            border: 1px solid #000;
+            padding: 6px 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>State Distributor Profile</h2>
+
+<div class="info-box">
+    Username: {{ distributor.username }}<br>
+    Password: {{ distributor.profile.raw_password }}
+</div>
+
+<table>
+<tr><th>Name</th><td>{{ distributor.profile.name }}</td></tr>
+<tr><th>Mobile</th><td>{{ distributor.mobile }}</td></tr>
+<tr><th>State</th><td>{{ distributor.profile.state }}</td></tr>
+<tr><th>Aadhar</th><td>{{ distributor.profile.aadhar }}</td></tr>
+<tr><th>PAN</th><td>{{ distributor.profile.pan }}</td></tr>
+<tr><th>Gender</th><td>{{ distributor.profile.gender }}</td></tr>
+<tr><th>DOB</th><td>{{ distributor.profile.dob }}</td></tr>
+<tr><th>Company</th><td>{{ distributor.profile.company }}</td></tr>
+<tr><th>Address</th><td>{{ distributor.profile.address }}</td></tr>
+<tr><th>PIN</th><td>{{ distributor.profile.pin_code }}</td></tr>
+</table>
+
+<br>
+<a href="javascript:history.back()">⬅ Back</a>
+
+</body>
+</html>
