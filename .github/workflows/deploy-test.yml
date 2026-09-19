@@ -18,15 +18,12 @@ jobs:
           SSH_KEY: ${{ secrets.SSCEGOV_TEST_SSH_KEY }}
         run: |
           set -eu
-          ssh_dir="$(mktemp -d)"
-          trap 'rm -rf "$ssh_dir"' EXIT
-          chmod 700 "$ssh_dir"
-          printf '%s\n' "$SSH_KEY" > "$ssh_dir/id_ed25519"
-          chmod 600 "$ssh_dir/id_ed25519"
-          ssh \
-            -i "$ssh_dir/id_ed25519" \
-            -p 22 \
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh -i ~/.ssh/id_ed25519 \
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=accept-new \
             -o ConnectTimeout=30 \
-            ssce@65.108.247.141
+            ssce@65.108.247.141 true
