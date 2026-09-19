@@ -1,0 +1,32 @@
+name: Deploy test
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run test deployment
+        env:
+          SSH_KEY: ${{ secrets.SSCEGOV_TEST_SSH_KEY }}
+        run: |
+          set -eu
+          ssh_dir="$(mktemp -d)"
+          trap 'rm -rf "$ssh_dir"' EXIT
+          chmod 700 "$ssh_dir"
+          printf '%s\n' "$SSH_KEY" > "$ssh_dir/id_ed25519"
+          chmod 600 "$ssh_dir/id_ed25519"
+          ssh \
+            -i "$ssh_dir/id_ed25519" \
+            -p 22 \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=accept-new \
+            -o ConnectTimeout=30 \
+            ssce@65.108.247.141
