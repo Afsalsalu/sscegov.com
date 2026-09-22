@@ -1,8 +1,9 @@
 {% extends "web/franchise/base.html" %}
+{% load i18n %}
 
 {% block content %}
 <style>
-    .enquiry-detail-page { max-width: 960px; margin: 0 auto; padding: 112px 24px 48px; color: #172033; }
+    .enquiry-detail-page { width: 100%; max-width: 960px; box-sizing: border-box; margin: 0 auto; padding: 112px 24px 48px; color: #172033; overflow-x: hidden; }
     .enquiry-detail-page * { box-sizing: border-box; }
     .detail-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
     .detail-eyebrow { margin: 0 0 7px; color: #5371a5; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
@@ -28,6 +29,9 @@
     @media (max-width: 640px) { .enquiry-detail-page { padding: 98px 14px 36px; }.detail-card { padding: 19px; }.detail-meta { grid-template-columns: 1fr; gap: 13px; }.detail-actions { display: grid; grid-template-columns: 1fr; }.detail-button { width: 100%; } }
 </style>
 
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+    <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+        <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
 <main class="enquiry-detail-page">
     {% for message in messages %}<div class="detail-alert{% if message.tags == 'warning' %} warning{% endif %}" role="status">{{ message }}</div>{% endfor %}
     <header class="detail-top">
@@ -56,4 +60,7 @@
         <a class="detail-button detail-button-primary" href="{% url 'web:franchise_enquiry_compose' %}"><i data-lucide="plus" aria-hidden="true"></i> New enquiry</a>
     </nav>
 </main>
+        </div>
+    </div>
+</div>
 {% endblock %}

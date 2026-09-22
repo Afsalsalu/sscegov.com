@@ -1,85 +1,113 @@
 {% extends "web/headoffice/base.html" %}
+{% load i18n %}
 
 {% block content %}
 <style>
-    .ho-enquiry-page { max-width: 1280px; margin: 0 auto; padding: 108px 24px 48px; color: #172033; }
+    .ho-enquiry-page { width: 100%; max-width: 1280px; box-sizing: border-box; margin: 0 auto; padding: 108px 24px 48px; color: #172033; overflow-x: hidden; }
     .ho-enquiry-page * { box-sizing: border-box; }
-    .ho-enquiry-header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 24px; }
-    .ho-enquiry-eyebrow { margin: 0 0 7px; color: #5371a5; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-    .ho-enquiry-title { margin: 0; color: #182642; font-size: clamp(25px, 4vw, 34px); font-weight: 750; }
-    .ho-enquiry-subtitle { margin: 8px 0 0; color: #68768d; }
-    .ho-enquiry-count { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #f2dfb4; border-radius: 999px; background: #fff8e9; padding: 9px 13px; color: #80550b; font-size: 13px; font-weight: 700; }
+    .ho-enquiry-header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 25px; }
+    .ho-enquiry-eyebrow { margin: 0 0 7px; color: #5371a5; font-size: 12px; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; }
+    .ho-enquiry-title { margin: 0; color: #182642; font-size: clamp(26px, 4vw, 36px); font-weight: 750; letter-spacing: -.02em; }
+    .ho-enquiry-subtitle { max-width: 680px; margin: 9px 0 0; color: #68768d; line-height: 1.6; }
+    .ho-enquiry-count { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #f2dfb4; border-radius: 999px; background: #fff8e9; padding: 9px 13px; color: #80550b; font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+    .ho-enquiry-count:hover { border-color: #e5c77d; background: #fff4d9; }
     .ho-enquiry-card { overflow: hidden; border: 1px solid #e7ebf2; border-radius: 18px; background: #fff; box-shadow: 0 16px 42px rgba(27, 43, 75, .07); }
-    .ho-enquiry-filters { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(170px, 220px) auto; gap: 12px; padding: 18px; border-bottom: 1px solid #edf0f5; }
+    .ho-enquiry-filters { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(170px, 220px) auto; gap: 12px; padding: 18px; border-bottom: 1px solid #edf0f5; background: linear-gradient(180deg, #fff, #fbfcfe); }
     .ho-enquiry-filters input, .ho-enquiry-filters select { width: 100%; min-width: 0; min-height: 43px; border: 1px solid #dce3ed; border-radius: 10px; background: #fff; padding: 0 12px; color: #25334d; font: inherit; }
-    .ho-enquiry-filter-button { min-height: 43px; border: 0; border-radius: 10px; background: #3158d5; padding: 0 17px; color: white; font-weight: 650; cursor: pointer; }
+    .ho-enquiry-filters input:focus, .ho-enquiry-filters select:focus, .ho-enquiry-filter-button:focus-visible, .ho-enquiry-action:focus-visible, .ho-enquiry-link:focus-visible { outline: 3px solid rgba(49, 88, 213, .18); outline-offset: 2px; }
+    .ho-enquiry-filter-button { min-height: 43px; border: 0; border-radius: 10px; background: #3158d5; padding: 0 17px; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+    .ho-enquiry-filter-button:hover { background: #2447b5; }
     .ho-enquiry-table-wrap { overflow-x: auto; }
-    .ho-enquiry-table { width: 100%; min-width: 790px; border-collapse: collapse; }
-    .ho-enquiry-table th { background: #f7f9fc; color: #65738b; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-align: left; text-transform: uppercase; }
-    .ho-enquiry-table th, .ho-enquiry-table td { border-bottom: 1px solid #edf0f5; padding: 15px 18px; vertical-align: middle; }
+    .ho-enquiry-table { width: 100%; min-width: 760px; border-collapse: collapse; }
+    .ho-enquiry-table th { background: #f7f9fc; color: #65738b; font-size: 12px; font-weight: 750; letter-spacing: .06em; text-align: left; text-transform: uppercase; }
+    .ho-enquiry-table th, .ho-enquiry-table td { border-bottom: 1px solid #edf0f5; padding: 16px 18px; vertical-align: middle; }
+    .ho-enquiry-table tbody tr { transition: background .15s ease; }
+    .ho-enquiry-table tbody tr:hover { background: #fbfcff; }
     .ho-enquiry-table tbody tr:last-child td { border-bottom: 0; }
-    .ho-enquiry-ref { color: #53627c; font-size: 13px; white-space: nowrap; }
-    .ho-enquiry-centre { color: #25334d; font-weight: 650; }
-    .ho-enquiry-email, .ho-enquiry-date { display: block; margin-top: 4px; color: #728097; font-size: 12px; font-weight: 400; }
-    .ho-enquiry-subject { max-width: 290px; color: #25334d; overflow-wrap: anywhere; }
-    .ho-enquiry-status { display: inline-flex; border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .ho-enquiry-centre { display: block; max-width: 270px; color: #25334d; font-weight: 700; overflow-wrap: anywhere; }
+    .ho-enquiry-meta, .ho-enquiry-date { display: block; margin-top: 5px; color: #728097; font-size: 12px; font-weight: 400; line-height: 1.45; overflow-wrap: anywhere; }
+    .ho-enquiry-subject { max-width: 300px; color: #25334d; font-weight: 550; overflow-wrap: anywhere; }
+    .ho-enquiry-reference { display: block; margin-top: 4px; color: #8a96a9; font-size: 11px; }
+    .ho-enquiry-status { display: inline-flex; border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 750; white-space: nowrap; }
     .status-open { background: #fff4dc; color: #91600a; }.status-replied { background: #e8f7ee; color: #1e7144; }.status-closed { background: #eef1f6; color: #57657a; }
-    .ho-enquiry-link { color: #3158d5; font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; }
-    .ho-enquiry-link:hover { text-decoration: underline; }
-    .ho-enquiry-empty { padding: 56px 24px; text-align: center; color: #6c7890; }
+    .ho-enquiry-action { display: inline-flex; align-items: center; gap: 7px; min-height: 35px; border: 1px solid #b8c8f7; border-radius: 9px; background: #fff; padding: 0 11px; color: #3158d5; font-size: 12px; font-weight: 750; text-decoration: none; white-space: nowrap; }
+    .ho-enquiry-action:hover { border-color: #3158d5; background: #f5f7ff; }
+    .ho-enquiry-empty { padding: 58px 24px; text-align: center; color: #6c7890; }
+    .ho-enquiry-empty-icon { display: inline-grid; place-items: center; width: 54px; height: 54px; margin-bottom: 14px; border-radius: 16px; background: #eef3ff; color: #5573c8; }
     .ho-enquiry-empty h2 { margin: 0 0 7px; color: #25334d; font-size: 20px; }
+    .ho-enquiry-empty p { max-width: 420px; margin: 0 auto; line-height: 1.6; }
     .ho-enquiry-pagination { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid #edf0f5; padding: 15px 20px; color: #53627a; }
+    .ho-enquiry-page-link { color: #3158d5; font-size: 13px; font-weight: 700; text-decoration: none; }
+    .ho-enquiry-page-link:hover { text-decoration: underline; }
     .ho-enquiry-alert { margin: 0 0 16px; border-radius: 12px; padding: 13px 16px; background: #edf8f1; color: #17663b; }.ho-enquiry-alert.warning { background: #fff7e8; color: #8b5b0c; }
-    @media (max-width: 680px) { .ho-enquiry-page { padding: 96px 14px 36px; }.ho-enquiry-filters { grid-template-columns: 1fr; }.ho-enquiry-filter-button { width: 100%; }.ho-enquiry-card { border-radius: 15px; } }
+    @media (max-width: 680px) { .ho-enquiry-page { padding: 96px 14px 36px; }.ho-enquiry-filters { grid-template-columns: 1fr; }.ho-enquiry-filter-button { width: 100%; }.ho-enquiry-card { border-radius: 15px; }.ho-enquiry-header { margin-bottom: 20px; }.ho-enquiry-count { width: fit-content; } }
 </style>
 
-<main class="ho-enquiry-page">
-    {% for message in messages %}<div class="ho-enquiry-alert{% if message.tags == 'warning' %} warning{% endif %}" role="status">{{ message }}</div>{% endfor %}
-    <header class="ho-enquiry-header">
-        <div><p class="ho-enquiry-eyebrow">Franchise support</p><h1 class="ho-enquiry-title">Enquiries</h1><p class="ho-enquiry-subtitle">Review franchise requests and reply from one secure inbox.</p></div>
-        <a class="ho-enquiry-count" href="?status=open" aria-label="{{ open_enquiry_count }} open enquiries"><i data-lucide="inbox" aria-hidden="true"></i>{{ open_enquiry_count }} open</a>
-    </header>
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+    <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+        <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+            <main class="ho-enquiry-page">
+                {% for message in messages %}<div class="ho-enquiry-alert{% if message.tags == 'warning' %} warning{% endif %}" role="status">{{ message }}</div>{% endfor %}
+                <header class="ho-enquiry-header">
+                    <div>
+                        <p class="ho-enquiry-eyebrow">{% translate "SUPPORT INBOX" %}</p>
+                        <h1 class="ho-enquiry-title">{% translate "Franchise Enquiries" %}</h1>
+                        <p class="ho-enquiry-subtitle">{% translate "Review and reply to franchise support requests from one secure inbox." %}</p>
+                    </div>
+                    <a class="ho-enquiry-count" href="?status=open" aria-label="{% translate 'Open enquiries' %}"><i data-lucide="inbox" aria-hidden="true"></i>{{ open_enquiry_count }} {% translate "open" %}</a>
+                </header>
 
-    <section class="ho-enquiry-card" aria-label="Franchise enquiry inbox">
-        <form method="get" class="ho-enquiry-filters" role="search">
-            <input type="search" name="q" value="{{ search_query }}" placeholder="Search reference, centre, user, subject or email" aria-label="Search enquiries">
-            <select name="status" aria-label="Filter enquiries by status">
-                <option value="" {% if not selected_status %}selected{% endif %}>All statuses</option>
-                <option value="open" {% if selected_status == 'open' %}selected{% endif %}>Open</option>
-                <option value="replied" {% if selected_status == 'replied' %}selected{% endif %}>Replied</option>
-                <option value="closed" {% if selected_status == 'closed' %}selected{% endif %}>Closed</option>
-            </select>
-            <button class="ho-enquiry-filter-button" type="submit">Search</button>
-        </form>
+                <section class="ho-enquiry-card" aria-label="{% translate 'Franchise enquiry inbox' %}">
+                    <form method="get" class="ho-enquiry-filters" role="search">
+                        <input type="search" name="q" value="{{ search_query }}" placeholder="{% translate 'Search reference, centre, user, subject or email' %}" aria-label="{% translate 'Search enquiries' %}">
+                        <select name="status" aria-label="{% translate 'Filter enquiries by status' %}">
+                            <option value="" {% if not selected_status %}selected{% endif %}>{% translate "All statuses" %}</option>
+                            <option value="open" {% if selected_status == 'open' %}selected{% endif %}>{% translate "Open" %}</option>
+                            <option value="replied" {% if selected_status == 'replied' %}selected{% endif %}>{% translate "Replied" %}</option>
+                            <option value="closed" {% if selected_status == 'closed' %}selected{% endif %}>{% translate "Closed" %}</option>
+                        </select>
+                        <button class="ho-enquiry-filter-button" type="submit">{% translate "Search" %}</button>
+                    </form>
 
-        {% if enquiries %}
-            <div class="ho-enquiry-table-wrap">
-                <table class="ho-enquiry-table">
-                    <thead><tr><th scope="col">Reference</th><th scope="col">Franchise</th><th scope="col">Subject</th><th scope="col">Created</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Action</span></th></tr></thead>
-                    <tbody>
-                        {% for enquiry in enquiries %}
-                        <tr>
-                            <td class="ho-enquiry-ref">#{{ enquiry.pk }}</td>
-                            <td><span class="ho-enquiry-centre">{{ enquiry.franchise_centre_name }}</span><span class="ho-enquiry-email">{{ enquiry.franchise_user_name }} · {{ enquiry.franchise_email }}</span></td>
-                            <td class="ho-enquiry-subject">{{ enquiry.subject }}</td>
-                            <td>{{ enquiry.created_at|date:"d M Y" }}<span class="ho-enquiry-date">{{ enquiry.created_at|date:"g:i A" }}</span></td>
-                            <td><span class="ho-enquiry-status status-{{ enquiry.status }}">{{ enquiry.get_status_display }}</span></td>
-                            <td><a class="ho-enquiry-link" href="{% url 'web:franchise_enquiry_admin_detail' enquiry.pk %}">Open</a></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% if is_paginated %}
-            <nav class="ho-enquiry-pagination" aria-label="Inbox pages">
-                {% if page_obj.has_previous %}<a class="ho-enquiry-link" href="?q={{ search_query|urlencode }}&status={{ selected_status|urlencode }}&page={{ page_obj.previous_page_number }}">Previous</a>{% else %}<span></span>{% endif %}
-                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-                {% if page_obj.has_next %}<a class="ho-enquiry-link" href="?q={{ search_query|urlencode }}&status={{ selected_status|urlencode }}&page={{ page_obj.next_page_number }}">Next</a>{% else %}<span></span>{% endif %}
-            </nav>
-            {% endif %}
-        {% else %}
-            <div class="ho-enquiry-empty"><i data-lucide="inbox" aria-hidden="true" style="width:34px;height:34px;margin-bottom:12px;color:#7890bd;"></i><h2>No matching enquiries</h2><p>Try another search or status filter. New franchise enquiries will appear here.</p></div>
-        {% endif %}
-    </section>
-</main>
+                    {% if enquiries %}
+                        <div class="ho-enquiry-table-wrap">
+                            <table class="ho-enquiry-table">
+                                <thead><tr><th scope="col">{% translate "Franchise / Centre" %}</th><th scope="col">{% translate "Subject" %}</th><th scope="col">{% translate "Created" %}</th><th scope="col">{% translate "Status" %}</th><th scope="col">{% translate "Action" %}</th></tr></thead>
+                                <tbody>
+                                    {% for enquiry in enquiries %}
+                                    <tr>
+                                        <td>
+                                            <span class="ho-enquiry-centre">{{ enquiry.franchise_centre_name }}</span>
+                                            <span class="ho-enquiry-meta">{{ enquiry.franchise_user_name }} · {{ enquiry.franchise_email }}</span>
+                                            <span class="ho-enquiry-meta">{% translate "State" %}: {% if enquiry.centre.state %}{{ enquiry.centre.state|title }}{% else %}{% translate "Not provided" %}{% endif %}</span>
+                                            <span class="ho-enquiry-reference">#{% translate "Enquiry" %} {{ enquiry.pk }}</span>
+                                        </td>
+                                        <td class="ho-enquiry-subject">{{ enquiry.subject }}</td>
+                                        <td>{{ enquiry.created_at|date:"d M Y" }}<span class="ho-enquiry-date">{{ enquiry.created_at|date:"g:i A" }}</span></td>
+                                        <td><span class="ho-enquiry-status status-{{ enquiry.status }}">{{ enquiry.get_status_display }}</span></td>
+                                        <td><a class="ho-enquiry-action" href="{% url 'web:franchise_enquiry_admin_detail' enquiry.pk %}" aria-label="{% blocktranslate with subject=enquiry.subject %}View enquiry: {{ subject }}{% endblocktranslate %}"><i data-lucide="arrow-up-right" aria-hidden="true"></i>{% translate "View enquiry" %}</a></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if is_paginated %}
+                        <nav class="ho-enquiry-pagination" aria-label="{% translate 'Inbox pages' %}">
+                            {% if page_obj.has_previous %}<a class="ho-enquiry-page-link" href="?q={{ search_query|urlencode }}&status={{ selected_status|urlencode }}&page={{ page_obj.previous_page_number }}">{% translate "Previous" %}</a>{% else %}<span></span>{% endif %}
+                            <span>{% translate "Page" %} {{ page_obj.number }} {% translate "of" %} {{ page_obj.paginator.num_pages }}</span>
+                            {% if page_obj.has_next %}<a class="ho-enquiry-page-link" href="?q={{ search_query|urlencode }}&status={{ selected_status|urlencode }}&page={{ page_obj.next_page_number }}">{% translate "Next" %}</a>{% else %}<span></span>{% endif %}
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="ho-enquiry-empty">
+                            <span class="ho-enquiry-empty-icon"><i data-lucide="inbox" aria-hidden="true"></i></span>
+                            <h2>{% translate "No matching enquiries" %}</h2>
+                            <p>{% translate "Try another search or status filter. New franchise enquiries will appear here." %}</p>
+                        </div>
+                    {% endif %}
+                </section>
+            </main>
+        </div>
+    </div>
+</div>
 {% endblock %}

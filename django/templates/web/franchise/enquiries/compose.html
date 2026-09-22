@@ -1,8 +1,9 @@
 {% extends "web/franchise/base.html" %}
+{% load i18n %}
 
 {% block content %}
 <style>
-    .enquiry-page { max-width: 980px; margin: 0 auto; padding: 112px 24px 48px; color: #172033; }
+    .enquiry-page { width: 100%; max-width: 980px; box-sizing: border-box; margin: 0 auto; padding: 112px 24px 48px; color: #172033; overflow-x: hidden; }
     .enquiry-page * { box-sizing: border-box; }
     .enquiry-card { overflow: hidden; border: 1px solid #e7ebf2; border-radius: 20px; background: #fff; box-shadow: 0 18px 50px rgba(27, 43, 75, .08); }
     .enquiry-card-head { padding: 28px 32px; background: linear-gradient(120deg, #f4f7ff, #eef8f7); border-bottom: 1px solid #e7ebf2; }
@@ -41,6 +42,9 @@
     }
 </style>
 
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+    <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+        <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
 <main class="enquiry-page">
     {% for message in messages %}
         <div class="enquiry-alert{% if message.tags == 'warning' %} warning{% endif %}" role="status">{{ message }}</div>
@@ -113,4 +117,7 @@
     });
 })();
 </script>
+        </div>
+    </div>
+</div>
 {% endblock %}
