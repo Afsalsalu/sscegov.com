@@ -1613,7 +1613,7 @@ class DistrictDashboardView(KeralaRequiredMixin, TemplateView):
         user = self.request.user
         from .enquiry_utils import get_support_whatsapp_url
 
-        context["support_whatsapp_url"] = get_support_whatsapp_url()
+        context["support_whatsapp_url"] = get_support_whatsapp_url(user)
 
         try:
             # Try to get the related centre

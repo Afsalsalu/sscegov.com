@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.sessions.models import Session
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Max
@@ -13,6 +14,7 @@ from django.utils.text import slugify
 from .storages import FranchiseEnquiryStorage
 
 from .constants import PaymentStatus
+from .whatsapp_utils import normalize_whatsapp_number
 
 # Create your models here.
 
@@ -582,10 +584,20 @@ class AddState(models.Model):
     logo = models.ImageField(upload_to="media")
     state_name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, blank=True)
+    whatsapp_number = models.CharField(max_length=15, blank=True, default="")
+    whatsapp_enabled = models.BooleanField(default=True)
+
+    def clean(self):
+        super().clean()
+        try:
+            self.whatsapp_number = normalize_whatsapp_number(self.whatsapp_number)
+        except ValidationError as exc:
+            raise ValidationError({"whatsapp_number": exc.messages}) from exc
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.state_name)
+        self.whatsapp_number = normalize_whatsapp_number(self.whatsapp_number)
         super(AddState, self).save(*args, **kwargs)
 
     def __str__(self):

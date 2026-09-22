@@ -1,0 +1,119 @@
+{% extends "web/headoffice/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<style>
+    .whatsapp-management { width: 100%; max-width: 1280px; box-sizing: border-box; margin: 0 auto; padding: 108px 24px 48px; color: #182642; overflow-x: hidden; }
+    .whatsapp-management__header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 24px; }
+    .whatsapp-management__eyebrow { margin: 0 0 7px; color: #5371a5; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .whatsapp-management__title { margin: 0; font-size: clamp(25px, 4vw, 34px); font-weight: 750; }
+    .whatsapp-management__intro { max-width: 720px; margin: 8px 0 0; color: #68768d; }
+    .whatsapp-management__card { overflow: hidden; border: 1px solid #e7ebf2; border-radius: 18px; background: #fff; box-shadow: 0 16px 42px rgba(27, 43, 75, .07); }
+    .whatsapp-management__toolbar { display: flex; justify-content: flex-end; padding: 18px; border-bottom: 1px solid #edf0f5; }
+    .whatsapp-management__search { width: min(100%, 360px); min-height: 43px; border: 1px solid #dce3ed; border-radius: 10px; padding: 0 12px; color: #25334d; font: inherit; }
+    .whatsapp-management__table-wrap { overflow-x: auto; }
+    .whatsapp-management__table { width: 100%; min-width: 760px; border-collapse: collapse; }
+    .whatsapp-management__table th { background: #f7f9fc; color: #65738b; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-align: left; text-transform: uppercase; }
+    .whatsapp-management__table th, .whatsapp-management__table td { border-bottom: 1px solid #edf0f5; padding: 16px 18px; vertical-align: middle; }
+    .whatsapp-management__table tbody tr:last-child td { border-bottom: 0; }
+    .whatsapp-management__state { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .whatsapp-management__state-icon { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: #e8f8f0; color: #087d52; }
+    .whatsapp-management__fallback { display: inline-flex; margin-top: 5px; border-radius: 999px; background: #fff6dd; padding: 3px 8px; color: #8a5b00; font-size: 11px; font-weight: 700; }
+    .whatsapp-management__form { display: flex; align-items: center; gap: 10px; }
+    .whatsapp-management__form input[type="text"] { width: min(100%, 220px); min-height: 40px; border: 1px solid #dce3ed; border-radius: 9px; padding: 0 10px; color: #25334d; font: inherit; }
+    .whatsapp-management__form input[type="text"]:focus, .whatsapp-management__search:focus { outline: 3px solid rgba(49, 88, 213, .15); border-color: #3158d5; }
+    .whatsapp-management__enabled { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; color: #53627a; font-size: 13px; }
+    .whatsapp-management__button { min-height: 40px; border: 0; border-radius: 9px; background: #3158d5; padding: 0 14px; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+    .whatsapp-management__button:hover { background: #2447b5; }
+    .whatsapp-management__error { margin-top: 7px; color: #b42318; font-size: 12px; }
+    @media (max-width: 767px) {
+        .whatsapp-management { padding: 96px 14px 32px; }
+        .whatsapp-management__form { align-items: stretch; flex-direction: column; }
+        .whatsapp-management__form input[type="text"] { width: 100%; }
+    }
+</style>
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+    <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:md:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+        <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+<main class="whatsapp-management">
+    <header class="whatsapp-management__header">
+        <div>
+            <p class="whatsapp-management__eyebrow">{% translate "Head Office support" %}</p>
+            <h1 id="whatsapp-management-title" class="whatsapp-management__title">{% translate "WhatsApp Management" %}</h1>
+            <p class="whatsapp-management__intro">{% translate "Configure the state support number used by franchise dashboard WhatsApp links. Kerala is the default fallback." %}</p>
+        </div>
+    </header>
+
+    <section class="whatsapp-management__card" aria-labelledby="whatsapp-management-title">
+        <div class="whatsapp-management__toolbar">
+            <label>
+                <span class="sr-only">{% translate "Search states" %}</span>
+                <input id="whatsapp-state-search" class="whatsapp-management__search" type="search" placeholder="{% translate 'Search states' %}" autocomplete="off">
+            </label>
+        </div>
+        <div class="whatsapp-management__table-wrap">
+            <table class="whatsapp-management__table">
+                <thead>
+                    <tr>
+                        <th>{% translate "State" %}</th>
+                        <th>{% translate "WhatsApp number" %}</th>
+                        <th>{% translate "Status" %}</th>
+                        <th>{% translate "Edit" %}</th>
+                    </tr>
+                </thead>
+                <tbody id="whatsapp-state-rows">
+                    {% for state in states %}
+                    <tr data-state-search="{{ state.state_name|lower }} {{ state.slug|lower }}">
+                        <td>
+                            <div class="whatsapp-management__state">
+                                <span class="whatsapp-management__state-icon"><i data-lucide="message-circle" class="size-4" aria-hidden="true"></i></span>
+                                <span>
+                                    {{ state.state_name }}
+                                    {% if state.is_default_fallback %}<small class="whatsapp-management__fallback">{% translate "Default fallback" %}</small>{% endif %}
+                                </span>
+                            </div>
+                        </td>
+                        <td>{% if state.whatsapp_number %}{{ state.whatsapp_number }}{% else %}{% translate "Not configured" %}{% endif %}</td>
+                        <td>
+                            {% if state.whatsapp_enabled %}{% translate "Enabled" %}{% else %}{% translate "Disabled" %}{% endif %}
+                        </td>
+                        <td>
+                            <form method="post" class="whatsapp-management__form">
+                                {% csrf_token %}
+                                <input type="hidden" name="state_id" value="{{ state.pk }}">
+                                {{ state.whatsapp_form.whatsapp_number }}
+                                <label class="whatsapp-management__enabled">
+                                    {{ state.whatsapp_form.whatsapp_enabled }} {% translate "Enabled" %}
+                                </label>
+                                <button class="whatsapp-management__button" type="submit">{% translate "Save" %}</button>
+                            </form>
+                            {% if state.whatsapp_form.errors %}<div class="whatsapp-management__error">{{ state.whatsapp_form.whatsapp_number.errors|striptags }}</div>{% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4">{% translate "No states configured." %}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<script>
+(() => {
+    const input = document.getElementById('whatsapp-state-search');
+    const rows = [...document.querySelectorAll('#whatsapp-state-rows tr[data-state-search]')];
+    if (!input) return;
+    input.addEventListener('input', () => {
+        const query = input.value.trim().toLowerCase();
+        rows.forEach((row) => {
+            row.hidden = query && !row.dataset.stateSearch.includes(query);
+        });
+    });
+})();
+</script>
+        </div>
+    </div>
+</div>
+{% endblock %}

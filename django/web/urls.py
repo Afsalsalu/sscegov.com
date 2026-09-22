@@ -16,6 +16,7 @@ from .enquiry_views import (
     FranchiseEnquiryInboxView,
 )
 from .language_views import set_language
+from .whatsapp_views import WhatsAppManagementView
 from .views import (AddCentreUserAdminView, logout_view,
                     AddDownloadFormView, AddEmployeeView, AddHeadOfficeView,
                     AddKeralaSubCentreView, AddOnlineClassView,
@@ -275,6 +276,7 @@ urlpatterns = [
         name="headoffice_dashboard",
     ),
     path("head-office/enquiries/", FranchiseEnquiryInboxView.as_view(), name="franchise_enquiry_inbox"),
+    path("head-office/whatsapp/", WhatsAppManagementView.as_view(), name="whatsapp_management"),
     path(
         "head-office/enquiries/<int:pk>/",
         FranchiseEnquiryAdminDetailView.as_view(),
