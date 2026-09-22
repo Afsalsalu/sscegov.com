@@ -40,4 +40,5 @@ logs/
 
 django/assets/
 django/media/
+django/private_media/
 django/db.sqlite3

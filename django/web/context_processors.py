@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.urls import reverse
 
+from .language import SUPPORTED_LANGUAGES, user_language
 from .models import AddState
 
 
@@ -29,3 +30,12 @@ def franchise_service_navigation(request):
         service_url = reverse("web:state_detail", kwargs={"slug": state.slug})
 
     return {"franchise_service_url": service_url}
+
+
+def language_preferences(request):
+    user = getattr(request, "user", None)
+    return {
+        "supported_languages": SUPPORTED_LANGUAGES,
+        "current_language": user_language(user, getattr(request, "session", None)),
+        "language_switch_url": reverse("web:set_language"),
+    }

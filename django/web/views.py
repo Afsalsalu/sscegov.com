@@ -40,6 +40,7 @@ from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.utils.translation import gettext
 # CRUD operations
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   TemplateView, UpdateView)
@@ -59,6 +60,7 @@ from .forms import (CentreUserForm, DownloadFormForm, OnlineClassForm,
 from .models import (AboutBlog, AboutPage, AddState, Career, CareerForm,
                      CentreUserAccount, CertificatePayment, Contact,
                      Department, DownloadForm, Employee, FailedLoginAttempt,
+                     FranchiseEnquiry,
                      HeadOffice, HomeLogoBrand,
                      HomeService, KeralaSubCentre, LatestNewsCentre, Media,
                      OnlineClass, Software, State, StateService,
@@ -435,7 +437,7 @@ class AdminOrHeadOfficeRequiredMixin(LoginRequiredMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
         if request.user.usertype not in ["Administrator", "HeadOffice"]:
-            messages.error(request, "You do not have permission to access this page.")
+            messages.error(request, gettext("You do not have permission to access this page."))
             return redirect("web:not_found")
         return super().dispatch(request, *args, **kwargs)
 
@@ -461,6 +463,9 @@ class AdminDashboardView(AdminOrHeadOfficeRequiredMixin, TemplateView):
                 "total_employees": total_employees,
                 "total_state": total_state,
                 "total_service": total_service,
+                "open_enquiry_count": FranchiseEnquiry.objects.filter(
+                    status=FranchiseEnquiry.Status.OPEN
+                ).count(),
             }
         )
 
@@ -617,6 +622,9 @@ class HeadofficeDashboardView(AdminOrHeadOfficeRequiredMixin, TemplateView):
                 "total_employees": total_employees,
                 "total_state": total_state,
                 "total_service": total_service,
+                "open_enquiry_count": FranchiseEnquiry.objects.filter(
+                    status=FranchiseEnquiry.Status.OPEN
+                ).count(),
             }
         )
 
@@ -1592,7 +1600,7 @@ class KeralaRequiredMixin(LoginRequiredMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
         if request.user.usertype != "centre":
-            messages.error(request, "You do not have permission to access this page.")
+            messages.error(request, gettext("You do not have permission to access this page."))
             return redirect("web:not_found")
         return super().dispatch(request, *args, **kwargs)
 
@@ -1603,6 +1611,9 @@ class DistrictDashboardView(KeralaRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
+        from .enquiry_utils import get_support_whatsapp_url
+
+        context["support_whatsapp_url"] = get_support_whatsapp_url()
 
         try:
             # Try to get the related centre
@@ -2176,7 +2187,7 @@ class StateRequiredMixin(LoginRequiredMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
         if request.user.usertype != "State":
-            messages.error(request, "You do not have permission to access this page.")
+            messages.error(request, gettext("You do not have permission to access this page."))
             return redirect("web:not_found")
         return super().dispatch(request, *args, **kwargs)
 

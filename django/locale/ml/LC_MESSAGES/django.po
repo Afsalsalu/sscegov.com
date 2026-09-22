@@ -1,0 +1,49 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: SSCEGOV\n"
+"Language: ml\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Select language"
+msgstr "ഭാഷ തിരഞ്ഞെടുക്കുക"
+
+msgid "Logout"
+msgstr "പുറത്തുകടക്കുക"
+
+msgid "Log Out"
+msgstr "പുറത്തുകടക്കുക"
+
+msgid "Admin Dashboard"
+msgstr "അഡ്മിൻ ഡാഷ്ബോർഡ്"
+
+msgid "Head Office Dashboard"
+msgstr "ഹെഡ് ഓഫീസ് ഡാഷ്ബോർഡ്"
+
+msgid "Centre Dashboard"
+msgstr "കേന്ദ്ര ഡാഷ്ബോർഡ്"
+
+msgid "Total Services"
+msgstr "ആകെ സേവനങ്ങൾ"
+
+msgid "Wallet Amount"
+msgstr "വാലറ്റ് തുക"
+
+msgid "IP Address"
+msgstr "ഐപി വിലാസം"
+
+msgid "Login Time"
+msgstr "ലോഗിൻ സമയം"
+
+msgid "Alerts & Updates"
+msgstr "അറിയിപ്പുകളും അപ്ഡേറ്റുകളും"
+
+msgid "Popular Services"
+msgstr "ജനപ്രിയ സേവനങ്ങൾ"
+
+msgid "More Services"
+msgstr "കൂടുതൽ സേവനങ്ങൾ"
+
+msgid "Popular services are not available"
+msgstr "ജനപ്രിയ സേവനങ്ങൾ ലഭ്യമല്ല"

@@ -10,6 +10,7 @@ from django.db.models import Max
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
+from .storages import FranchiseEnquiryStorage
 
 from .constants import PaymentStatus
 
@@ -45,6 +46,7 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractUser):
     USERNAME_FIELD = "username"
+    preferred_language = models.CharField(max_length=10, blank=True, default="")
     usertype = models.CharField(
         max_length=128,
         choices=[
@@ -422,6 +424,74 @@ class CentreUserAccount(models.Model):
     def formatted_id(self):
         # Check if the id is None and return a default string or empty string
         return f"{self.id:06d}" if self.id is not None else "000000"
+
+
+def franchise_enquiry_attachment_path(instance, filename):
+    """Use an opaque name and a server-controlled directory for enquiry uploads."""
+    from pathlib import Path
+    from uuid import uuid4
+
+    extension = Path(filename).suffix.lower()
+    if extension not in {".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png"}:
+        extension = ".bin"
+    return f"franchise_enquiries/{uuid4().hex}{extension}"
+
+
+class FranchiseEnquiry(models.Model):
+    class Status(models.TextChoices):
+        OPEN = "open", "Open"
+        REPLIED = "replied", "Replied"
+        CLOSED = "closed", "Closed"
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="franchise_enquiries",
+        null=True,
+        blank=True,
+    )
+    centre = models.ForeignKey(
+        CentreUserAccount,
+        on_delete=models.SET_NULL,
+        related_name="enquiries",
+        null=True,
+        blank=True,
+    )
+    franchise_centre_name = models.CharField(max_length=255)
+    franchise_user_name = models.CharField(max_length=255)
+    franchise_email = models.EmailField(max_length=254)
+    contact_phone = models.CharField(max_length=30, blank=True)
+    subject = models.CharField(max_length=200)
+    message = models.TextField(max_length=10000)
+    attachment = models.FileField(
+        upload_to=franchise_enquiry_attachment_path,
+        storage=FranchiseEnquiryStorage(),
+        blank=True,
+        null=True,
+    )
+    original_notification_message_id = models.CharField(max_length=255, blank=True, default="")
+    status = models.CharField(
+        max_length=12, choices=Status.choices, default=Status.OPEN, db_index=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    admin_reply = models.TextField(blank=True)
+    replied_at = models.DateTimeField(blank=True, null=True)
+    replied_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="replied_franchise_enquiries",
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        ordering = ("-created_at", "-pk")
+        verbose_name = "Franchise enquiry"
+        verbose_name_plural = "Franchise enquiries"
+
+    def __str__(self):
+        return f"Enquiry #{self.pk}: {self.subject}"
 
 class CertificatePayment(models.Model):
     user_registration = models.ForeignKey(CentreUserAccount, on_delete=models.CASCADE)

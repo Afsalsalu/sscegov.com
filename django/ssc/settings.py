@@ -15,6 +15,11 @@ from decouple import config
 import os
 
 from dotenv import load_dotenv
+from web.language import SUPPORTED_LANGUAGES
+
+# Load .env values before reading settings through os.getenv (including the
+# optional Brevo configuration below).
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -66,7 +71,9 @@ MIDDLEWARE = [
     # 'web.middleware.NoCacheMiddleware',
     # 'web.middleware.SingleSessionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'web.language_middleware.UserLanguageMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     #  'web.middleware.ContentSecurityPolicyMiddleware',
     # 'axes.middleware.AxesMiddleware',
@@ -91,9 +98,11 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'web.context_processors.franchise_service_navigation',
+            'django.contrib.auth.context_processors.auth',
+            'django.contrib.messages.context_processors.messages',
+            'django.template.context_processors.i18n',
+            'web.context_processors.franchise_service_navigation',
+            'web.context_processors.language_preferences',
             ],
         },
     },
@@ -154,13 +163,8 @@ DATABASES = {
 #     },
 # ]
 
-ANYMAIL = {
-    "BREVO": {
-        "API_KEY": os.getenv("BREVO_API_KEY", ""),
-    }
-}
-EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
-DEFAULT_FROM_EMAIL = "samatwaservicecenter.gov.in@gmail.com"
+BREVO_API_KEY = config("BREVO_API_KEY", default="")
+ANYMAIL = {"BREVO": {"API_KEY": BREVO_API_KEY}}
 
 
 
@@ -173,7 +177,11 @@ DEFAULT_FROM_EMAIL = "samatwaservicecenter.gov.in@gmail.com"
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = SUPPORTED_LANGUAGES
+
+LOCALE_PATHS = [BASE_DIR / 'locale']
 
 TIME_ZONE = 'UTC'
 
@@ -217,27 +225,60 @@ LOGIN_URL = '/custom_login'
 LOGOUT_URL = '/accounts/logout/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
-# For email   
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp-relay.brevo.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = '79f983002@smtp-brevo.com'
-# EMAIL_HOST_PASSWORD = '9YLzAk1PNcDMfQqI'
-EMAIL_BACKEND = config("EMAIL_BACKEND")
-EMAIL_HOST = config("EMAIL_HOST")
-EMAIL_PORT = config("EMAIL_PORT")
-EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+configured_email_backend = config("EMAIL_BACKEND", default="").strip()
+EMAIL_HOST = config("EMAIL_HOST", default="")
+EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+EMAIL_USE_SSL = config("EMAIL_USE_SSL", default=False, cast=bool)
+DEFAULT_FROM_EMAIL = config(
+    "DEFAULT_FROM_EMAIL",
+    default=EMAIL_HOST_USER or "samatwaservicecenter.gov.in@gmail.com",
+)
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+smtp_is_configured = bool(
+    EMAIL_HOST and EMAIL_PORT and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD
+)
+brevo_is_configured = bool(os.getenv("BREVO_API_KEY", ""))
+if configured_email_backend:
+    EMAIL_BACKEND = configured_email_backend
+elif smtp_is_configured:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+elif brevo_is_configured:
+    EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+# Local installations sometimes inherit Django's console/locmem backend from
+# development configuration. Prefer an already-configured real provider when
+# its credentials are present so enquiry notifications can be delivered.
+if DEBUG and EMAIL_BACKEND in {
+    "django.core.mail.backends.console.EmailBackend",
+    "django.core.mail.backends.locmem.EmailBackend",
+}:
+    if smtp_is_configured:
+        EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    elif brevo_is_configured:
+        EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'web.User'
 
-load_dotenv()
+# Franchise enquiry delivery uses this single server-side recipient setting.
+ENQUIRY_ADMIN_EMAIL = config(
+    "ENQUIRY_ADMIN_EMAIL", default="samatwaservicecenter.gov.in@gmail.com"
+)
+
+# Optional support number in international format (country code included).
+SUPPORT_WHATSAPP_NUMBER = os.getenv("SUPPORT_WHATSAPP_NUMBER", "")
+
+# Enquiry attachments must not be served from the public MEDIA_URL directory.
+PRIVATE_MEDIA_ROOT = Path(
+    os.getenv("PRIVATE_MEDIA_ROOT", str(BASE_DIR / "private_media"))
+)
 
 
 TIME_ZONE = 'Asia/Kolkata'

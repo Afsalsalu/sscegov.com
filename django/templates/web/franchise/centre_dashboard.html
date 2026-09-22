@@ -1,5 +1,5 @@
 {% extends "web/franchise/base.html" %}
-{% load static %}
+{% load static i18n %}
 
 {% block content %}
 
@@ -54,47 +54,47 @@
       <div class="card">
         <div class="card-body">
         {% if banners %}<div class="banner-carousel" tabindex="0" aria-label="Banners"><div class="banner-slides">{% for banner in banners %}<div class="banner-slide{% if forloop.first %} is-active{% endif %}"><img src="{{ banner.image.url }}" alt="Banner {{ forloop.counter }}"></div>{% endfor %}</div>{% if banners|length > 1 %}<button type="button" class="banner-prev" aria-label="Previous banner">&#10094;</button><button type="button" class="banner-next" aria-label="Next banner">&#10095;</button><div class="banner-dots">{% for banner in banners %}<button type="button" aria-label="Show banner {{ forloop.counter }}" class="banner-dot{% if forloop.first %} is-active{% endif %}"></button>{% endfor %}</div>{% endif %}</div>{% endif %}
-        <h6 class="mb-4 text-15">Centre Dashboard</h6>
+        <h6 class="mb-4 text-15">{% translate "Centre Dashboard" %}</h6>
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
                 <div class="px-3 py-6 text-center bg-green-100 border border-green-100 rounded-md dark:bg-green-900 dark:border-zink-800">
                     <div class="flex items-center justify-center mx-auto mb-4 rounded-md size-12 bg-green-50 text-15 dark:bg-green-400/20"><i data-lucide="monitor" class="text-green-500 fill-green-200 dark:fill-green-500/20"></i></div>
                     <h4 class="mb-1 text-white-500 fs-4xl"><span class="counter-value" data-target="{{ total_service }}">0</span></h4>
-                    <p class="mb-0 text-white-400">Total Services</p>
+                    <p class="mb-0 text-white-400">{% translate "Total Services" %}</p>
                 </div>
                 <div class="px-3 py-6 text-center bg-green-100 border border-green-100 rounded-md dark:bg-green-900 dark:border-zink-800">
                     <div class="flex items-center justify-center mx-auto mb-4 rounded-md size-12 bg-green-50 text-15 dark:bg-green-400/20"><i data-lucide="wallet" class="text-green-500 fill-green-200 dark:fill-green-500/20"></i></div>
                     <h4 class="mb-1 text-white-500 fs-4xl">₹<span class="counter-value" data-target="{{ wallet_total }}"></span></h4>
-                    <p class="mb-0 text-white-400">Wallet Amount </p>
+                    <p class="mb-0 text-white-400">{% translate "Wallet Amount" %}</p>
                 </div>
                 <div class="px-3 py-6 text-center bg-green-100 border border-green-100 rounded-md dark:bg-green-900 dark:border-zink-800">
                     <div class="flex items-center justify-center mx-auto mb-4 rounded-md size-12 bg-green-50 text-15 dark:bg-green-400/20"><i data-lucide="settings" class="text-green-500 fill-green-200 dark:fill-green-500/20"></i></div>
                     <h4 class="mb-1 text-white-500 fs-4xl">{{ ip }}</h4>
-                    <p class="mb-0 text-white-400">IP Aadress </p>
+                    <p class="mb-0 text-white-400">{% translate "IP Address" %}</p>
                 </div>
 
                 <div class="px-3 py-6 text-center border rounded-md bg-sky-500 border-sky-500 dark:bg-sky-900 dark:border-zink-800">
                     <div class="flex items-center justify-center mx-auto mb-4 rounded-md size-12 bg-white/90 text-15 dark:bg-sky-400/20"><i data-lucide="clock-4" class="text-sky-500 fill-sky-200 dark:fill-sky-500/20"></i></div>
                     <h5 class="mb-1 text-white-50 fs-4xl" style="color: whitesmoke;">{{ last_login|date:"d M Y, H:i:s" }}</h5>
-                    <p class="mb-0 text-white-200" style="color: whitesmoke;">Login Time</p>
+                    <p class="mb-0 text-white-200" style="color: whitesmoke;">{% translate "Login Time" %}</p>
                 </div>
             </div>
         </div>
     </div><!--end card-->
 
             <div class="container marquee marquees">
-              <div class="marquee-title"><span class="title-tip"></span>Alerts & Updates</div>
+              <div class="marquee-title"><span class="title-tip"></span>{% translate "Alerts & Updates" %}</div>
               
               
               <marquee behavior="" direction="" >
-                Be cautious of fraud attempts and never share your OTP or password with anyone. Protect your sensitive information by regularly updating your software to the latest version. This helps ensure you have the latest security features and protections in place. Stay vigilant and secure!
+                {% blocktranslate %}Be cautious of fraud attempts and never share your OTP or password with anyone. Protect your sensitive information by regularly updating your software to the latest version. This helps ensure you have the latest security features and protections in place. Stay vigilant and secure!{% endblocktranslate %}
               </marquee>
             </div>
-            <h4 class="popular-services-heading">Popular Services</h4>
+            <h4 class="popular-services-heading">{% translate "Popular Services" %}</h4>
 
             <div class="popular-services-grid">
                 {% if franchise_state %}
                 <div class="popular-services-context" style="grid-column:1/-1;">
-                    Showing priority content for <strong>{{ franchise_state.state_name }}</strong>
+                    {% blocktranslate with state_name=franchise_state.state_name %}Showing priority content for <strong>{{ state_name }}</strong>{% endblocktranslate %}
                 </div>
                 {% if priority_services %}
                 {% for service in priority_services %}
@@ -108,7 +108,7 @@
                 {% endfor %}
                 {% endif %}
                 {% if priority_services and other_services %}
-                <div class="popular-services-divider">More Services</div>
+                <div class="popular-services-divider">{% translate "More Services" %}</div>
                 {% endif %}
                 {% if other_services %}
                 {% for service in other_services %}
@@ -122,7 +122,7 @@
                 {% endfor %}
                 {% endif %}
                 {% if not priority_services and not other_services %}
-                <p class="popular-services-empty">popular services not available</p>
+                <p class="popular-services-empty">{% translate "Popular services are not available" %}</p>
                 {% endif %}
                 {% else %}
                 {% if popular_services %}
@@ -136,24 +136,25 @@
                 </a>
                 {% endfor %}
                 {% else %}
-                <p class="popular-services-empty">popular services not available</p>
+                <p class="popular-services-empty">{% translate "popular services not available" %}</p>
                 {% endif %}
                 {% endif %}
             </div>
           <!-- / Content -->
-          <h4 class="dashboard-news-heading">Latest News</h4>
+          <h4 class="dashboard-news-heading">{% translate "Latest News" %}</h4>
           <div class="dashboard-news-grid">
             {% if latest_news %}
             {% for latestnews in latest_news %}
             <article class="dashboard-news-card">
               <div class="dashboard-news-media">
                 {% if latestnews.image %}
-                <img hidden src="{{ latestnews.image.url }}" alt="{{ latestnews.title }}" loading="lazy" onload="this.hidden=false;this.nextElementSibling.hidden=true" onerror="this.remove()">
-                {% endif %}
+                <img src="{{ latestnews.image.url }}" alt="{{ latestnews.title }}" loading="lazy">
+                {% else %}
                 <div class="dashboard-news-placeholder" aria-hidden="true">
                   <i data-lucide="newspaper"></i>
                   <span>News update · No image available</span>
                 </div>
+                {% endif %}
               </div>
               <div class="dashboard-news-body">
                 <h6 class="dashboard-news-title">{{ latestnews.title }}</h6>
@@ -163,7 +164,7 @@
             </article>
             {% endfor %}
             {% else %}
-            <div class="dashboard-news-empty">Latest news is not available right now.</div>
+            <div class="dashboard-news-empty">{% translate "Latest news is not available right now." %}</div>
             {% endif %}
           </div><!--end grid-->
  
@@ -172,7 +173,7 @@
             <div class="card" style="background: white;">
                 <div class="card-body">
                     <div class="flex items-center mb-3">
-                        <h6 class="grow text-15">Recent Wallet <span style="color: brown;">Payment Transactions</span></h6>
+                        <h6 class="grow text-15">{% translate "Recent Wallet" %} <span style="color: brown;">{% translate "Payment Transactions" %}</span></h6>
                         <div class="relative dropdown shrink-0">
                             <button type="button" class="flex items-center justify-center size-[30px] p-0 bg-white text-slate-500 btn hover:text-slate-500 hover:bg-slate-100 focus:text-slate-500 focus:bg-slate-100 active:text-slate-500 active:bg-slate-100 dark:bg-zink-700 dark:hover:bg-slate-500/10 dark:focus:bg-slate-500/10 dark:active:bg-slate-500/10 dropdown-toggle" id="customServiceDropdown" data-bs-toggle="dropdown">
                                 <i data-lucide="more-vertical" class="inline-block size-4"></i>
@@ -192,7 +193,7 @@
                                     <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">6 Monthly</a>
                                 </li>
                                 <li>
-                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">This Yearly</a>
+                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">{% translate "This Yearly" %}</a>
                                 </li>
                             </ul>
                         </div>
@@ -205,7 +206,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500" style="text-align: center;">no transactions</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500" style="text-align: center;">{% translate "no transactions" %}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -216,7 +217,7 @@
             <div class="card" style="background: white;">
                 <div class="card-body">
                     <div class="flex items-center mb-3">
-                        <h6 class="grow text-15">Recent Service <span style="color: green;">History</span></h6>
+                        <h6 class="grow text-15">{% translate "Recent Service" %} <span style="color: green;">{% translate "History" %}</span></h6>
                         <div class="relative dropdown shrink-0">
                             <button type="button" class="flex items-center justify-center size-[30px] p-0 bg-white text-slate-500 btn hover:text-slate-500 hover:bg-slate-100 focus:text-slate-500 focus:bg-slate-100 active:text-slate-500 active:bg-slate-100 dark:bg-zink-700 dark:hover:bg-slate-500/10 dark:focus:bg-slate-500/10 dark:active:bg-slate-500/10 dropdown-toggle" id="customServiceDropdown" data-bs-toggle="dropdown">
                                 <i data-lucide="more-vertical" class="inline-block size-4"></i>
@@ -236,7 +237,7 @@
                                     <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">6 Monthly</a>
                                 </li>
                                 <li>
-                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">This Yearly</a>
+                                    <a class="block px-4 py-1.5 text-base transition-all duration-200 ease-linear text-slate-600 dropdown-item hover:bg-slate-100 hover:text-slate-500 focus:bg-slate-100 focus:text-slate-500 dark:text-zink-100 dark:hover:bg-zink-500 dark:hover:text-zink-200 dark:focus:bg-zink-500 dark:focus:text-zink-200" href="#!">{% translate "This Yearly" %}</a>
                                 </li>
                             </ul>
                         </div>
@@ -249,7 +250,7 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500" style="text-align: center;">no history</td>
+                                    <td class="px-3.5 py-2.5 border-y border-slate-200 dark:border-zink-500" style="text-align: center;">{% translate "no history" %}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -279,6 +280,44 @@
   <!-- / Layout wrapper -->
 
 <script>(function(){var b=document.querySelector('.banner-carousel');if(!b)return;var s=[].slice.call(b.querySelectorAll('.banner-slide')),d=[].slice.call(b.querySelectorAll('.banner-dot')),i=0,t;function show(n){i=(n+s.length)%s.length;s.forEach(function(x,k){x.classList.toggle('is-active',k===i)});d.forEach(function(x,k){x.classList.toggle('is-active',k===i)})}function start(){if(s.length>1)t=setInterval(function(){show(i+1)},5000)}function stop(){clearInterval(t)}var p=b.querySelector('.banner-prev'),n=b.querySelector('.banner-next');if(p)p.onclick=function(){show(i-1)};if(n)n.onclick=function(){show(i+1)};d.forEach(function(x,k){x.onclick=function(){show(k)}});b.onmouseenter=stop;b.onmouseleave=start;b.onkeydown=function(e){if(e.key==='ArrowLeft')show(i-1);if(e.key==='ArrowRight')show(i+1)};start()})()</script>
+<style>
+    .franchise-support-floats { position: fixed; right: max(18px, env(safe-area-inset-right, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 5.5rem); z-index: 40; display: flex; flex-direction: column; align-items: flex-end; gap: 11px; }
+    .franchise-support-float { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; border: 1px solid rgba(255,255,255,.24); border-radius: 999px; padding: 0 18px; box-shadow: 0 12px 28px rgba(24,38,66,.22); color: #fff; font-family: inherit; font-size: 14px; font-weight: 650; line-height: 1.2; text-decoration: none; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; }
+    .franchise-support-float:hover { color: #fff; transform: translateY(-2px); box-shadow: 0 15px 32px rgba(24,38,66,.26); }
+    .franchise-support-float:focus-visible { outline: 3px solid #f4c65c; outline-offset: 3px; }
+    .franchise-support-float-enquiry { background: linear-gradient(135deg,#3158d5,#2447b5); }
+    .franchise-support-float-whatsapp { background: linear-gradient(135deg,#169b68,#087d52); }
+    .franchise-support-float-unavailable { background: linear-gradient(135deg,#66758d,#4c5a70); }
+    .franchise-support-unavailable-message { display: none; max-width: min(310px, calc(100vw - 32px)); border: 1px solid #e1e8f2; border-radius: 13px; background: #fff; padding: 12px 14px; color: #34435c; box-shadow: 0 10px 28px rgba(24,38,66,.15); font-size: 13px; line-height: 1.45; }
+    @media (max-width: 767px) {
+        .franchise-support-floats { right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 6rem); gap: 9px; }
+        .franchise-support-float { min-height: 47px; padding: 0 15px; font-size: 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .franchise-support-float { transition: none; } }
+</style>
+<aside class="franchise-support-floats" aria-label="Franchise support actions">
+    <a class="franchise-support-float franchise-support-float-enquiry" href="{% url 'web:franchise_enquiry_compose' %}" aria-label="Write an enquiry to Head Office" title="Write an enquiry to Head Office"><i data-lucide="mail" aria-hidden="true"></i><span>{% translate "Enquiry" %}</span></a>
+    {% if support_whatsapp_url %}
+        <a class="franchise-support-float franchise-support-float-whatsapp" href="{{ support_whatsapp_url }}" target="_blank" rel="noopener noreferrer" aria-label="Contact support on WhatsApp" title="Contact support on WhatsApp"><i data-lucide="message-circle" aria-hidden="true"></i><span>{% translate "WhatsApp" %}</span></a>
+    {% else %}
+        <span class="franchise-support-unavailable-message" id="support-unavailable-message" role="status">{% translate "WhatsApp support is currently unavailable. Please send an enquiry to Head Office." %}</span>
+        <button class="franchise-support-float franchise-support-float-unavailable" id="support-unavailable-button" type="button" aria-label="WhatsApp support unavailable. Use Enquiry instead." title="WhatsApp support is not configured" aria-expanded="false" aria-controls="support-unavailable-message"><i data-lucide="message-circle" aria-hidden="true"></i><span>{% translate "WhatsApp" %}</span></button>
+    {% endif %}
+</aside>
+{% if not support_whatsapp_url %}
+<script>
+(() => {
+    const button = document.getElementById('support-unavailable-button');
+    const message = document.getElementById('support-unavailable-message');
+    if (!button || !message) return;
+    button.addEventListener('click', () => {
+        const opening = message.style.display !== 'block';
+        message.style.display = opening ? 'block' : 'none';
+        button.setAttribute('aria-expanded', String(opening));
+    });
+})();
+</script>
+{% endif %}
 {% endblock content %}    
 
 <!-- Newly Arrived / recently added services -->

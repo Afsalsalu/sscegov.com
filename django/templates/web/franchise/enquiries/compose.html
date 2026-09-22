@@ -1,0 +1,116 @@
+{% extends "web/franchise/base.html" %}
+
+{% block content %}
+<style>
+    .enquiry-page { max-width: 980px; margin: 0 auto; padding: 112px 24px 48px; color: #172033; }
+    .enquiry-page * { box-sizing: border-box; }
+    .enquiry-card { overflow: hidden; border: 1px solid #e7ebf2; border-radius: 20px; background: #fff; box-shadow: 0 18px 50px rgba(27, 43, 75, .08); }
+    .enquiry-card-head { padding: 28px 32px; background: linear-gradient(120deg, #f4f7ff, #eef8f7); border-bottom: 1px solid #e7ebf2; }
+    .enquiry-eyebrow { margin: 0 0 8px; color: #5371a5; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .enquiry-title { margin: 0; color: #182642; font-size: clamp(24px, 4vw, 32px); font-weight: 750; line-height: 1.2; }
+    .enquiry-intro { margin: 10px 0 0; color: #65738b; font-size: 15px; }
+    .enquiry-form { display: grid; gap: 22px; padding: 30px 32px 32px; }
+    .enquiry-field { display: grid; gap: 8px; min-width: 0; }
+    .enquiry-field label { color: #25334d; font-size: 14px; font-weight: 650; }
+    .enquiry-field input:not([type=file]), .enquiry-field textarea, .enquiry-field select { width: 100%; min-width: 0; border: 1px solid #dce3ed; border-radius: 11px; background: #fff; padding: 12px 14px; color: #182642; font: inherit; outline: none; transition: border-color .18s ease, box-shadow .18s ease; }
+    .enquiry-field input:focus, .enquiry-field textarea:focus, .enquiry-field select:focus { border-color: #4c6fff; box-shadow: 0 0 0 3px rgba(76, 111, 255, .13); }
+    .enquiry-field input[readonly] { background: #f5f7fb; color: #647189; }
+    .enquiry-field textarea { min-height: 190px; resize: vertical; }
+    .enquiry-help { margin: 0; color: #748198; font-size: 13px; line-height: 1.5; }
+    .enquiry-errors { margin: 0; padding-left: 18px; color: #b42318; font-size: 13px; }
+    .enquiry-file-wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+    .enquiry-file-input { max-width: 100%; color: #53627a; font: inherit; }
+    .enquiry-file-name { display: none; align-items: center; gap: 10px; max-width: 100%; border: 1px solid #e0e6ef; border-radius: 999px; background: #f7f9fc; padding: 7px 9px 7px 13px; color: #34435c; font-size: 13px; }
+    .enquiry-file-name span { overflow: hidden; max-width: min(54vw, 360px); text-overflow: ellipsis; white-space: nowrap; }
+    .enquiry-remove-file { border: 0; border-radius: 50%; background: #e9eef7; color: #34435c; width: 27px; height: 27px; cursor: pointer; font-size: 16px; line-height: 1; }
+    .enquiry-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; padding-top: 6px; }
+    .enquiry-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 46px; border: 1px solid transparent; border-radius: 11px; padding: 0 18px; font-weight: 650; text-decoration: none; cursor: pointer; transition: transform .16s ease, box-shadow .16s ease; }
+    .enquiry-button:hover { transform: translateY(-1px); }
+    .enquiry-button-primary { background: #3158d5; color: #fff; box-shadow: 0 8px 18px rgba(49, 88, 213, .2); }
+    .enquiry-button-primary:hover { background: #284ab8; color: #fff; }
+    .enquiry-button-secondary { border-color: #dce3ed; background: #fff; color: #40516e; }
+    .enquiry-alert { margin: 0 0 18px; border-radius: 12px; padding: 13px 16px; background: #edf8f1; color: #17663b; }
+    .enquiry-alert.warning { background: #fff7e8; color: #8b5b0c; }
+    @media (max-width: 640px) {
+        .enquiry-page { padding: 98px 14px 36px; }
+        .enquiry-card { border-radius: 16px; }
+        .enquiry-card-head { padding: 23px 20px; }
+        .enquiry-form { gap: 18px; padding: 22px 20px 24px; }
+        .enquiry-actions { display: grid; grid-template-columns: 1fr 1fr; }
+        .enquiry-button { padding: 0 12px; }
+    }
+</style>
+
+<main class="enquiry-page">
+    {% for message in messages %}
+        <div class="enquiry-alert{% if message.tags == 'warning' %} warning{% endif %}" role="status">{{ message }}</div>
+    {% endfor %}
+    <section class="enquiry-card" aria-labelledby="enquiry-title">
+        <header class="enquiry-card-head">
+            <p class="enquiry-eyebrow">Franchise support</p>
+            <h1 id="enquiry-title" class="enquiry-title">Write to Head Office</h1>
+            <p class="enquiry-intro">Send your question or request. You can follow the response from your enquiry history.</p>
+        </header>
+        <form class="enquiry-form" method="post" enctype="multipart/form-data" id="enquiry-compose-form">
+            {% csrf_token %}
+            {% if form.non_field_errors %}<ul class="enquiry-errors">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            <div class="enquiry-field">
+                <label for="enquiry-recipient">To</label>
+                <input id="enquiry-recipient" type="text" value="Head Office Admin" readonly aria-readonly="true">
+                <p class="enquiry-help">Your enquiry is routed securely to the Head Office support team.</p>
+            </div>
+            <div class="enquiry-field">
+                <label for="id_subject">{{ form.subject.label }} <span aria-hidden="true">*</span></label>
+                {{ form.subject }}
+                {% if form.subject.errors %}<ul class="enquiry-errors">{% for error in form.subject.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+            <div class="enquiry-field">
+                <label for="id_message">{{ form.message.label }} <span aria-hidden="true">*</span></label>
+                {{ form.message }}
+                {% if form.message.errors %}<ul class="enquiry-errors">{% for error in form.message.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+            <div class="enquiry-field">
+                <label for="id_attachment">{{ form.attachment.label }}</label>
+                <div class="enquiry-file-wrap">
+                    <input class="enquiry-file-input" type="file" id="id_attachment" name="attachment" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" aria-describedby="attachment-help">
+                    <span class="enquiry-file-name" id="attachment-selected"><span id="attachment-name"></span><button class="enquiry-remove-file" type="button" id="remove-attachment" aria-label="Remove selected attachment">×</button></span>
+                </div>
+                <p class="enquiry-help" id="attachment-help">{{ form.attachment.help_text }}</p>
+                {% if form.attachment.errors %}<ul class="enquiry-errors">{% for error in form.attachment.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            </div>
+            <div class="enquiry-actions">
+                <a class="enquiry-button enquiry-button-secondary" href="{% url 'web:centre_dashboard' %}">Cancel</a>
+                <button class="enquiry-button enquiry-button-primary" id="send-enquiry-button" type="submit"><i data-lucide="send" aria-hidden="true"></i><span>Send enquiry</span></button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<script>
+(() => {
+    const input = document.getElementById('id_attachment');
+    const selected = document.getElementById('attachment-selected');
+    const name = document.getElementById('attachment-name');
+    const remove = document.getElementById('remove-attachment');
+    const form = document.getElementById('enquiry-compose-form');
+    const submit = document.getElementById('send-enquiry-button');
+    input.addEventListener('change', () => {
+        const file = input.files && input.files[0];
+        name.textContent = file ? file.name : '';
+        selected.style.display = file ? 'inline-flex' : 'none';
+    });
+    remove.addEventListener('click', () => {
+        input.value = '';
+        name.textContent = '';
+        selected.style.display = 'none';
+        input.focus();
+    });
+    form.addEventListener('submit', () => {
+        if (form.reportValidity()) {
+            submit.disabled = true;
+            submit.querySelector('span').textContent = 'Sending…';
+        }
+    });
+})();
+</script>
+{% endblock %}

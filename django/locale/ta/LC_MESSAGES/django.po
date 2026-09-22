@@ -1,0 +1,49 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: SSCEGOV\n"
+"Language: ta\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Select language"
+msgstr "மொழியைத் தேர்ந்தெடுக்கவும்"
+
+msgid "Logout"
+msgstr "வெளியேறு"
+
+msgid "Log Out"
+msgstr "வெளியேறு"
+
+msgid "Admin Dashboard"
+msgstr "நிர்வாகி டாஷ்போர்டு"
+
+msgid "Head Office Dashboard"
+msgstr "தலைமை அலுவலக டாஷ்போர்டு"
+
+msgid "Centre Dashboard"
+msgstr "மைய டாஷ்போர்டு"
+
+msgid "Total Services"
+msgstr "மொத்த சேவைகள்"
+
+msgid "Wallet Amount"
+msgstr "வாலெட் தொகை"
+
+msgid "IP Address"
+msgstr "ஐபி முகவரி"
+
+msgid "Login Time"
+msgstr "உள்நுழைவு நேரம்"
+
+msgid "Alerts & Updates"
+msgstr "எச்சரிக்கைகள் மற்றும் புதுப்பிப்புகள்"
+
+msgid "Popular Services"
+msgstr "பிரபலமான சேவைகள்"
+
+msgid "More Services"
+msgstr "மேலும் சேவைகள்"
+
+msgid "Popular services are not available"
+msgstr "பிரபலமான சேவைகள் கிடைக்கவில்லை"

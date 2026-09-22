@@ -73,7 +73,7 @@ class ContentSecurityPolicyMiddleware:
         # response["Content-Security-Policy"] = csp_header
         # response["Content-Security-Policy-Report-Only"] = csp_header  # Optional: Only for monitoring
         
-        # # Add nonce to the response context if needed for templates
+        # # Add nonce to the response context if needed for inline scripts
         # response.context_data = {"csp_nonce": nonce}
 
         return response
@@ -126,4 +126,3 @@ from django.utils.deprecation import MiddlewareMixin
 #             "report-uri /csp-report-endpoint;"
 #         )
 #         return response
-

@@ -1,6 +1,6 @@
 {% extends "web/headoffice/base.html" %}
 
-{% load static %}
+{% load static i18n %}
 
 {% block content %}
 
@@ -18,22 +18,27 @@
 
           <div class="flex flex-col gap-2 py-4 md:flex-row md:items-center print:hidden">
               <div class="grow">
-                  <h5 class="text-16">Head Office Dashboard</h5>
+                  <h5 class="text-16">{% translate "Head Office Dashboard" %}</h5>
               </div>
               <ul class="flex items-center gap-2 text-sm font-normal shrink-0">
                   
                   <li class="text-slate-700 dark:text-zink-100">
-                    <p style="font-weight:bold; font-size: 15px;"><span style="color:brown;">Time:</span> <span id="currentTime"></span></p> 
+                    <p style="font-weight:bold; font-size: 15px;"><span style="color:brown;">{% translate "Time:" %}</span> <span id="currentTime"></span></p> 
 
                   </li>
                   <li class="text-slate-700 dark:text-zink-100">
-                    <p style="font-weight:bold; font-size: 15px;"><span style="color:brown;">Date:</span> <span id="currentDate"></span></p> 
+                    <p style="font-weight:bold; font-size: 15px;"><span style="color:brown;">{% translate "Date:" %}</span> <span id="currentDate"></span></p> 
 
                 </li>
               </ul>
           </div>
           
           
+          <a href="{% url 'web:franchise_enquiry_inbox' %}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 18px;padding:15px 18px;border:1px solid #f0dfba;border-radius:14px;background:linear-gradient(110deg,#fff9eb,#fff);color:#67470b;text-decoration:none;box-shadow:0 8px 22px rgba(54,43,16,.05);">
+            <span style="display:flex;align-items:center;gap:12px;"><span style="display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#ffefc9;color:#8e5f00;"><i data-lucide="inbox" aria-hidden="true"></i></span><span><strong style="display:block;color:#24324a;">{% translate "Franchise enquiries" %}</strong><span style="font-size:13px;color:#68768d;">{% translate "Open the Head Office inbox to review and reply." %}</span></span></span>
+            <span style="display:inline-flex;align-items:center;gap:7px;border-radius:999px;background:#fff0cd;padding:7px 11px;font-size:13px;font-weight:700;white-space:nowrap;">{{ open_enquiry_count }} {% translate "open" %} <i data-lucide="arrow-right" aria-hidden="true" style="width:15px;height:15px;"></i></span>
+          </a>
+
           <div class="grid grid-cols-12 gap-x-5">
               <div class="order-1 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-green-100 dark:bg-green-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-green-500/20 relative overflow-hidden">
                   <div class="card-body">
@@ -42,7 +47,7 @@
                           <i data-lucide="users"></i>
                       </div>
                       <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{ total_kerala }}">0</span></h5>
-                      <p class="text-slate-500 dark:text-slate-200">Centres Users</p>
+                      <p class="text-slate-500 dark:text-slate-200">{% translate "Centres Users" %}</p>
                   </div>
               </div><!--end col-->
               <div class="order-5 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-orange-100 dark:bg-orange-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-orange-500/20 relative overflow-hidden">
@@ -52,7 +57,7 @@
                         <i data-lucide="users"></i>
                       </div>
                       <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{ total_employees }}">0</span></h5>
-                      <p class="text-slate-500 dark:text-slate-200">SSC Employee Users</p>
+                      <p class="text-slate-500 dark:text-slate-200">{% translate "SSC Employee Users" %}</p>
                   </div>
               </div><!--end col-->
               <div class="order-8 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-purple-100 dark:bg-purple-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-purple-500/20 relative overflow-hidden">
@@ -62,7 +67,7 @@
                         <i data-lucide="cog"></i>
                       </div>
                       <h5 class="mt-5 mb-2">{{ip}}</h5>
-                      <p class="text-slate-500 dark:text-slate-200">Your IP Address</p>
+                      <p class="text-slate-500 dark:text-slate-200">{% translate "Your IP Address" %}</p>
                   </div>
               </div><!--end col-->
               <div class="order-4 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-sky-100 dark:bg-sky-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-sky-500/20 relative overflow-hidden">
@@ -72,7 +77,7 @@
                           <i data-lucide="users"></i>
                       </div>
                       <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{ total_state }}">0</span></h5>
-                      <p class="text-slate-500 dark:text-slate-200">State Users</p>
+                      <p class="text-slate-500 dark:text-slate-200">{% translate "State Users" %}</p>
                   </div>    
               </div><!--end col-->
               <div class="order-5 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 dark:bg-sky-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-sky-500/20 relative overflow-hidden" style="background-color: rgb(255 199 199);">
@@ -81,8 +86,8 @@
                     <div class="flex items-center justify-center rounded-md size-12 text-15 text-sky-50" style="background-color: white;">
                         <img src="{% static 'web/images/google.webp' %}" alt="google">
                     </div>
-                    <h5 class="mt-5 mb-2"><a href="https://analytics.google.com/analytics/web/?authuser=0#/p442561502/reports/intelligenthome?params=_u..nav%3Dmaui" target="_blank" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">Analytics</a></h5>
-                    <p class="text-slate-500 dark:text-slate-200">Google Analytics</p>
+                    <h5 class="mt-5 mb-2"><a href="https://analytics.google.com/analytics/web/?authuser=0#/p442561502/reports/intelligenthome?params=_u..nav%3Dmaui" target="_blank" class="text-white btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20">{% translate "Analytics" %}</a></h5>
+                    <p class="text-slate-500 dark:text-slate-200">{% translate "Google Analytics" %}</p>
                 </div>    
             </div><!--end col-->
             <div class="order-6 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-sky-100 dark:bg-sky-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-sky-500/20 relative overflow-hidden">
@@ -92,7 +97,7 @@
                         <i data-lucide="users"></i>
                     </div>
                     <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{ total_register }}">0</span></h5>
-                    <p class="text-slate-500 dark:text-slate-200">Exam Register Users</p>
+                    <p class="text-slate-500 dark:text-slate-200">{% translate "Exam Register Users" %}</p>
                 </div>    
             </div><!--end col-->
             <div class="order-2 md:col-span-6 lg:col-span-3 col-span-12 2xl:order-1 bg-green-100 dark:bg-green-500/20 card 2xl:col-span-2 group-data-[skin=bordered]:border-green-500/20 relative overflow-hidden">
@@ -102,27 +107,27 @@
                         <i data-lucide="users"></i>
                     </div>
                     <h5 class="mt-5 mb-2"><span class="counter-value" data-target="{{ total_service }}">0</span></h5>
-                    <p class="text-slate-500 dark:text-slate-200">Total Services</p>
+                    <p class="text-slate-500 dark:text-slate-200">{% translate "Total Services" %}</p>
                 </div>
             </div><!--end col-->
           </div>
           <marquee behavior="" direction="" style="background-color: antiquewhite; height: 3vh;">
-            <p>Welcome to the Samatwa Service Centre E-Governance LTD Head Office Dashboard, facilitating nationwide access. Control total exam registrations, monitor IP addresses, manage Center Users, track employee counts, and govern state operations efficiently.</p>
+            <p>{% blocktranslate %}Welcome to the Samatwa Service Centre E-Governance LTD Head Office Dashboard, facilitating nationwide access. Control total exam registrations, monitor IP addresses, manage Center Users, track employee counts, and govern state operations efficiently.{% endblocktranslate %}</p>
           </marquee>
           
           <div class="grid grid-cols-1 gap-x-5 xl:grid-cols-2 py-5">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-4 text-15">Recent Exam Registrations <span style="color: brown;">Payment Transactions</span> </h6>
+                    <h6 class="mb-4 text-15">{% translate "Recent Exam Registrations" %} <span style="color: brown;">{% translate "Payment Transactions" %}</span> </h6>
 
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead class="ltr:text-left rtl:text-right">
                                 <tr>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">TEC No</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Amount</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">State</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">District</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "TEC No" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "Amount" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "State" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "District" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -140,16 +145,16 @@
             </div><!--end card-->
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-4 text-15">Recent Exam Registrations</h6>
+                    <h6 class="mb-4 text-15">{% translate "Recent Exam Registrations" %}</h6>
 
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead class="ltr:text-left rtl:text-right">
                                 <tr>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">TEC No</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Name</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">State</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">District</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "TEC No" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "Name" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "State" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "District" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -169,15 +174,15 @@
             </div><!--end card-->
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-4 text-15">New Center Account <span style="color: green;">Opening</span> </h6>
+                    <h6 class="mb-4 text-15">{% translate "New Center Account" %} <span style="color: green;">{% translate "Opening" %}</span> </h6>
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead class="ltr:text-left rtl:text-right">
                                 <tr>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Centre ID</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Name</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">State</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">District</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "Centre ID" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "Name" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "State" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "District" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -195,14 +200,14 @@
             </div><!--end card-->
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-4 text-15">Center Wallet <span style="color: blue;">Top Up</span> Transactions    </h6>
+                    <h6 class="mb-4 text-15">{% translate "Center Wallet" %} <span style="color: blue;">{% translate "Top Up" %}</span> Transactions    </h6>
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead class="ltr:text-left rtl:text-right">
                                 <tr>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Centre ID</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Virtual A/C No.</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Amount</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "Centre ID" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "Virtual A/C No." %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "Amount" %}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -219,15 +224,15 @@
             </div><!--end card-->
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-4 text-15">Recent Enquiry via Contact Form</h6>
+                    <h6 class="mb-4 text-15">{% translate "Recent Enquiry via Contact Form" %}</h6>
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead class="ltr:text-left rtl:text-right">
                                 <tr>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Name</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">Phone</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">State</th>
-                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">District</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "Name" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "Phone" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "State" %}</th>
+                                    <th class="px-3.5 py-2.5 font-semibold border-b border-slate-200 dark:border-zink-500">{% translate "District" %}</th>
                                 </tr>
                             </thead>
                             <tbody>

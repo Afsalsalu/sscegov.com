@@ -1,0 +1,14 @@
+{% load i18n %}
+<div class="language-switcher" data-language-switcher>
+    <form method="post" action="{{ language_switch_url }}" class="language-switcher__form">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <span class="language-switcher__icon" aria-hidden="true"><i data-lucide="globe-2"></i></span>
+        <label class="sr-only" for="dashboard-language">{% trans "Select language" %}</label>
+        <select id="dashboard-language" name="language" class="language-switcher__select" aria-label="{% trans 'Select language' %}" onchange="this.form.submit()">
+            {% for language_code, language_name in supported_languages %}
+                <option value="{{ language_code }}"{% if language_code == current_language %} selected{% endif %}>{{ language_name }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>

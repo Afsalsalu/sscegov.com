@@ -415,7 +415,7 @@ class LatestNewsTests(TestCase):
         )
         return user
 
-    def test_admin_list_uses_compact_cards_search_and_safe_image_fallback(self):
+    def test_admin_list_uses_compact_cards_search_and_falls_back_only_when_image_is_empty(self):
         admin = get_user_model().objects.create_user(
             username="latest-news-admin", password="test-password", usertype="HeadOffice"
         )
@@ -427,6 +427,11 @@ class LatestNewsTests(TestCase):
         missing = LatestNewsCentre.objects.create(
             image="media/news/missing-latest-news.png",
             title="Missing image update",
+            content="This item has an image value but no stored file.",
+        )
+        LatestNewsCentre.objects.create(
+            image="",
+            title="Image-less update",
             content="This item should use the built-in fallback.",
         )
         self.client.force_login(admin)
@@ -437,34 +442,42 @@ class LatestNewsTests(TestCase):
         self.assertContains(response, "Search news by title or description")
         self.assertContains(response, "group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu")
         self.assertContains(response, "news-management-header-actions")
-        self.assertContains(response, '<article class="news-management-card" data-news-card>', count=2)
+        self.assertContains(response, '<article class="news-management-card" data-news-card>', count=3)
         self.assertContains(response, "Edit")
         self.assertContains(response, "Delete")
         self.assertContains(response, news.image.url)
-        self.assertContains(response, "No image available")
+        self.assertContains(response, missing.image.url)
+        self.assertContains(response, "No image available", count=1)
         self.assertNotContains(response, 'src=""')
         self.assertContains(response, f'data-edit-url="{reverse("web:latest_news_edit", kwargs={"pk": news.pk})}"')
         self.assertContains(response, f'data-delete-url="{reverse("web:latest_news_delete", kwargs={"pk": missing.pk})}"')
 
-    def test_dashboard_latest_news_uses_compact_safe_cards(self):
-        LatestNewsCentre.objects.create(
+    def test_dashboard_latest_news_falls_back_only_when_image_is_empty(self):
+        news = LatestNewsCentre.objects.create(
             image=image_file("dashboard-news.png"),
             title="Dashboard update",
             content="A compact dashboard news preview.",
         )
-        LatestNewsCentre.objects.create(
+        missing = LatestNewsCentre.objects.create(
             image="media/news/missing-dashboard-news.png",
             title="Fallback update",
+            content="This item has an image value but no stored file.",
+        )
+        LatestNewsCentre.objects.create(
+            image="",
+            title="Image-less dashboard update",
             content="Fallback preview.",
         )
         self.client.force_login(self.make_franchise_user())
         response = self.client.get(reverse("web:centre_dashboard"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '<article class="dashboard-news-card">', count=2)
+        self.assertContains(response, '<article class="dashboard-news-card">', count=3)
         self.assertContains(response, "dashboard-news-grid")
         self.assertContains(response, "Dashboard update")
-        self.assertContains(response, "No image available")
+        self.assertContains(response, news.image.url)
+        self.assertContains(response, missing.image.url)
+        self.assertContains(response, "No image available", count=1)
         self.assertNotContains(response, 'src=""')
 
 

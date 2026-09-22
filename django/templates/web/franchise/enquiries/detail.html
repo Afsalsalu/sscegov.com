@@ -1,0 +1,59 @@
+{% extends "web/franchise/base.html" %}
+
+{% block content %}
+<style>
+    .enquiry-detail-page { max-width: 960px; margin: 0 auto; padding: 112px 24px 48px; color: #172033; }
+    .enquiry-detail-page * { box-sizing: border-box; }
+    .detail-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+    .detail-eyebrow { margin: 0 0 7px; color: #5371a5; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .detail-title { margin: 0; color: #182642; font-size: clamp(24px, 4vw, 32px); font-weight: 750; overflow-wrap: anywhere; }
+    .detail-ref { margin: 8px 0 0; color: #6b7890; font-size: 14px; }
+    .detail-card { margin-bottom: 18px; border: 1px solid #e7ebf2; border-radius: 17px; background: #fff; padding: 24px; box-shadow: 0 14px 38px rgba(27, 43, 75, .06); }
+    .detail-card h2 { margin: 0 0 17px; color: #25334d; font-size: 17px; }
+    .detail-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; margin-bottom: 22px; }
+    .detail-meta-item small { display: block; margin-bottom: 5px; color: #758198; font-size: 12px; font-weight: 650; text-transform: uppercase; letter-spacing: .04em; }
+    .detail-meta-item strong { color: #25334d; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+    .detail-status { display: inline-flex; border-radius: 999px; padding: 6px 11px; font-size: 12px; font-weight: 700; }
+    .status-open { background: #fff4dc; color: #91600a; }.status-replied { background: #e8f7ee; color: #1e7144; }.status-closed { background: #eef1f6; color: #57657a; }
+    .detail-content { border-top: 1px solid #edf0f5; padding-top: 19px; }
+    .detail-content-label { margin: 0 0 9px; color: #758198; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+    .detail-message { color: #34435c; line-height: 1.7; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .detail-attachment { display: inline-flex; align-items: center; gap: 9px; margin-top: 18px; border: 1px solid #e0e6ef; border-radius: 10px; padding: 10px 13px; color: #3158d5; font-size: 13px; font-weight: 650; text-decoration: none; }
+    .detail-reply { border-color: #dce8ff; background: linear-gradient(120deg, #f8faff, #fff); }
+    .detail-reply h2 { color: #3158d5; }
+    .detail-actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 22px; }
+    .detail-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid #dce3ed; border-radius: 11px; background: #fff; padding: 0 15px; color: #40516e; font-weight: 650; text-decoration: none; }
+    .detail-button-primary { border-color: transparent; background: #3158d5; color: #fff; }
+    .detail-alert { margin: 0 0 16px; border-radius: 12px; padding: 13px 16px; background: #edf8f1; color: #17663b; }.detail-alert.warning { background: #fff7e8; color: #8b5b0c; }
+    @media (max-width: 640px) { .enquiry-detail-page { padding: 98px 14px 36px; }.detail-card { padding: 19px; }.detail-meta { grid-template-columns: 1fr; gap: 13px; }.detail-actions { display: grid; grid-template-columns: 1fr; }.detail-button { width: 100%; } }
+</style>
+
+<main class="enquiry-detail-page">
+    {% for message in messages %}<div class="detail-alert{% if message.tags == 'warning' %} warning{% endif %}" role="status">{{ message }}</div>{% endfor %}
+    <header class="detail-top">
+        <div><p class="detail-eyebrow">Enquiry details</p><h1 class="detail-title">{{ enquiry.subject }}</h1><p class="detail-ref">Reference #{{ enquiry.pk }} · Submitted {{ enquiry.created_at|date:"d M Y, g:i A" }}</p></div>
+        <span class="detail-status status-{{ enquiry.status }}">{{ enquiry.get_status_display }}</span>
+    </header>
+
+    <section class="detail-card" aria-labelledby="your-message-heading">
+        <h2 id="your-message-heading">Your message</h2>
+        <div class="detail-content"><p class="detail-content-label">Message</p><div class="detail-message">{{ enquiry.message }}</div></div>
+        {% if enquiry.attachment %}<a class="detail-attachment" href="{% url 'web:franchise_enquiry_attachment' enquiry.pk %}" aria-label="Download your enquiry attachment"><i data-lucide="paperclip" aria-hidden="true"></i> Download attachment</a>{% endif %}
+    </section>
+
+    {% if enquiry.admin_reply %}
+    <section class="detail-card detail-reply" aria-labelledby="head-office-reply-heading">
+        <h2 id="head-office-reply-heading">Reply from Head Office</h2>
+        <p class="detail-content-label">{% if enquiry.replied_at %}{{ enquiry.replied_at|date:"d M Y, g:i A" }}{% endif %}</p>
+        <div class="detail-message">{{ enquiry.admin_reply }}</div>
+    </section>
+    {% else %}
+    <section class="detail-card" aria-live="polite"><h2>Waiting for Head Office</h2><p class="detail-message">Your enquiry is saved. A reply will appear here when the Head Office team responds.</p></section>
+    {% endif %}
+
+    <nav class="detail-actions" aria-label="Enquiry actions">
+        <a class="detail-button" href="{% url 'web:franchise_enquiry_history' %}"><i data-lucide="arrow-left" aria-hidden="true"></i> Back to enquiry history</a>
+        <a class="detail-button detail-button-primary" href="{% url 'web:franchise_enquiry_compose' %}"><i data-lucide="plus" aria-hidden="true"></i> New enquiry</a>
+    </nav>
+</main>
+{% endblock %}

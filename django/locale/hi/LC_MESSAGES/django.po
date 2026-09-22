@@ -1,0 +1,49 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: SSCEGOV\n"
+"Language: hi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Select language"
+msgstr "भाषा चुनें"
+
+msgid "Logout"
+msgstr "लॉग आउट"
+
+msgid "Log Out"
+msgstr "लॉग आउट"
+
+msgid "Admin Dashboard"
+msgstr "व्यवस्थापक डैशबोर्ड"
+
+msgid "Head Office Dashboard"
+msgstr "प्रधान कार्यालय डैशबोर्ड"
+
+msgid "Centre Dashboard"
+msgstr "केंद्र डैशबोर्ड"
+
+msgid "Total Services"
+msgstr "कुल सेवाएँ"
+
+msgid "Wallet Amount"
+msgstr "वॉलेट राशि"
+
+msgid "IP Address"
+msgstr "आईपी पता"
+
+msgid "Login Time"
+msgstr "लॉगिन समय"
+
+msgid "Alerts & Updates"
+msgstr "सूचनाएँ और अपडेट"
+
+msgid "Popular Services"
+msgstr "लोकप्रिय सेवाएँ"
+
+msgid "More Services"
+msgstr "अधिक सेवाएँ"
+
+msgid "Popular services are not available"
+msgstr "लोकप्रिय सेवाएँ उपलब्ध नहीं हैं"

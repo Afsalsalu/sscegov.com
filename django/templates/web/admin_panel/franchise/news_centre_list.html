@@ -79,12 +79,13 @@
           <article class="news-management-card" data-news-card>
             <div class="news-management-media">
               {% if latestnews.image %}
-              <img hidden src="{{ latestnews.image.url }}" alt="{{ latestnews.title }}" loading="lazy" onload="this.hidden=false;this.nextElementSibling.hidden=true" onerror="this.remove()">
-              {% endif %}
+              <img src="{{ latestnews.image.url }}" alt="{{ latestnews.title }}" loading="lazy">
+              {% else %}
               <div class="news-management-placeholder" aria-hidden="true">
                 <i data-lucide="newspaper"></i>
                 <span>News update · No image available</span>
               </div>
+              {% endif %}
             </div>
             <div class="news-management-body">
               <h2 class="news-management-title-text" data-news-title>{{ latestnews.title }}</h2>

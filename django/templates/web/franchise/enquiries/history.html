@@ -1,0 +1,85 @@
+{% extends "web/franchise/base.html" %}
+
+{% block content %}
+<style>
+    .history-page { max-width: 1120px; margin: 0 auto; padding: 112px 24px 48px; color: #172033; }
+    .history-page * { box-sizing: border-box; }
+    .history-header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 24px; }
+    .history-eyebrow { margin: 0 0 7px; color: #5371a5; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .history-title { margin: 0; color: #182642; font-size: clamp(25px, 4vw, 34px); font-weight: 750; }
+    .history-subtitle { margin: 8px 0 0; color: #68768d; }
+    .history-card { overflow: hidden; border: 1px solid #e7ebf2; border-radius: 18px; background: #fff; box-shadow: 0 16px 42px rgba(27, 43, 75, .07); }
+    .history-table-wrap { overflow-x: auto; }
+    .history-table { width: 100%; border-collapse: collapse; min-width: 850px; }
+    .history-table th { background: #f7f9fc; color: #65738b; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-align: left; text-transform: uppercase; }
+    .history-table th, .history-table td { border-bottom: 1px solid #edf0f5; padding: 16px 19px; vertical-align: middle; }
+    .history-table tbody tr:last-child td { border-bottom: 0; }
+    .history-ref { color: #52627c; font-size: 13px; white-space: nowrap; }
+    .history-subject { color: #1f2f4a; font-weight: 650; }
+    .history-date { color: #6c7890; font-size: 13px; white-space: nowrap; }
+    .history-status { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .status-open { background: #fff4dc; color: #91600a; }
+    .status-replied { background: #e8f7ee; color: #1e7144; }
+    .status-closed { background: #eef1f6; color: #57657a; }
+    .history-reply { max-width: 300px; color: #53627a; font-size: 13px; line-height: 1.5; }
+    .history-reply-waiting { color: #8994a7; font-size: 12px; }
+    .history-link { color: #3158d5; font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+    .history-link:hover { text-decoration: underline; }
+    .history-empty { padding: 56px 24px; text-align: center; }
+    .history-empty-icon { display: grid; place-items: center; width: 58px; height: 58px; margin: 0 auto 16px; border-radius: 18px; background: #eef3ff; color: #3158d5; }
+    .history-empty h2 { margin: 0 0 8px; color: #25334d; font-size: 20px; }
+    .history-empty p { margin: 0 auto 20px; max-width: 420px; color: #6c7890; }
+    .history-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border-radius: 11px; background: #3158d5; padding: 0 16px; color: #fff; font-weight: 650; text-decoration: none; }
+    .history-alert { margin: 0 0 16px; border-radius: 12px; padding: 13px 16px; background: #edf8f1; color: #17663b; }
+    .history-alert.warning { background: #fff7e8; color: #8b5b0c; }
+    @media (max-width: 640px) { .history-page { padding: 98px 14px 36px; } .history-card { border-radius: 15px; } .history-header { align-items: stretch; } .history-header .history-button { width: 100%; } }
+</style>
+
+<main class="history-page">
+    {% for message in messages %}<div class="history-alert{% if message.tags == 'warning' %} warning{% endif %}" role="status">{{ message }}</div>{% endfor %}
+    <header class="history-header">
+        <div>
+            <p class="history-eyebrow">Franchise support</p>
+            <h1 class="history-title">Your enquiries</h1>
+            <p class="history-subtitle">View your submitted requests and replies from Head Office.</p>
+        </div>
+        <a class="history-button" href="{% url 'web:franchise_enquiry_compose' %}"><i data-lucide="plus" aria-hidden="true"></i> New enquiry</a>
+    </header>
+
+    <section class="history-card" aria-label="Your enquiry history">
+        {% if enquiries %}
+            <div class="history-table-wrap">
+                <table class="history-table">
+                    <thead><tr><th scope="col">Reference</th><th scope="col">Subject</th><th scope="col">Submitted</th><th scope="col">Status</th><th scope="col">Head Office reply</th><th scope="col"><span class="sr-only">Action</span></th></tr></thead>
+                    <tbody>
+                        {% for enquiry in enquiries %}
+                        <tr>
+                            <td class="history-ref">#{{ enquiry.pk }}</td>
+                            <td class="history-subject">{{ enquiry.subject }}</td>
+                            <td class="history-date">{{ enquiry.created_at|date:"d M Y, g:i A" }}</td>
+                            <td><span class="history-status status-{{ enquiry.status }}">{{ enquiry.get_status_display }}</span></td>
+                            <td class="history-reply">{% if enquiry.admin_reply %}{{ enquiry.admin_reply|truncatechars:96 }}{% else %}<span class="history-reply-waiting">No reply yet</span>{% endif %}</td>
+                            <td><a class="history-link" href="{% url 'web:franchise_enquiry_detail' enquiry.pk %}">View details</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if is_paginated %}
+            <nav aria-label="Enquiry history pages" style="display:flex;justify-content:space-between;gap:12px;padding:16px 20px;border-top:1px solid #edf0f5;color:#53627a;">
+                {% if page_obj.has_previous %}<a class="history-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>{% else %}<span></span>{% endif %}
+                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% if page_obj.has_next %}<a class="history-link" href="?page={{ page_obj.next_page_number }}">Next</a>{% else %}<span></span>{% endif %}
+            </nav>
+            {% endif %}
+        {% else %}
+            <div class="history-empty">
+                <span class="history-empty-icon"><i data-lucide="mail-question" aria-hidden="true"></i></span>
+                <h2>No enquiries yet</h2>
+                <p>When you contact Head Office, your request and any reply will appear here.</p>
+                <a class="history-button" href="{% url 'web:franchise_enquiry_compose' %}"><i data-lucide="send" aria-hidden="true"></i> Send your first enquiry</a>
+            </div>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}

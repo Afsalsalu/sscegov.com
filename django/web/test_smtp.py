@@ -1,15 +1,28 @@
-import smtplib
+import logging
+import os
+
+import django
+from django.apps import apps
+
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ssc.settings")
+
+logger = logging.getLogger(__name__)
 
 def test_smtp_connection():
+    if not apps.ready:
+        django.setup()
+    from django.core.mail import get_connection
+
+    connection = get_connection(fail_silently=False)
     try:
-        server = smtplib.SMTP('smtp-relay.brevo.com', 587)
-        server.ehlo()
-        server.starttls()
-        server.login('sadhikali0867@gmail.com', 'NdcSyY40fFtQEIHU')
-        print("SMTP connection successful")
-        server.quit()
-    except Exception as e:
-        print(f"SMTP connection error: {e}")
+        connection.open()
+        print("Configured Django email backend opened successfully.")
+    except Exception:
+        logger.exception("Could not open the configured Django email backend.")
+        print("Could not connect to the configured email backend. See the server log.")
+    finally:
+        connection.close()
 
 if __name__ == "__main__":
     test_smtp_connection()

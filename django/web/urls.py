@@ -7,6 +7,15 @@ from django.contrib import admin
 
 
 from . import views
+from .enquiry_views import (
+    FranchiseEnquiryAdminDetailView,
+    FranchiseEnquiryAttachmentView,
+    FranchiseEnquiryComposeView,
+    FranchiseEnquiryDetailView,
+    FranchiseEnquiryHistoryView,
+    FranchiseEnquiryInboxView,
+)
+from .language_views import set_language
 from .views import (AddCentreUserAdminView, logout_view,
                     AddDownloadFormView, AddEmployeeView, AddHeadOfficeView,
                     AddKeralaSubCentreView, AddOnlineClassView,
@@ -79,6 +88,7 @@ urlpatterns = [
     path("", views.index, name="index"),
     # Custom Login
     path("login/", views.login_view, name="login_view"),
+    path("language/switch/", set_language, name="set_language"),
     # path("career/", CustomLoginView.as_view(), name="career"),
     # Home
     path("contact/", views.contact, name="contact"),
@@ -264,6 +274,17 @@ urlpatterns = [
         HeadofficeDashboardView.as_view(),
         name="headoffice_dashboard",
     ),
+    path("head-office/enquiries/", FranchiseEnquiryInboxView.as_view(), name="franchise_enquiry_inbox"),
+    path(
+        "head-office/enquiries/<int:pk>/",
+        FranchiseEnquiryAdminDetailView.as_view(),
+        name="franchise_enquiry_admin_detail",
+    ),
+    path(
+        "head-office/enquiries/<int:pk>/attachment/",
+        FranchiseEnquiryAttachmentView.as_view(),
+        name="franchise_enquiry_admin_attachment",
+    ),
     path(
         "state-dashboard/franchise-wallet/",
         KeralaStateWalletView.as_view(),
@@ -381,6 +402,26 @@ path(
         "franchise-dashboard/dashboard/",
         DistrictDashboardView.as_view(),
         name="centre_dashboard",
+    ),
+    path(
+        "franchise-dashboard/enquiries/new/",
+        FranchiseEnquiryComposeView.as_view(),
+        name="franchise_enquiry_compose",
+    ),
+    path(
+        "franchise-dashboard/enquiries/",
+        FranchiseEnquiryHistoryView.as_view(),
+        name="franchise_enquiry_history",
+    ),
+    path(
+        "franchise-dashboard/enquiries/<int:pk>/",
+        FranchiseEnquiryDetailView.as_view(),
+        name="franchise_enquiry_detail",
+    ),
+    path(
+        "franchise-dashboard/enquiries/<int:pk>/attachment/",
+        FranchiseEnquiryAttachmentView.as_view(),
+        name="franchise_enquiry_attachment",
     ),
     # franchise - all states
     # franchise - state services
@@ -667,5 +708,3 @@ path(
 
 ]
 handler404 = notfound
-
-
