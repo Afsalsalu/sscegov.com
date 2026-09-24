@@ -15,11 +15,6 @@ from decouple import config
 import os
 
 from dotenv import load_dotenv
-from web.language import SUPPORTED_LANGUAGES
-
-# Load .env values before reading settings through os.getenv (including the
-# optional Brevo configuration below).
-load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -71,9 +66,7 @@ MIDDLEWARE = [
     # 'web.middleware.NoCacheMiddleware',
     # 'web.middleware.SingleSessionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'web.language_middleware.UserLanguageMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     #  'web.middleware.ContentSecurityPolicyMiddleware',
     # 'axes.middleware.AxesMiddleware',
@@ -98,11 +91,9 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-            'django.contrib.auth.context_processors.auth',
-            'django.contrib.messages.context_processors.messages',
-            'django.template.context_processors.i18n',
-            'web.context_processors.franchise_service_navigation',
-            'web.context_processors.language_preferences',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'web.context_processors.franchise_service_navigation',
             ],
         },
     },
@@ -163,8 +154,13 @@ DATABASES = {
 #     },
 # ]
 
-BREVO_API_KEY = config("BREVO_API_KEY", default="")
-ANYMAIL = {"BREVO": {"API_KEY": BREVO_API_KEY}}
+ANYMAIL = {
+    "BREVO": {
+        "API_KEY": os.getenv("BREVO_API_KEY", "your-brevo-api-key"),
+    }
+}
+EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+DEFAULT_FROM_EMAIL = "samatwaservicecenter.gov.in@gmail.com"
 
 
 
@@ -177,11 +173,7 @@ ANYMAIL = {"BREVO": {"API_KEY": BREVO_API_KEY}}
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en'
-
-LANGUAGES = SUPPORTED_LANGUAGES
-
-LOCALE_PATHS = [BASE_DIR / 'locale']
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
@@ -198,8 +190,10 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+STATIC_URL = '/test/static/'
+MEDIA_URL = '/test/media/'
+FORCE_SCRIPT_NAME = '/test'
+
 MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_DIRS = [BASE_DIR / 'static']  # This is where your static files are located
@@ -225,60 +219,27 @@ LOGIN_URL = '/custom_login'
 LOGOUT_URL = '/accounts/logout/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
-configured_email_backend = config("EMAIL_BACKEND", default="").strip()
-EMAIL_HOST = config("EMAIL_HOST", default="")
-EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
-EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
-EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
-EMAIL_USE_SSL = config("EMAIL_USE_SSL", default=False, cast=bool)
-DEFAULT_FROM_EMAIL = config(
-    "DEFAULT_FROM_EMAIL",
-    default=EMAIL_HOST_USER or "samatwaservicecenter.gov.in@gmail.com",
-)
+# For email   
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp-relay.brevo.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = '79f983002@smtp-brevo.com'
+# EMAIL_HOST_PASSWORD = '9YLzAk1PNcDMfQqI'
+EMAIL_BACKEND = config("EMAIL_BACKEND")
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_PORT = config("EMAIL_PORT")
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
 
-smtp_is_configured = bool(
-    EMAIL_HOST and EMAIL_PORT and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD
-)
-brevo_is_configured = bool(os.getenv("BREVO_API_KEY", ""))
-if configured_email_backend:
-    EMAIL_BACKEND = configured_email_backend
-elif smtp_is_configured:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-elif brevo_is_configured:
-    EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-
-# Local installations sometimes inherit Django's console/locmem backend from
-# development configuration. Prefer an already-configured real provider when
-# its credentials are present so enquiry notifications can be delivered.
-if DEBUG and EMAIL_BACKEND in {
-    "django.core.mail.backends.console.EmailBackend",
-    "django.core.mail.backends.locmem.EmailBackend",
-}:
-    if smtp_is_configured:
-        EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    elif brevo_is_configured:
-        EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'web.User'
 
-# Franchise enquiry delivery uses this single server-side recipient setting.
-ENQUIRY_ADMIN_EMAIL = config(
-    "ENQUIRY_ADMIN_EMAIL", default="samatwaservicecenter.gov.in@gmail.com"
-)
-
-# Optional support number in international format (country code included).
-SUPPORT_WHATSAPP_NUMBER = os.getenv("SUPPORT_WHATSAPP_NUMBER", "")
-
-# Enquiry attachments must not be served from the public MEDIA_URL directory.
-PRIVATE_MEDIA_ROOT = Path(
-    os.getenv("PRIVATE_MEDIA_ROOT", str(BASE_DIR / "private_media"))
-)
+load_dotenv()
 
 
 TIME_ZONE = 'Asia/Kolkata'
@@ -286,18 +247,16 @@ USE_TZ = True
 
 
 # Razorpay API
-RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
-RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "rzp_live_nSEm6ZJdnKS1Ov")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "54bep8rW085LCIk6rySSDcr2")
 
 
 # PSPDFKit API key
 PSPDFKIT_API_KEY = os.getenv("PSPDFKIT_API_KEY", "")
 
 # reCAPTCHA keys
-RECAPTCHA_SITE_KEY = os.getenv("RECAPTCHA_SITE_KEY", "")
-RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY", "")
-
-MAPBOX_PUBLIC_TOKEN = os.getenv("MAPBOX_PUBLIC_TOKEN", "")
+RECAPTCHA_SITE_KEY = os.getenv("RECAPTCHA_SITE_KEY", "6LfhACgqAAAAAH6BOnzNkIfbY-yRgk_XCNKWTH8i")
+RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY", "6LfhACgqAAAAAFqwP-iG32CZyREH66J6u43F-I8D")
 
 
 # Secure Proxy Header
