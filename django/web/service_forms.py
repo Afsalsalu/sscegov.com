@@ -32,16 +32,37 @@ class StateServiceForm(forms.ModelForm):
                 attrs={"rows": 9, "placeholder": "Describe this service..."}
             ),
             "service_logo": forms.ClearableFileInput(
-                attrs={"accept": ".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"}
+                attrs={"accept": "image/jpeg,image/png,image/webp"}
             ),
         }
 
+    service_logo = forms.ImageField(
+        required=False,
+        widget=forms.ClearableFileInput(
+            attrs={"accept": "image/jpeg,image/png,image/webp"}
+        ),
+    )
+
     def clean_service_logo(self):
+        file_key = self.add_prefix("service_logo")
+        if hasattr(self.files, "getlist"):
+            uploaded_logos = self.files.getlist(file_key)
+        else:
+            uploaded_logos = self.files.get(file_key)
+            if uploaded_logos is None:
+                uploaded_logos = []
+            elif not isinstance(uploaded_logos, (list, tuple)):
+                uploaded_logos = [uploaded_logos]
+        if len(uploaded_logos) > 1:
+            raise forms.ValidationError("Upload only one service logo.")
         logo = self.cleaned_data.get("service_logo")
         if not logo:
+            clear_logo = self.data.get(f"{self.add_prefix('service_logo')}-clear")
+            if clear_logo in {"on", "true", "1"}:
+                return False
             if self.instance.pk:
                 return self.instance.service_logo
-            raise forms.ValidationError("Please select a service logo.")
+            return logo
         return validate_uploaded_image(logo, "Service logo")
 
 

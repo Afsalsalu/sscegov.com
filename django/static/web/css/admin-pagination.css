@@ -1,0 +1,50 @@
+.admin-pagination {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    justify-content: center;
+    margin: 1.5rem 0 0.25rem;
+}
+
+.admin-pagination__link,
+.admin-pagination__current,
+.admin-pagination__disabled {
+    align-items: center;
+    border: 1px solid #dbe3ec;
+    border-radius: 0.45rem;
+    display: inline-flex;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    justify-content: center;
+    line-height: 1;
+    min-height: 2.25rem;
+    min-width: 2.25rem;
+    padding: 0.625rem 0.8rem;
+    text-decoration: none;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.admin-pagination__link {
+    background: #fff;
+    color: #475569;
+}
+
+.admin-pagination__link:hover,
+.admin-pagination__link:focus-visible {
+    background: #eff6ff;
+    border-color: #2563eb;
+    color: #1d4ed8;
+}
+
+.admin-pagination__current {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+}
+
+.admin-pagination__disabled {
+    background: #f8fafc;
+    color: #94a3b8;
+    cursor: not-allowed;
+}

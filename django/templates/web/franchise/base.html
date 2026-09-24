@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{% static 'web/css/custom.css' %}" />
     <link rel="stylesheet" href="{% static 'web/css/language-switcher.css' %}" />
     <link rel="stylesheet" href="{% static 'web/css/tailwind2.css' %}">
+    <link rel="stylesheet" href="{% static 'web/css/franchise-dashboard.css' %}">
 
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     
@@ -28,7 +29,7 @@
 </head>
 
 <body
-    class="text-base bg-body-bg text-body font-public dark:text-zink-100 dark:bg-zink-800 group-data-[skin=bordered]:bg-body-bordered group-data-[skin=bordered]:dark:bg-zink-700">
+    class="text-base bg-body-bg text-body font-public dark:text-zink-100 dark:bg-zink-800 group-data-[skin=bordered]:bg-body-bordered group-data-[skin=bordered]:dark:bg-zink-700 franchise-app-page{% if request.resolver_match.url_name == 'centre_dashboard' %} franchise-dashboard-page{% endif %}">
     <div class="group-data-[sidebar-size=sm]:min-h-sm group-data-[sidebar-size=sm]:relative">
 
 
@@ -36,7 +37,7 @@
             class="cos app-menu w-vertical-menu bg-vertical-menu ltr:border-r rtl:border-l border-vertical-menu-border fixed bottom-0 top-0 z-[1003] transition-all duration-75 ease-linear group-data-[sidebar-size=md]:w-vertical-menu-md group-data-[sidebar-size=sm]:w-vertical-menu-sm group-data-[sidebar-size=sm]:pt-header group-data-[sidebar=dark]:bg-vertical-menu-dark group-data-[sidebar=dark]:border-vertical-menu-dark group-data-[sidebar=brand]:bg-vertical-menu-brand group-data-[sidebar=brand]:border-vertical-menu-brand group-data-[sidebar=modern]:bg-gradient-to-tr group-data-[sidebar=modern]:to-vertical-menu-to-modern group-data-[sidebar=modern]:from-vertical-menu-form-modern group-data-[layout=horizontal]:w-full group-data-[layout=horizontal]:bottom-auto group-data-[layout=horizontal]:top-header hidden md:block print:hidden group-data-[sidebar-size=sm]:absolute group-data-[sidebar=modern]:border-vertical-menu-border-modern group-data-[layout=horizontal]:dark:bg-zink-700 group-data-[layout=horizontal]:border-t group-data-[layout=horizontal]:dark:border-zink-500 group-data-[layout=horizontal]:border-r-0 group-data-[sidebar=dark]:dark:bg-zink-700 group-data-[sidebar=dark]:dark:border-zink-600 group-data-[layout=horizontal]:group-data-[navbar=scroll]:absolute group-data-[layout=horizontal]:group-data-[navbar=bordered]:top-[calc(theme('spacing.header')_+_theme('spacing.4'))] group-data-[layout=horizontal]:group-data-[navbar=bordered]:inset-x-4 group-data-[layout=horizontal]:group-data-[navbar=hidden]:top-0 group-data-[layout=horizontal]:group-data-[navbar=hidden]:h-16 group-data-[layout=horizontal]:group-data-[navbar=bordered]:w-[calc(100%_-_2rem)] group-data-[layout=horizontal]:group-data-[navbar=bordered]:[&.sticky]:top-header group-data-[layout=horizontal]:group-data-[navbar=bordered]:rounded-b-md group-data-[layout=horizontal]:shadow-md group-data-[layout=horizontal]:shadow-slate-500/10 group-data-[layout=horizontal]:dark:shadow-zink-500/10 group-data-[layout=horizontal]:opacity-0">
             <div
                 class="flex items-center justify-center px-5 text-center h-header group-data-[layout=horizontal]:hidden group-data-[sidebar-size=sm]:fixed group-data-[sidebar-size=sm]:top-0 group-data-[sidebar-size=sm]:bg-vertical-menu group-data-[sidebar-size=sm]:group-data-[sidebar=dark]:bg-vertical-menu-dark group-data-[sidebar-size=sm]:group-data-[sidebar=brand]:bg-vertical-menu-brand group-data-[sidebar-size=sm]:group-data-[sidebar=modern]:bg-gradient-to-br group-data-[sidebar-size=sm]:group-data-[sidebar=modern]:to-vertical-menu-to-modern group-data-[sidebar-size=sm]:group-data-[sidebar=modern]:from-vertical-menu-form-modern group-data-[sidebar-size=sm]:group-data-[sidebar=modern]:bg-vertical-menu-modern group-data-[sidebar-size=sm]:z-10 group-data-[sidebar-size=sm]:w-[calc(theme('spacing.vertical-menu-sm')_-_1px)] group-data-[sidebar-size=sm]:group-data-[sidebar=dark]:dark:bg-zink-700">
-                <a href=""
+                <a href="{% url 'web:centre_dashboard' %}"
                     class="group-data-[sidebar=dark]:hidden group-data-[sidebar=brand]:hidden group-data-[sidebar=modern]:hidden">
                     <span class="hidden group-data-[sidebar-size=sm]:block">
                     </span>
@@ -55,7 +56,7 @@
                     <i class="ri-record-circle-line"></i>
                 </button>
             </div>
-            {% include "web/sidebar.html" %}
+            {% include "web/franchise/sidebar.html" %}
                   
             </div>            
         </div>
@@ -65,7 +66,51 @@
             class="ltr:md:left-vertical-menu rtl:md:right-vertical-menu group-data-[sidebar-size=md]:ltr:md:left-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:right-vertical-menu-md group-data-[sidebar-size=sm]:ltr:md:left-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:md:right-vertical-menu-sm group-data-[layout=horizontal]:ltr:left-0 group-data-[layout=horizontal]:rtl:right-0 fixed right-0 z-[1000] left-0 print:hidden group-data-[navbar=bordered]:m-4 group-data-[navbar=bordered]:[&.is-sticky]:mt-0 transition-all ease-linear duration-300 group-data-[navbar=hidden]:hidden group-data-[navbar=scroll]:absolute group/topbar group-data-[layout=horizontal]:z-[1004]">
             <div class="layout-width">
                 <div
-                    class="flex items-center px-4 mx-auto bg-topbar border-b-2 border-topbar group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:border-topbar-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:border-topbar-brand shadow-md h-header shadow-slate-200/50 group-data-[navbar=bordered]:rounded-md group-data-[navbar=bordered]:group-[.is-sticky]/topbar:rounded-t-none group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:border-zink-700 dark:shadow-none group-data-[topbar=dark]:group-[.is-sticky]/topbar:dark:shadow-zink-500 group-data-[topbar=dark]:group-[.is-sticky]/topbar:dark:shadow-md group-data-[navbar=bordered]:shadow-none group-data-[layout=horizontal]:group-data-[navbar=bordered]:rounded-b-none group-data-[layout=horizontal]:shadow-none group-data-[layout=horizontal]:dark:group-[.is-sticky]/topbar:shadow-none">
+                    class="flex items-center px-4 mx-auto bg-topbar border-b-2 border-topbar group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:border-topbar-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:border-topbar-brand shadow-md h-header shadow-slate-200/50 group-data-[navbar=bordered]:rounded-md group-data-[navbar=bordered]:group-[.is-sticky]/topbar:rounded-t-none group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:border-zink-700 dark:shadow-none dark:shadow-zink-500 group-data-[topbar=dark]:group-[.is-sticky]/topbar:dark:shadow-zink-500 group-data-[topbar=dark]:group-[.is-sticky]/topbar:dark:shadow-md group-data-[navbar=bordered]:shadow-none group-data-[layout=horizontal]:group-data-[navbar=bordered]:rounded-b-none group-data-[layout=horizontal]:shadow-none group-data-[layout=horizontal]:dark:group-[.is-sticky]/topbar:shadow-none">
+                    {% if request.resolver_match.url_name == 'centre_dashboard' %}
+                    <div class="franchise-dashboard-topbar">
+                        <button type="button" class="franchise-dashboard-menu hamburger-icon" id="topnav-hamburger-icon" aria-label="{% translate 'Toggle navigation' %}">
+                            <i data-lucide="menu" aria-hidden="true"></i>
+                        </button>
+                        <a class="franchise-dashboard-brand" href="{% url 'web:centre_dashboard' %}">
+                            <img src="{% static 'web/file/images/logoSSC-blue.png' %}" alt="{% translate 'SSC logo' %}">
+                        </a>
+                        <div class="franchise-dashboard-greeting">
+                            <span>{% translate "Welcome back," %}</span>
+                            <strong>{{ centre_display_name }}</strong>
+                        </div>
+                        <div class="franchise-dashboard-topbar-actions">
+                            <a class="franchise-dashboard-wallet-chip" href="{% url 'web:wallet' %}" aria-label="{% translate 'Open wallet' %}">
+                                <i data-lucide="wallet-cards" aria-hidden="true"></i>
+                                <span><small>{% translate "Wallet Balance" %}</small><strong>{% if wallet_total %}₹ {{ wallet_total|floatformat:2 }}{% else %}—{% endif %}</strong></span>
+                            </a>
+                            <button type="button" class="franchise-dashboard-icon-button" aria-label="{% translate 'Notifications' %}" title="{% translate 'Notifications' %}"><i data-lucide="bell" aria-hidden="true"></i></button>
+                            <details class="franchise-dashboard-profile-menu">
+                                <summary>
+                                    <span class="franchise-dashboard-profile-avatar">
+                                        {% if district_detail.photo %}
+                                            <img src="{{ district_detail.photo.url }}" alt="{{ centre_display_name }}" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                            <span class="franchise-dashboard-avatar-fallback" hidden><i data-lucide="user-round" aria-hidden="true"></i></span>
+                                        {% else %}
+                                            <span class="franchise-dashboard-avatar-fallback"><i data-lucide="user-round" aria-hidden="true"></i></span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="franchise-dashboard-profile-copy"><strong>{{ centre_display_name }}</strong><small>{% translate "Agency ID" %}: {{ agency_identifier }}</small></span>
+                                    <i data-lucide="chevron-down" aria-hidden="true"></i>
+                                </summary>
+                                <div class="franchise-dashboard-profile-dropdown">
+                                    <a href="{% url 'web:keraladistrict_profile' %}"><i data-lucide="user-round" aria-hidden="true"></i>{% translate "Profile" %}</a>
+                                    <form id="logout-form" method="post" action="{% url 'web:logout_view' %}">
+                                        {% csrf_token %}
+                                        <button type="button" onclick="confirmLogout()"><i data-lucide="log-out" aria-hidden="true"></i>{% translate "Log Out" %}</button>
+                                    </form>
+                                </div>
+                            </details>
+                            {% include "web/includes/language_switcher.html" %}
+                            <button type="button" class="franchise-dashboard-icon-button franchise-dashboard-fullscreen" id="fullscreen-btn" aria-label="{% translate 'Full screen' %}" title="{% translate 'Full screen' %}"><i data-lucide="maximize-2" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    {% else %}
                     <div
                         class="flex items-center w-full group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl navbar-header group-data-[layout=horizontal]:ltr:xl:pr-3 group-data-[layout=horizontal]:rtl:xl:pl-3">
 
@@ -107,12 +152,15 @@
                         </div>
 
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </header>
 
-        {% block content %}
-        {% endblock %}
+        <div class="franchise-page-shell">
+            {% block content %}
+            {% endblock %}
+        </div>
 
     </div>
     <!-- end main content -->

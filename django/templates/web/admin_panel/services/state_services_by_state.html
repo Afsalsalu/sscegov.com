@@ -52,7 +52,7 @@
       <div class="" style="background-color: antiquewhite">
         <div class="card-body text-center">
           <div class="flex items-center justify-center mx-auto rounded-full size-14 bg-custom-100 text-custom-500 dark:bg-custom-500/20">
-            <img class"mb-3" src="{{ service.service_logo.url }}" alt="">
+            {% if service.service_logo %}<img class="mb-3" src="{{ service.service_logo.url }}" alt="{{ service.service_name }} logo" onerror="this.hidden=true;">{% endif %}
           </div>
           <h5 class="pt-2 hard">{{ service.service_name }}</h5>
         </div>
@@ -88,6 +88,7 @@
     </div>
     {% endfor %}
   </div>
+  {% include "web/includes/admin_pagination.html" %}
 </div>
 </div>
 

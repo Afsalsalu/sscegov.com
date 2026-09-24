@@ -1,78 +1,218 @@
 {% extends "web/admin_panel/base.html" %}
 {% load static %}
+
 {% block content %}
-<style>.ssf-preview-item{position:relative}.ssf-preview-remove{position:absolute;right:5px;top:5px;border:0;border-radius:50%;width:24px;height:24px;background:#fff;color:#b24444;box-shadow:0 2px 8px #20304730;cursor:pointer;font-weight:700}.ssf-gallery-item form{margin-top:5px}</style>
 <style>
-.state-service-form-page{max-width:1440px;margin:0 auto;padding:28px clamp(16px,3vw,40px);color:#172033}.state-service-form-page *{box-sizing:border-box}.ssf-kicker{font-size:13px;color:#718096;margin-bottom:8px}.ssf-kicker a{color:#147d98;text-decoration:none}.ssf-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:24px}.ssf-head h1{margin:0;font-size:28px;line-height:1.2;font-weight:700}.ssf-subtitle{margin:7px 0 0;color:#718096;font-size:14px}.ssf-back,.ssf-secondary,.ssf-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;padding:11px 16px;font-size:14px;font-weight:600;text-decoration:none;transition:.2s}.ssf-back,.ssf-secondary{border:1px solid #dce5eb;background:#fff;color:#314155}.ssf-back:hover,.ssf-secondary:hover{background:#f3f8fa}.ssf-card{max-width:1000px;margin:0 auto;background:#fff;border:1px solid #e7edf3;border-radius:14px;box-shadow:0 5px 22px #2030470d}.ssf-card-body{padding:clamp(20px,4vw,36px)}.ssf-section{border-bottom:1px solid #edf1f5;padding-bottom:25px;margin-bottom:25px}.ssf-section:last-of-type{border-bottom:0;margin-bottom:0;padding-bottom:8px}.ssf-section h2{font-size:18px;margin:0 0 5px;font-weight:700}.ssf-section-copy{font-size:13px;color:#718096;margin:0 0 20px}.ssf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.ssf-field{min-width:0}.ssf-field-full{grid-column:1/-1}.ssf-field label{display:block;margin-bottom:8px;color:#25344a;font-size:14px;font-weight:600}.ssf-field input:not([type=checkbox]),.ssf-field textarea{display:block;width:100%;padding:10px 12px;border:1px solid #dce5eb;border-radius:8px;background:#fff;color:#172033;font:inherit;font-size:14px;outline:0}.ssf-field input:not([type=checkbox]){height:44px}.ssf-field textarea{min-height:180px;resize:vertical;line-height:1.6}.ssf-field input:focus,.ssf-field textarea:focus{border-color:#147d98;box-shadow:0 0 0 3px #147d9820}.ssf-help{display:block;margin-top:7px;color:#718096;font-size:12px}.ssf-error{display:block;margin-top:6px;color:#b24444;font-size:12px}.ssf-checks{display:flex;gap:24px;align-items:center;flex-wrap:wrap}.ssf-check{display:flex;align-items:center;gap:8px;color:#314155;font-size:14px}.ssf-check input{width:17px;height:17px;accent-color:#147d98}.ssf-upload{border:1.5px dashed #b9ced8;border-radius:12px;background:#f8fbfc;padding:22px;text-align:center}.ssf-upload input[type=file]{display:block;width:100%;padding:10px;border:1px solid #dce5eb;border-radius:8px;background:#fff}.ssf-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}.ssf-gallery-item{position:relative;border:1px solid #e2ebef;border-radius:8px;padding:6px;background:#fff}.ssf-gallery-item img{display:block;width:100%;height:90px;object-fit:cover;border-radius:5px}.ssf-gallery-item form{margin-top:5px}.ssf-remove{border:0;background:none;color:#b24444;font-size:12px;cursor:pointer;padding:3px}.ssf-preview{display:none;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}.ssf-preview.is-visible{display:grid}.ssf-preview img{display:block;width:100%;height:90px;object-fit:cover;border-radius:8px;border:1px solid #e2ebef;background:#fff}.ssf-logo-preview{max-width:130px;max-height:90px;object-fit:contain;display:block;margin-top:12px;border:1px solid #e2ebef;border-radius:8px;padding:6px;background:#fff}.ssf-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:24px}.ssf-primary{border:0;background:#147d98;color:#fff;cursor:pointer;box-shadow:0 5px 12px #147d9830}.ssf-primary:hover{background:#0d647b;transform:translateY(-1px)}@media(max-width:700px){.state-service-form-page{padding:20px 14px}.ssf-head{align-items:stretch;flex-direction:column}.ssf-head h1{font-size:24px}.ssf-back{width:100%}.ssf-grid{grid-template-columns:1fr}.ssf-field-full{grid-column:auto}.ssf-gallery,.ssf-preview{grid-template-columns:repeat(2,minmax(0,1fr))}.ssf-actions{align-items:stretch;flex-direction:column-reverse}.ssf-actions a,.ssf-actions button{width:100%}}
+    .state-service-form-page { max-width: 1440px; margin: 0 auto; padding: 28px clamp(16px, 3vw, 40px); color: #172033; }
+    .state-service-form-page * { box-sizing: border-box; }
+    .ssf-kicker { margin-bottom: 8px; color: #718096; font-size: 13px; }
+    .ssf-kicker a { color: #147d98; text-decoration: none; }
+    .ssf-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+    .ssf-head h1 { margin: 0; font-size: 28px; line-height: 1.2; font-weight: 700; }
+    .ssf-subtitle { margin: 7px 0 0; color: #718096; font-size: 14px; }
+    .ssf-back, .ssf-secondary, .ssf-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 8px; padding: 11px 16px; font-size: 14px; font-weight: 600; text-decoration: none; transition: .2s; }
+    .ssf-back, .ssf-secondary { border: 1px solid #dce5eb; background: #fff; color: #314155; }
+    .ssf-back:hover, .ssf-secondary:hover { background: #f3f8fa; }
+    .ssf-card { max-width: 1000px; margin: 0 auto; border: 1px solid #e7edf3; border-radius: 14px; background: #fff; box-shadow: 0 5px 22px #2030470d; }
+    .ssf-card-body { padding: clamp(20px, 4vw, 36px); }
+    .ssf-section { margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px solid #edf1f5; }
+    .ssf-section:last-of-type { margin-bottom: 0; padding-bottom: 8px; border-bottom: 0; }
+    .ssf-section h2 { margin: 0 0 5px; font-size: 18px; font-weight: 700; }
+    .ssf-section-copy { margin: 0 0 20px; color: #718096; font-size: 13px; }
+    .ssf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    .ssf-field { min-width: 0; }
+    .ssf-field-full { grid-column: 1 / -1; }
+    .ssf-field label { display: block; margin-bottom: 8px; color: #25344a; font-size: 14px; font-weight: 600; }
+    .ssf-field input:not([type=checkbox]), .ssf-field textarea { display: block; width: 100%; padding: 10px 12px; border: 1px solid #dce5eb; border-radius: 8px; background: #fff; color: #172033; font: inherit; font-size: 14px; outline: 0; }
+    .ssf-field input:not([type=checkbox]) { height: 44px; }
+    .ssf-field textarea { min-height: 180px; resize: vertical; line-height: 1.6; }
+    .ssf-field input:focus, .ssf-field textarea:focus { border-color: #147d98; box-shadow: 0 0 0 3px #147d9820; }
+    .ssf-help { display: block; margin-top: 7px; color: #718096; font-size: 12px; }
+    .ssf-error { display: block; margin-top: 6px; color: #b24444; font-size: 12px; }
+    .ssf-checks { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; }
+    .ssf-check { display: flex; align-items: center; gap: 8px; color: #314155; font-size: 14px; }
+    .ssf-check input { width: 17px; height: 17px; accent-color: #147d98; }
+    .ssf-logo-preview-wrap { display: flex; align-items: center; min-height: 90px; margin-top: 12px; }
+    .ssf-logo-preview { display: block; width: 90px; height: 90px; object-fit: contain; border: 1px solid #e2ebef; border-radius: 8px; padding: 6px; background: #fff; }
+    .ssf-image-placeholder { display: inline-flex; align-items: center; justify-content: center; border: 1px dashed #c9d5dc; border-radius: 8px; background: #f7fafb; color: #718096; font-size: 11px; text-align: center; }
+    .ssf-upload { margin-top: 16px; padding: 18px; border: 1.5px dashed #b9ced8; border-radius: 12px; background: #f8fbfc; }
+    .ssf-upload input[type=file] { display: block; width: 100%; padding: 10px; border: 1px solid #dce5eb; border-radius: 8px; background: #fff; }
+    .ssf-gallery, .ssf-preview { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+    .ssf-gallery-card, .ssf-preview-card { position: relative; min-width: 0; padding: 6px; border: 1px solid #e2ebef; border-radius: 8px; background: #fff; }
+    .ssf-gallery-card img, .ssf-preview-card img { display: block; width: 100%; height: 90px; border-radius: 5px; object-fit: cover; }
+    .ssf-gallery-card .ssf-image-placeholder, .ssf-preview-card .ssf-image-placeholder { width: 100%; height: 90px; }
+    .ssf-remove { display: block; width: 100%; margin-top: 5px; border: 0; background: none; color: #b24444; font-size: 12px; cursor: pointer; padding: 3px; }
+    .ssf-preview { display: none; }
+    .ssf-preview.is-visible { display: grid; }
+    .ssf-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+    .ssf-primary { border: 0; background: #147d98; color: #fff; cursor: pointer; box-shadow: 0 5px 12px #147d9830; }
+    .ssf-primary:hover { background: #0d647b; transform: translateY(-1px); }
+    @media (max-width: 700px) {
+        .state-service-form-page { padding: 20px 14px; }
+        .ssf-head { align-items: stretch; flex-direction: column; }
+        .ssf-head h1 { font-size: 24px; }
+        .ssf-back { width: 100%; }
+        .ssf-grid { grid-template-columns: 1fr; }
+        .ssf-field-full { grid-column: auto; }
+        .ssf-gallery, .ssf-preview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .ssf-actions { align-items: stretch; flex-direction: column-reverse; }
+        .ssf-actions a, .ssf-actions button { width: 100%; }
+    }
 </style>
-<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm"><div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:md:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:md:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:md:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0"><div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto"><main class="state-service-form-page">
-  <div class="ssf-kicker">Home / <a href="{% url 'web:stateservice_by_state' state_slug=state.slug %}">{{ state.state_name }} Services</a> / {% if object %}Edit{% else %}Add{% endif %}</div>
-  <div class="ssf-head"><div><h1>{% if object %}Edit Service{% else %}Add New Service{% endif %}</h1><p class="ssf-subtitle">Configure the service and the information franchise users will see</p></div><a class="ssf-back" href="{% url 'web:stateservice_by_state' state_slug=state.slug %}"><i data-lucide="arrow-left" class="size-4"></i> Back to Services</a></div>
-  <section class="ssf-card"><div class="ssf-card-body"><form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}{% if form.non_field_errors %}<div class="ssf-error">{{ form.non_field_errors }}</div>{% endif %}
-    <section class="ssf-section"><h2>Service information</h2><p class="ssf-section-copy">Keep the existing service details up to date.</p><div class="ssf-grid"><div class="ssf-field"><label for="id_service_name">Service name</label>{{ form.service_name }}{% if form.service_name.errors %}<span class="ssf-error">{{ form.service_name.errors }}</span>{% endif %}</div><div class="ssf-field"><label for="id_service_link">Service link</label>{{ form.service_link }}<span class="ssf-help">This is opened by the Open button.</span>{% if form.service_link.errors %}<span class="ssf-error">{{ form.service_link.errors }}</span>{% endif %}</div><div class="ssf-field"><label for="id_service_logo">Service logo</label>{{ form.service_logo }}{% if form.service_logo.errors %}<span class="ssf-error">{{ form.service_logo.errors }}</span>{% endif %}{% if object and object.service_logo %}<img class="ssf-logo-preview" src="{{ object.service_logo.url }}" alt="Current service logo">{% endif %}<img id="logo-preview" class="ssf-logo-preview" alt="Selected service logo preview" hidden></div><div class="ssf-field ssf-field-full"><div class="ssf-checks"><label class="ssf-check">{{ form.is_active }} Is active</label><label class="ssf-check">{{ form.is_popular }} Is popular</label></div>{% if form.is_active.errors %}<span class="ssf-error">{{ form.is_active.errors }}</span>{% endif %}{% if form.is_popular.errors %}<span class="ssf-error">{{ form.is_popular.errors }}</span>{% endif %}</div></div></section>
-    <section class="ssf-section"><h2>Service Details</h2><p class="ssf-section-copy">Add the detailed information franchise users will see after selecting Detail. Plain text is used safely and paragraphs are preserved.</p><div class="ssf-field"><label for="id_service_details">Detailed description</label>{{ form.service_details }}<span class="ssf-help">Use separate lines for paragraphs, headings, or lists.</span>{% if form.service_details.errors %}<span class="ssf-error">{{ form.service_details.errors }}</span>{% endif %}</div></section>
-    <section class="ssf-section"><h2>Detail gallery</h2><p class="ssf-section-copy">Add detail images one by one. JPG, JPEG, PNG, or WebP only; maximum 5 MB per image.</p><div class="ssf-upload"><label class="ssf-check" for="id_detail_images" style="justify-content:center;margin-bottom:10px">Choose detail images</label><input id="id_detail_images" name="detail_images" type="file" multiple accept="image/jpeg,image/png,image/webp"><span class="ssf-help">Each new selection is appended to the current previews until you save.</span></div><div id="detail-preview" class="ssf-preview" aria-live="polite"></div>{% if detail_images %}<div class="ssf-gallery">{% for detail_image in detail_images %}<div class="ssf-gallery-item"><img src="{{ detail_image.image.url }}" alt="{{ object.service_name }} detail image"><button class="ssf-remove" type="submit" formmethod="post" formaction="{% url 'web:stateservice_detail_image_delete' detail_image.pk %}" onclick="return confirm('Remove this detail image?');">Remove image</button></div>{% endfor %}</div>{% endif %}</section>
-    <div class="ssf-actions"><a class="ssf-secondary" href="{% url 'web:stateservice_by_state' state_slug=state.slug %}">Cancel</a><button class="ssf-primary" type="submit"><i data-lucide="save" class="size-4"></i> Save Service</button></div>
-  </form></div></section>
-  <script>(function(){function preview(file,target){if(!file||!file.type.startsWith('image/'))return;const reader=new FileReader();reader.onload=function(e){target.src=e.target.result;target.hidden=false};reader.readAsDataURL(file)}const logo=document.getElementById('id_service_logo'),logoPreview=document.getElementById('logo-preview');if(logo)logo.addEventListener('change',function(){preview(this.files[0],logoPreview)});const details=document.getElementById('id_detail_images'),gallery=document.getElementById('detail-preview');if(details)details.addEventListener('change',function(){gallery.innerHTML='';Array.from(this.files).forEach(function(file){const image=document.createElement('img');image.alt='Selected detail image preview';gallery.appendChild(image);preview(file,image)});gallery.classList.toggle('is-visible',this.files.length>0)})})();</script>
-  </main></div></div></div>
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+    <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:md:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:md:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:md:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0">
+        <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+            <main class="state-service-form-page">
+                <div class="ssf-kicker">Home / <a href="{% url 'web:stateservice_by_state' state_slug=state.slug %}">{{ state.state_name }} Services</a> / {% if object %}Edit{% else %}Add{% endif %}</div>
+                <div class="ssf-head">
+                    <div><h1>{% if object %}Edit Service{% else %}Add New Service{% endif %}</h1><p class="ssf-subtitle">Configure the service and the information franchise users will see</p></div>
+                    <a class="ssf-back" href="{% url 'web:stateservice_by_state' state_slug=state.slug %}"><i data-lucide="arrow-left" class="size-4"></i> Back to Services</a>
+                </div>
+                <section class="ssf-card">
+                    <div class="ssf-card-body">
+                        <form method="post" enctype="multipart/form-data" novalidate>
+                            {% csrf_token %}
+                            {% if form.non_field_errors %}<div class="ssf-error">{{ form.non_field_errors }}</div>{% endif %}
+                            <section class="ssf-section">
+                                <h2>Service information</h2>
+                                <p class="ssf-section-copy">Keep the existing service details up to date.</p>
+                                <div class="ssf-grid">
+                                    <div class="ssf-field"><label for="id_service_name">Service name</label>{{ form.service_name }}{% if form.service_name.errors %}<span class="ssf-error">{{ form.service_name.errors }}</span>{% endif %}</div>
+                                    <div class="ssf-field"><label for="id_service_link">Service link</label>{{ form.service_link }}<span class="ssf-help">This is opened by the Open button.</span>{% if form.service_link.errors %}<span class="ssf-error">{{ form.service_link.errors }}</span>{% endif %}</div>
+                                    <div class="ssf-field">
+                                        <label for="id_service_logo">Service logo</label>
+                                        {{ form.service_logo }}
+                                        <span class="ssf-help">Upload one JPG, JPEG, PNG, or WebP image.</span>
+                                        {% if form.service_logo.errors %}<span class="ssf-error">{{ form.service_logo.errors }}</span>{% endif %}
+                                        <div id="logo-preview-wrap" class="ssf-logo-preview-wrap"{% if not object or not object.service_logo %} hidden{% endif %}>
+                                            <img id="logo-preview" class="ssf-logo-preview"{% if object and object.service_logo %} src="{{ object.service_logo.url }}"{% endif %} alt="Service logo preview"{% if not object or not object.service_logo %} hidden{% endif %} onerror="this.hidden=true; document.getElementById('logo-preview-wrap').hidden=true;">
+                                        </div>
+                                    </div>
+                                    <div class="ssf-field ssf-field-full"><div class="ssf-checks"><label class="ssf-check">{{ form.is_active }} Is active</label><label class="ssf-check">{{ form.is_popular }} Is popular</label></div>{% if form.is_active.errors %}<span class="ssf-error">{{ form.is_active.errors }}</span>{% endif %}{% if form.is_popular.errors %}<span class="ssf-error">{{ form.is_popular.errors }}</span>{% endif %}</div>
+                                </div>
+                            </section>
+                            <section class="ssf-section">
+                                <h2>Service Details</h2>
+                                <p class="ssf-section-copy">Add the detailed information franchise users will see after selecting Detail. Plain text is used safely and paragraphs are preserved.</p>
+                                <div class="ssf-field"><label for="id_service_details">Detailed description</label>{{ form.service_details }}<span class="ssf-help">Use separate lines for paragraphs, headings, or lists.</span>{% if form.service_details.errors %}<span class="ssf-error">{{ form.service_details.errors }}</span>{% endif %}</div>
+                                <div class="ssf-field">
+                                    <label for="id_detail_images">Detail gallery images</label>
+                                    <div class="ssf-upload">
+                                        <input id="id_detail_images" name="detail_images" type="file" multiple accept="image/jpeg,image/png,image/webp">
+                                        <span class="ssf-help">Add multiple JPG, JPEG, PNG, or WebP images. Each image must be 5 MB or smaller.</span>
+                                    </div>
+                                    <div id="detail-preview" class="ssf-preview" aria-live="polite"></div>
+                                    {% if detail_images %}
+                                        <div class="ssf-gallery" aria-label="Existing detail gallery images">
+                                            {% for detail_image in detail_images %}
+                                                <div class="ssf-gallery-card">
+                                                    {% if detail_image.image %}<img src="{{ detail_image.image.url }}" alt="{{ object.service_name }} detail image" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">{% endif %}
+                                                    <span class="ssf-image-placeholder"{% if detail_image.image %} hidden{% endif %}>Image unavailable</span>
+                                                    <button class="ssf-remove" type="submit" form="detail-delete-{{ detail_image.pk }}" onclick="return confirm('Remove this detail image?');">Remove image</button>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </section>
+                            <div class="ssf-actions"><a class="ssf-secondary" href="{% url 'web:stateservice_by_state' state_slug=state.slug %}">Cancel</a><button class="ssf-primary" type="submit"><i data-lucide="save" class="size-4"></i> Save Service</button></div>
+                        </form>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+</div>
+
+{% if detail_images %}
+    {% for detail_image in detail_images %}
+        <form id="detail-delete-{{ detail_image.pk }}" method="post" action="{% url 'web:stateservice_detail_image_delete' detail_image.pk %}">{% csrf_token %}</form>
+    {% endfor %}
+{% endif %}
+
 <script>
 (function () {
-  const input = document.getElementById('id_detail_images');
-  const preview = document.getElementById('detail-preview');
-  const form = input && input.form;
-  if (!input || !preview || !form) return;
-  let selectedDetailFiles = [];
-  const fileKey = file => [file.name, file.size, file.lastModified, file.type].join('::');
-  function syncInput() {
-    const transfer = new DataTransfer();
-    selectedDetailFiles.forEach(file => transfer.items.add(file));
-    input.files = transfer.files;
-  }
-  function renderPreviews() {
-    preview.innerHTML = '';
-    selectedDetailFiles.forEach(function (file, index) {
-      const item = document.createElement('div');
-      item.className = 'ssf-preview-item';
-      const image = document.createElement('img');
-      image.alt = 'Selected detail image ' + (index + 1);
-      const remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'ssf-preview-remove';
-      remove.setAttribute('aria-label', 'Remove ' + file.name);
-      remove.textContent = '×';
-      remove.addEventListener('click', function () {
-        selectedDetailFiles.splice(index, 1);
-        syncInput();
-        renderPreviews();
-      });
-      item.appendChild(image);
-      item.appendChild(remove);
-      const caption = document.createElement('span');
-      caption.className = 'ssf-help';
-      caption.textContent = file.name;
-      item.appendChild(caption);
-      preview.appendChild(item);
-      const reader = new FileReader();
-      reader.onload = event => { image.src = event.target.result; };
-      reader.readAsDataURL(file);
+    const logo = document.getElementById('id_service_logo');
+    const preview = document.getElementById('logo-preview');
+    const previewWrap = document.getElementById('logo-preview-wrap');
+    if (!logo || !preview || !previewWrap) return;
+    function hideLogoPreview() {
+        preview.hidden = true;
+        previewWrap.hidden = true;
+    }
+    logo.addEventListener('change', function () {
+        const file = this.files && this.files[0];
+        if (!file || !file.type.startsWith('image/')) {
+            hideLogoPreview();
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            preview.src = event.target.result;
+            preview.hidden = false;
+            previewWrap.hidden = false;
+        };
+        reader.onerror = hideLogoPreview;
+        reader.readAsDataURL(file);
     });
-    preview.classList.toggle('is-visible', selectedDetailFiles.length > 0);
-  }
-  input.addEventListener('change', function () {
-    const newlyChosen = Array.from(input.files);
-    input.value = '';
-    const existingKeys = new Set(selectedDetailFiles.map(fileKey));
-    newlyChosen.forEach(function (file) {
-      if (!existingKeys.has(fileKey(file))) {
-        selectedDetailFiles.push(file);
-        existingKeys.add(fileKey(file));
-      }
+
+    preview.addEventListener('error', hideLogoPreview);
+
+    const detailInput = document.getElementById('id_detail_images');
+    const detailPreview = document.getElementById('detail-preview');
+    if (!detailInput || !detailPreview) return;
+
+    let selectedDetailFiles = [];
+    function syncDetailInput() {
+        try {
+            const transfer = new DataTransfer();
+            selectedDetailFiles.forEach(function (file) { transfer.items.add(file); });
+            detailInput.files = transfer.files;
+        } catch (error) {
+            // The browser will still submit the selected files when DataTransfer is unavailable.
+        }
+    }
+    function renderDetailPreviews() {
+        detailPreview.innerHTML = '';
+        selectedDetailFiles.forEach(function (file, index) {
+            const card = document.createElement('div');
+            card.className = 'ssf-preview-card';
+            const image = document.createElement('img');
+            image.alt = 'Selected detail image preview';
+            image.hidden = true;
+            const placeholder = document.createElement('span');
+            placeholder.className = 'ssf-image-placeholder';
+            placeholder.textContent = 'Preview unavailable';
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'ssf-remove';
+            remove.textContent = 'Remove image';
+            remove.addEventListener('click', function () {
+                selectedDetailFiles.splice(index, 1);
+                syncDetailInput();
+                renderDetailPreviews();
+            });
+            card.appendChild(image);
+            card.appendChild(placeholder);
+            card.appendChild(remove);
+            detailPreview.appendChild(card);
+            if (!file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                image.src = event.target.result;
+                image.hidden = false;
+                placeholder.hidden = true;
+            };
+            reader.readAsDataURL(file);
+        });
+        detailPreview.classList.toggle('is-visible', selectedDetailFiles.length > 0);
+    }
+    detailInput.addEventListener('change', function () {
+        Array.from(this.files || []).forEach(function (file) { selectedDetailFiles.push(file); });
+        syncDetailInput();
+        renderDetailPreviews();
     });
-    syncInput();
-    renderPreviews();
-  });
-  form.addEventListener('submit', syncInput);
 })();
 </script>
 {% endblock %}

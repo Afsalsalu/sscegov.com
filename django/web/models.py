@@ -609,7 +609,7 @@ class StateService(models.Model):
         AddState, on_delete=models.CASCADE, related_name="services"
     )
     service_name = models.CharField(max_length=100)
-    service_logo = models.ImageField(upload_to="media/servicelogo")
+    service_logo = models.ImageField(upload_to="media/servicelogo", blank=True)
     service_link = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)

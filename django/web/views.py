@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordChangeView
 from django.core import serializers
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.http import FileResponse, HttpResponseRedirect, JsonResponse
@@ -442,6 +443,24 @@ class AdminOrHeadOfficeRequiredMixin(LoginRequiredMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
+class AdminListPaginationMixin:
+    """Apply consistent, query-string preserving pagination to admin lists."""
+
+    paginate_by = 10
+
+    def paginate_queryset(self, queryset, page_size):
+        paginator = Paginator(queryset, page_size)
+        page = paginator.get_page(self.request.GET.get("page", 1))
+        return paginator, page, page.object_list, page.has_other_pages()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        query_params = self.request.GET.copy()
+        query_params.pop("page", None)
+        context["pagination_query"] = query_params.urlencode()
+        return context
+
+
 class AdminDashboardView(AdminOrHeadOfficeRequiredMixin, TemplateView):
     template_name = "web/admin_panel/dashboard.html"
 
@@ -555,10 +574,13 @@ class AddHeadOfficeView(AdminOrHeadOfficeRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class HeadofficeListView(AdminOrHeadOfficeRequiredMixin, ListView):
+class HeadofficeListView(AdminListPaginationMixin, AdminOrHeadOfficeRequiredMixin, ListView):
     model = HeadOffice
     template_name = "web/admin_panel/headoffice/headoffice_list.html"
     context_object_name = "headoffices"
+
+    def get_queryset(self):
+        return super().get_queryset().order_by("-pk")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -857,13 +879,13 @@ class EditCentreUserView(AdminOrHeadOfficeRequiredMixin, UpdateView):
             return self.form_invalid(form)
 
 
-class AdminCentreUserListView(AdminOrHeadOfficeRequiredMixin, ListView):
+class AdminCentreUserListView(AdminListPaginationMixin, AdminOrHeadOfficeRequiredMixin, ListView):
     model = CentreUserAccount
     template_name = "web/admin_panel/franchise/franchise_list.html"
     context_object_name = "centreusers"
 
     def get_queryset(self):
-        return CentreUserAccount.objects.all()
+        return CentreUserAccount.objects.order_by("-pk")
 
 
 class AdminCenterUserDetailView(AdminOrHeadOfficeRequiredMixin, DetailView):
@@ -987,7 +1009,7 @@ class AddOnlineClassView(AdminOrHeadOfficeRequiredMixin, CreateView):
     success_url = reverse_lazy("web:onlineclass_list")
 
 
-class OnlineClassListView(AdminOrHeadOfficeRequiredMixin, ListView):
+class OnlineClassListView(AdminListPaginationMixin, AdminOrHeadOfficeRequiredMixin, ListView):
     model = OnlineClass
     template_name = "web/admin_panel/franchise_dashboard/onlineclass_list.html"
     context_object_name = "onlineclass"
@@ -1019,10 +1041,13 @@ class EmployeeDetailView(AdminOrHeadOfficeRequiredMixin, DetailView):
     context_object_name = "employees"
 
 
-class EmployeeListView(AdminOrHeadOfficeRequiredMixin, ListView):
+class EmployeeListView(AdminListPaginationMixin, AdminOrHeadOfficeRequiredMixin, ListView):
     model = Employee
     template_name = "web/admin_panel/employee/employee_list.html"
     context_object_name = "employees"
+
+    def get_queryset(self):
+        return super().get_queryset().order_by("-pk")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1176,10 +1201,13 @@ class AddDownloadFormView(AdminOrHeadOfficeRequiredMixin, CreateView):
         return response
 
 
-class DownloadFormAdminListView(AdminOrHeadOfficeRequiredMixin, ListView):
+class DownloadFormAdminListView(AdminListPaginationMixin, AdminOrHeadOfficeRequiredMixin, ListView):
     model = DownloadForm
     template_name = "web/admin_panel/franchise_dashboard/downloadform_list.html"
     context_object_name = "download_forms"
+
+    def get_queryset(self):
+        return super().get_queryset().order_by("-created_at", "-pk")
 
 
 class EditDownloadFormView(AdminOrHeadOfficeRequiredMixin, UpdateView):
@@ -1335,7 +1363,6 @@ class StateServiceListView(AdminOrHeadOfficeRequiredMixin, ListView):
     template_name = "web/admin_panel/services/stateservice_list.html"
     context_object_name = "services"
 
-
 class StateServiceDetailImageUploadMixin:
     def validate_detail_uploads(self, form):
         self.detail_uploads = self.request.FILES.getlist("detail_images")
@@ -1343,13 +1370,14 @@ class StateServiceDetailImageUploadMixin:
             try:
                 validate_detail_image(uploaded_file)
             except ValidationError as error:
-                form.add_error(None, error.messages)
+                form.add_error(None, error)
         return not form.errors
 
     def save_detail_uploads(self):
         for uploaded_file in self.detail_uploads:
             StateServiceDetailImage.objects.create(
-                service=self.object, image=uploaded_file
+                service=self.object,
+                image=uploaded_file,
             )
 
 
@@ -1360,13 +1388,9 @@ class StateServiceCreateView(
     form_class = StateServiceForm
     template_name = "web/admin_panel/services/stateservice_form.html"
 
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
+    def form_valid(self, form):
         if not self.validate_detail_uploads(form):
             return self.form_invalid(form)
-        return self.form_valid(form)
-
-    def form_valid(self, form):
         state = get_object_or_404(AddState, slug=self.kwargs["state_slug"])
         with transaction.atomic():
             self.object = form.save(commit=False)
@@ -1388,34 +1412,19 @@ class StateServiceCreateView(
         return context
 
 
-class StateServiceUpdateView(AdminOrHeadOfficeRequiredMixin, UpdateView):
+class StateServiceUpdateView(
+    StateServiceDetailImageUploadMixin, AdminOrHeadOfficeRequiredMixin, UpdateView
+):
     model = StateService
     form_class = StateServiceForm
     template_name = "web/admin_panel/services/stateservice_form.html"
 
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form = self.get_form()
+    def form_valid(self, form):
         if not self.validate_detail_uploads(form):
             return self.form_invalid(form)
-        return self.form_valid(form)
-
-    def validate_detail_uploads(self, form):
-        self.detail_uploads = self.request.FILES.getlist("detail_images")
-        for uploaded_file in self.detail_uploads:
-            try:
-                validate_detail_image(uploaded_file)
-            except ValidationError as error:
-                form.add_error(None, error.messages)
-        return not form.errors
-
-    def form_valid(self, form):
         with transaction.atomic():
             self.object = form.save()
-            for uploaded_file in self.detail_uploads:
-                StateServiceDetailImage.objects.create(
-                    service=self.object, image=uploaded_file
-                )
+            self.save_detail_uploads()
         messages.success(self.request, "Service updated successfully.")
         return redirect(self.get_success_url())
 
@@ -1479,14 +1488,16 @@ class AllSectionView(AdminOrHeadOfficeRequiredMixin, TemplateView):
         return context
 
 
-class StateServiceByStateView(AdminOrHeadOfficeRequiredMixin, ListView):
+class StateServiceByStateView(AdminListPaginationMixin, AdminOrHeadOfficeRequiredMixin, ListView):
     model = StateService
     template_name = "web/admin_panel/services/state_services_by_state.html"
     context_object_name = "services"
 
     def get_queryset(self):
         state_slug = self.kwargs["state_slug"]
-        return StateService.objects.filter(state__slug=state_slug)
+        return StateService.objects.filter(state__slug=state_slug).order_by(
+            "-created_at", "-pk"
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1525,10 +1536,13 @@ class DeleteLatestNewsCentreView(AdminOrHeadOfficeRequiredMixin, DeleteView):
         return HttpResponseRedirect(success_url)
 
 
-class BannerListView(AdminOrHeadOfficeRequiredMixin, ListView):
+class BannerListView(AdminListPaginationMixin, AdminOrHeadOfficeRequiredMixin, ListView):
     model = Banner
     template_name = "web/admin_panel/banners/list.html"
     context_object_name = "banners"
+
+    def get_queryset(self):
+        return super().get_queryset().order_by("display_order", "-created_at", "-pk")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1621,10 +1635,12 @@ class DistrictDashboardView(KeralaRequiredMixin, TemplateView):
         except ObjectDoesNotExist:
             raise Http404("User has no associated centre.")
 
-        latest_news = LatestNewsCentre.objects.all()
+        latest_news_queryset = LatestNewsCentre.objects.order_by("-created_at")
+        latest_news_count = latest_news_queryset.count()
+        latest_news = latest_news_queryset[:3]
         popular_services = StateService.objects.filter(
             is_popular=True, is_active=True
-        ).select_related("state")
+        ).select_related("state").order_by("-updated_at", "-created_at", "pk")
         state_value = (district_detail.state or "").strip()
         franchise_state = None
         if state_value:
@@ -1632,27 +1648,56 @@ class DistrictDashboardView(KeralaRequiredMixin, TemplateView):
                 Q(slug__iexact=state_value) | Q(state_name__iexact=state_value)
             ).first()
 
-        priority_services = popular_services.none()
-        other_services = popular_services
+        priority_services = list(popular_services.none())
+        other_services = list(popular_services)
         if franchise_state:
-            priority_services = popular_services.filter(state_id=franchise_state.pk)
-            other_services = popular_services.exclude(state_id=franchise_state.pk)
+            priority_services = list(popular_services.filter(state_id=franchise_state.pk))
+            other_services = list(popular_services.exclude(state_id=franchise_state.pk))
+
+        ordered_services = priority_services + other_services
+        dashboard_services = ordered_services[:8]
+        popular_programs = ordered_services[:2]
+        if franchise_state:
+            service_page_url = reverse(
+                "web:state_detail", kwargs={"slug": franchise_state.slug}
+            )
+        else:
+            service_page_url = reverse("web:state_list")
 
         banners = Banner.objects.filter(is_enabled=True)
         total_service = StateService.objects.count()
         ac_master = Table_Accountsmaster.objects.filter(user=self.request.user).first()
-        wallet_total = ac_master.currentbalance if ac_master else '0'
+        wallet_total = ac_master.currentbalance if ac_master else None
+        wallet_transaction_count = (
+            Table_Voucher.objects.filter(user=user).count()
+            + Table_DrCrNote.objects.filter(user=user).count()
+            + Table_Journal_Entry.objects.filter(auth_user=user).count()
+            + Table_Contra_Entry.objects.filter(auth_user=user).count()
+        )
+        centre_display_name = (
+            district_detail.centre_name
+            or district_detail.owner_centre
+            or user.get_username()
+        )
+        agency_identifier = district_detail.username or user.get_username()
         context.update(
             {
                 "latest_news": latest_news,
+                "latest_news_count": latest_news_count,
                 "district_detail": district_detail,
                 "popular_services": popular_services,
                 "priority_services": priority_services,
                 "other_services": other_services,
+                "dashboard_services": dashboard_services,
+                "popular_programs": popular_programs,
                 "franchise_state": franchise_state,
+                "service_page_url": service_page_url,
+                "centre_display_name": centre_display_name,
+                "agency_identifier": agency_identifier,
                 "last_login": user.last_login if user.centre else None,
                 "total_service": total_service,
                 "wallet_total": wallet_total,
+                "wallet_transaction_count": wallet_transaction_count,
                 "banners": banners,
             }
         )

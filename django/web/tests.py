@@ -4,13 +4,17 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from PIL import Image
 from io import BytesIO
+from datetime import date
 
 from .banner_forms import BannerForm
 from .models import (
     AddState,
     Banner,
     CentreUserAccount,
+    Department,
     DownloadForm,
+    Employee,
+    HeadOffice,
     LatestNewsCentre,
     OnlineClass,
     StateService,
@@ -111,7 +115,7 @@ class ServiceDetailsTests(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
-    def test_detail_image_is_saved_and_rendered(self):
+    def test_existing_detail_image_is_preserved_and_rendered(self):
         detail_image = StateServiceDetailImage.objects.create(
             service=self.service, image=image_file("detail.png")
         )
@@ -123,7 +127,9 @@ class ServiceDetailsTests(TestCase):
             )
         )
         self.assertEqual(response.status_code, 200)
+        self.assertTrue(StateServiceDetailImage.objects.filter(pk=detail_image.pk).exists())
         self.assertContains(response, detail_image.image.url)
+        self.assertContains(response, "sd-gallery")
 
     def test_invalid_detail_image_is_rejected(self):
         invalid = SimpleUploadedFile(
@@ -164,7 +170,7 @@ class ServiceDetailsTests(TestCase):
         self.assertContains(response, "Other States")
         self.assertContains(response, 'href="/franchise-dashboard/all-states/"')
 
-    def test_head_office_can_create_service_with_details_and_images(self):
+    def test_head_office_can_create_service_with_details_logo_and_gallery(self):
         admin = get_user_model().objects.create_user(
             username="head-office-details-test",
             password="test-password",
@@ -180,17 +186,18 @@ class ServiceDetailsTests(TestCase):
                 "service_link": "https://example.com/new-service",
                 "service_logo": image_file("new-logo.png"),
                 "service_details": "Heading\n\nA detailed paragraph.",
+                "detail_images": [image_file("detail-one.png"), image_file("detail-two.png")],
                 "is_active": "on",
                 "is_popular": "on",
-                "detail_images": [image_file("detail-one.png"), image_file("detail-two.png")],
             },
         )
         self.assertEqual(response.status_code, 302)
         created = StateService.objects.get(service_name="New Detailed Service")
         self.assertEqual(created.service_details, "Heading\n\nA detailed paragraph.")
+        self.assertTrue(created.service_logo)
         self.assertEqual(created.detail_images.count(), 2)
 
-    def test_head_office_can_add_multiple_images_without_replacing_existing_images(self):
+    def test_head_office_edit_appends_gallery_without_deleting_existing_records(self):
         admin = get_user_model().objects.create_user(
             username="head-office-gallery-edit-test",
             password="test-password",
@@ -214,7 +221,7 @@ class ServiceDetailsTests(TestCase):
         self.assertTrue(StateServiceDetailImage.objects.filter(pk=existing.pk).exists())
         self.assertEqual(self.service.detail_images.count(), 3)
 
-    def test_head_office_service_form_renders_details_section(self):
+    def test_head_office_service_form_renders_separate_logo_and_gallery_workflows(self):
         admin = get_user_model().objects.create_user(
             username="head-office-form-test",
             password="test-password",
@@ -228,17 +235,18 @@ class ServiceDetailsTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Service Details")
-        self.assertContains(response, "detail_images")
         self.assertContains(response, 'accept="image/jpeg,image/png,image/webp"')
-        self.assertContains(response, "selectedDetailFiles")
-        self.assertContains(response, "newlyChosen.forEach")
+        self.assertContains(response, 'id="id_service_logo"')
+        self.assertContains(response, "detail_images")
+        self.assertContains(response, "Detail gallery images")
         self.assertContains(response, "DataTransfer")
 
-    def test_logo_and_gallery_inputs_are_separate(self):
+    def test_logo_input_is_single_and_gallery_input_is_multiple(self):
         form = StateServiceForm()
         logo_html = str(form["service_logo"])
         self.assertIn('name="service_logo"', logo_html)
         self.assertNotIn("multiple", logo_html)
+        self.assertFalse(form.fields["service_logo"].required)
         admin = get_user_model().objects.create_user(
             username="head-office-input-separation-test",
             password="test-password",
@@ -250,12 +258,13 @@ class ServiceDetailsTests(TestCase):
                 "web:add_service_for_state", kwargs={"state_slug": self.state.slug}
             )
         )
+        self.assertContains(response, 'id="logo-preview"')
         self.assertContains(response, 'name="detail_images"')
         self.assertContains(response, 'id="detail-preview"')
-        self.assertContains(response, 'id="logo-preview"')
+        self.assertContains(response, "Detail gallery images")
         self.assertNotContains(response, 'id="id_service_logo" multiple')
 
-    def test_detail_page_renders_all_gallery_images_and_action_links(self):
+    def test_detail_page_renders_gallery_images_and_action_links(self):
         images = [
             StateServiceDetailImage.objects.create(
                 service=self.service, image=image_file("gallery-one.png")
@@ -274,9 +283,43 @@ class ServiceDetailsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         for gallery_image in images:
             self.assertContains(response, gallery_image.image.url)
-        self.assertContains(response, "service-lightbox")
-        self.assertContains(response, "Previous image")
+        self.assertContains(response, self.service.service_logo.url)
+        self.assertContains(response, "sd-gallery")
         self.assertContains(response, self.service.service_link)
+
+    def test_head_office_can_create_service_without_logo(self):
+        admin = get_user_model().objects.create_user(
+            username="head-office-optional-logo-test",
+            password="test-password",
+            usertype="HeadOffice",
+        )
+        self.client.force_login(admin)
+        response = self.client.post(
+            reverse("web:add_service_for_state", kwargs={"state_slug": self.state.slug}),
+            data={
+                "service_name": "Logo Optional Service",
+                "service_details": "Details without a logo.",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        created = StateService.objects.get(service_name="Logo Optional Service")
+        self.assertFalse(created.service_logo)
+
+    def test_existing_detail_image_can_be_removed_individually(self):
+        admin = get_user_model().objects.create_user(
+            username="head-office-gallery-remove-test",
+            password="test-password",
+            usertype="HeadOffice",
+        )
+        detail_image = StateServiceDetailImage.objects.create(
+            service=self.service, image=image_file("remove-me.png")
+        )
+        self.client.force_login(admin)
+        response = self.client.post(
+            reverse("web:stateservice_detail_image_delete", kwargs={"pk": detail_image.pk})
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(StateServiceDetailImage.objects.filter(pk=detail_image.pk).exists())
 
     def test_edit_preserves_existing_logo_and_details_without_new_upload(self):
         admin = get_user_model().objects.create_user(
@@ -529,7 +572,7 @@ class StateSmartDashboardTests(TestCase):
         self.assertEqual(list(response.context["other_services"]), [general])
         self.assertContains(response, "Showing priority content for")
         self.assertContains(response, "More Services")
-        self.assertEqual(response.content.decode().count('class="popular-service-card"'), 2)
+        self.assertEqual(response.content.decode().count('class="popular-service-card franchise-quick-card"'), 2)
 
     def test_user_without_state_keeps_global_dashboard_content(self):
         kerala = self.make_state("Kerala")
@@ -555,6 +598,29 @@ class StateSmartDashboardTests(TestCase):
         self.assertFalse(response.context["priority_services"])
         self.assertEqual(list(response.context["other_services"]), [general])
         self.assertContains(response, "General Service")
+
+    def test_dashboard_reference_structure_keeps_real_banner_and_blank_image_fallbacks(self):
+        state = self.make_state("Kerala")
+        service = self.make_service(state, "Reference Service")
+        banner = Banner.objects.create(image=image_file("dashboard-reference.png"), is_enabled=True)
+        missing_banner = Banner.objects.create(image="banners/missing-dashboard-reference.png", is_enabled=True)
+        user = self.make_franchise_user(state.slug)
+
+        self.client.force_login(user)
+        response = self.client.get(reverse("web:centre_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "franchise-banner-copy")
+        self.assertContains(response, "franchise-banner-media")
+        self.assertContains(response, banner.image.url)
+        self.assertContains(response, missing_banner.image.url)
+        self.assertContains(response, "this.nextElementSibling.hidden=false")
+        self.assertContains(response, "franchise-quick-card")
+        self.assertContains(response, "franchise-dashboard-panels")
+        self.assertContains(response, "franchise-panel-footer")
+        self.assertContains(response, service.service_name)
+        self.assertNotContains(response, "franchise-image-fallback")
+        self.assertNotContains(response, "image-off")
 
 
 class FranchiseSidebarNavigationTests(TestCase):
@@ -764,5 +830,130 @@ class OnlineClassTests(TestCase):
             reverse("web:onlineclass_list"), {"q": "workplace"}
         )
         self.assertEqual(list(description_response.context["onlineclass"]), [matching])
+
+
+class AdminListPaginationTests(TestCase):
+    def setUp(self):
+        self.admin = get_user_model().objects.create_user(
+            username="admin-pagination", password="test-password", usertype="HeadOffice"
+        )
+        self.state = AddState.objects.create(state_name="Kerala")
+        self.service = StateService.objects.create(
+            state=self.state,
+            service_name="Pagination Service",
+            service_details="Service details",
+        )
+        self.department = Department.objects.create(name="Pagination Department")
+        self.client.force_login(self.admin)
+
+    def assert_list_pages(self, url, context_name):
+        first_response = self.client.get(url)
+        self.assertEqual(first_response.status_code, 200)
+        self.assertEqual(first_response.context["page_obj"].number, 1)
+        self.assertEqual(len(first_response.context[context_name]), 10)
+        self.assertEqual(first_response.context["paginator"].per_page, 10)
+        self.assertContains(first_response, "Next")
+        self.assertContains(first_response, "page=2")
+
+        second_response = self.client.get(url, {"page": 2})
+        self.assertEqual(second_response.status_code, 200)
+        self.assertEqual(second_response.context["page_obj"].number, 2)
+        self.assertEqual(len(second_response.context[context_name]), 1)
+        self.assertContains(second_response, "Previous")
+
+        invalid_response = self.client.get(url, {"page": "not-a-page"})
+        self.assertEqual(invalid_response.context["page_obj"].number, 1)
+
+        out_of_range_response = self.client.get(url, {"page": 999})
+        self.assertEqual(out_of_range_response.context["page_obj"].number, 2)
+
+    def test_head_office_and_franchise_tables_paginate(self):
+        for index in range(11):
+            HeadOffice.objects.create(
+                name=f"Head Office {index}",
+                phone_number=f"90000000{index:02d}",
+                email=f"headoffice-{index}@example.com",
+            )
+            user = get_user_model().objects.create_user(
+                username=f"centre-pagination-{index}",
+                password="test-password",
+                usertype="centre",
+            )
+            CentreUserAccount.objects.create(
+                user=user,
+                owner_centre=f"Centre {index}",
+                mobile=9100000000 + index,
+                aadhaar_number=100000000000 + index,
+                email=f"centre-{index}@example.com",
+                centre_phone_number=9200000000 + index,
+                state="kerala",
+                district="Ernakulam",
+                location="",
+            )
+
+        self.assert_list_pages(reverse("web:headoffice_list"), "headoffices")
+        self.assert_list_pages(reverse("web:franchise_list"), "centreusers")
+
+    def test_service_card_routes_paginate(self):
+        for index in range(10):
+            StateService.objects.create(
+                state=self.state,
+                service_name=f"Service {index}",
+                service_details="Service details",
+            )
+
+        self.assert_list_pages(
+            reverse("web:stateservice_by_state", kwargs={"state_slug": self.state.slug}),
+            "services",
+        )
+
+    def test_download_online_class_banner_and_employee_lists_paginate(self):
+        for index in range(11):
+            DownloadForm.objects.create(
+                title=f"Download Form {index}",
+                pdf=pdf_file(f"form-{index}.pdf"),
+                state=self.state,
+                service=self.service,
+            )
+            OnlineClass.objects.create(
+                title=f"Online Class {index}",
+                description="Pagination class",
+                class_video_link=f"https://example.com/class-{index}",
+            )
+            Banner.objects.create(
+                image=image_file(f"banner-{index}.png"),
+                display_order=index,
+            )
+            Employee.objects.create(
+                name=f"Employee {index}",
+                username=f"employee-pagination-{index}",
+                email=f"employee-{index}@example.com",
+                position=self.department,
+                date_of_birth=date(2000, 1, 1),
+                mobile=9300000000 + index,
+            )
+
+        self.assert_list_pages(reverse("web:downloadform_list"), "download_forms")
+        self.assert_list_pages(reverse("web:onlineclass_list"), "onlineclass")
+        self.assert_list_pages(reverse("web:banner_list"), "banners")
+        self.assert_list_pages(reverse("web:employee_list"), "employees")
+
+    def test_pagination_preserves_online_class_search_parameter(self):
+        for index in range(11):
+            OnlineClass.objects.create(
+                title=f"Searchable Class {index}",
+                description="Matching description",
+                class_video_link=f"https://example.com/searchable-{index}",
+            )
+
+        response = self.client.get(
+            reverse("web:onlineclass_list"), {"q": "Searchable", "page": 2}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["page_obj"].number, 2)
+        self.assertEqual(len(response.context["onlineclass"]), 1)
+        self.assertContains(response, "q=Searchable&amp;page=1")
+        self.assertContains(response, "q=Searchable&amp;page=2")
 
 # Create your tests here.

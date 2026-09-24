@@ -31,7 +31,7 @@
                         <div class="card service-category">
                             <div class="card-body text-center">
                                 <div class="flex items-center justify-center mx-auto rounded-full size-14 bg-custom-100 text-custom-500 dark:bg-custom-500/20">
-                                    <img class"mb-3" src="{{ kl.service_logo.url }}" alt="">
+                                    {% if kl.service_logo %}<img class="mb-3" src="{{ kl.service_logo.url }}" alt="{{ kl.service_name }} logo" onerror="this.hidden=true;">{% endif %}
                                 </div>
                                 <h5 class="pt-2 hard">{{ kl.service_name }}</h5>
                             </div>

@@ -641,6 +641,20 @@
     </a>
 </li>
 {% elif user.usertype == 'centre' %}
+{% if request.resolver_match.url_name == 'centre_dashboard' %}
+<li class="dashboard-sidebar-heading"><span>{% translate "Menu" %}</span></li>
+<li><a class="dashboard-sidebar-link is-active" href="{% url 'web:centre_dashboard' %}" aria-current="page"><i data-lucide="house" aria-hidden="true"></i><span>{% translate "Dashboard" %}</span></a></li>
+<li><a class="dashboard-sidebar-link" href="{{ franchise_service_url }}"><i data-lucide="grid-2x2" aria-hidden="true"></i><span>{% translate "Service" %}</span></a></li>
+<li><a class="dashboard-sidebar-link" href="{% url 'web:acc_master' %}"><i data-lucide="book-open" aria-hidden="true"></i><span>{% translate "Accounts" %}</span></a></li>
+<li><a class="dashboard-sidebar-link" href="{% url 'web:wallet' %}"><i data-lucide="wallet-cards" aria-hidden="true"></i><span>{% translate "Wallet" %}</span></a></li>
+<li><a class="dashboard-sidebar-link" href="{% url 'web:download_form_list' %}"><i data-lucide="download" aria-hidden="true"></i><span>{% translate "Download Forms" %}</span></a></li>
+<li><a class="dashboard-sidebar-link" href="{% url 'web:online_class' %}"><i data-lucide="graduation-cap" aria-hidden="true"></i><span>{% translate "Online Class" %}</span></a></li>
+<li><a class="dashboard-sidebar-link" href="{% url 'web:softwares' %}"><i data-lucide="boxes" aria-hidden="true"></i><span>{% translate "Software" %}</span></a></li>
+<li><a class="dashboard-sidebar-link" href="{% url 'web:keraladistrict_profile' %}"><i data-lucide="user-round" aria-hidden="true"></i><span>{% translate "Profile" %}</span></a></li>
+<li><a class="dashboard-sidebar-link" href="{% url 'web:franchise_enquiry_history' %}"><i data-lucide="mail" aria-hidden="true"></i><span>{% translate "My enquiries" %}</span></a></li>
+<li class="dashboard-sidebar-divider" aria-hidden="true"></li>
+<li><a class="dashboard-sidebar-link" href="{% url 'web:kerala_subcentre' %}"><i data-lucide="network" aria-hidden="true"></i><span>{% translate "Sub Centre" %}</span></a></li>
+{% else %}
 
 <li
 class="px-4 py-1 text-vertical-menu-item group-data-[sidebar=dark]:text-vertical-menu-item-dark group-data-[sidebar=brand]:text-vertical-menu-item-brand group-data-[sidebar=modern]:text-vertical-menu-item-modern uppercase font-medium text-[11px] cursor-default tracking-wider group-data-[sidebar-size=sm]:hidden group-data-[layout=horizontal]:hidden inline-block group-data-[sidebar-size=md]:block group-data-[sidebar-size=md]:underline group-data-[sidebar-size=md]:text-center group-data-[sidebar=dark]:dark:text-zink-200">
@@ -984,6 +998,8 @@ class="px-4 py-1 text-vertical-menu-item group-data-[sidebar=dark]:text-vertical
         data-key="t-dashboards">{% translate "Profile" %}</span>
 </a>
 </li>
+
+{% endif %}
 
 {% elif user.usertype == 'Employee' %}
 

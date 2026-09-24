@@ -1,0 +1,73 @@
+{% load i18n %}
+
+<div id="scrollbar" class="h-full overflow-y-auto">
+    <div>
+        <ul id="navbar-nav" class="metismenu navbar-nav">
+            <li class="dashboard-sidebar-heading"><span>{% translate "Menu" %}</span></li>
+
+            <li>
+                <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'centre_dashboard' %} is-active{% endif %}"
+                    href="{% url 'web:centre_dashboard' %}"{% if request.resolver_match.url_name == 'centre_dashboard' %} aria-current="page"{% endif %}>
+                    <i data-lucide="house" aria-hidden="true"></i><span>{% translate "Dashboard" %}</span>
+                </a>
+            </li>
+            <li>
+                <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'state_list' or request.resolver_match.url_name == 'state_detail' or request.resolver_match.url_name == 'service_detail' %} is-active{% endif %}"
+                    href="{{ franchise_service_url }}"{% if request.resolver_match.url_name == 'state_list' or request.resolver_match.url_name == 'state_detail' or request.resolver_match.url_name == 'service_detail' %} aria-current="page"{% endif %}>
+                    <i data-lucide="grid-2x2" aria-hidden="true"></i><span>{% translate "Service" %}</span>
+                </a>
+            </li>
+            <li>
+                <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'acc_master' or request.resolver_match.url_name == 'acc_master_list' or request.resolver_match.url_name == 'delete_acc_master_list' or request.resolver_match.url_name == 'edit_acc_master_list' %} is-active{% endif %}"
+                    href="{% url 'web:acc_master' %}"{% if request.resolver_match.url_name == 'acc_master' or request.resolver_match.url_name == 'acc_master_list' or request.resolver_match.url_name == 'delete_acc_master_list' or request.resolver_match.url_name == 'edit_acc_master_list' %} aria-current="page"{% endif %}>
+                    <i data-lucide="book-open" aria-hidden="true"></i><span>{% translate "Accounts" %}</span>
+                </a>
+            </li>
+            <li>
+                <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'wallet' or request.resolver_match.url_name == 'add_wallet' or request.resolver_match.url_name == 'history' %} is-active{% endif %}"
+                    href="{% url 'web:wallet' %}"{% if request.resolver_match.url_name == 'wallet' or request.resolver_match.url_name == 'add_wallet' or request.resolver_match.url_name == 'history' %} aria-current="page"{% endif %}>
+                    <i data-lucide="wallet-cards" aria-hidden="true"></i><span>{% translate "Wallet" %}</span>
+                </a>
+            </li>
+            <li>
+                <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'download_form_list' or request.resolver_match.url_name == 'download_file' %} is-active{% endif %}"
+                    href="{% url 'web:download_form_list' %}"{% if request.resolver_match.url_name == 'download_form_list' or request.resolver_match.url_name == 'download_file' %} aria-current="page"{% endif %}>
+                    <i data-lucide="download" aria-hidden="true"></i><span>{% translate "Download Forms" %}</span>
+                </a>
+            </li>
+            <li>
+                <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'online_class' or request.resolver_match.url_name == 'online_class_detail' %} is-active{% endif %}"
+                    href="{% url 'web:online_class' %}"{% if request.resolver_match.url_name == 'online_class' or request.resolver_match.url_name == 'online_class_detail' %} aria-current="page"{% endif %}>
+                    <i data-lucide="graduation-cap" aria-hidden="true"></i><span>{% translate "Online Class" %}</span>
+                </a>
+            </li>
+            <li>
+                <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'softwares' or request.resolver_match.url_name == 'tools' %} is-active{% endif %}"
+                    href="{% url 'web:softwares' %}"{% if request.resolver_match.url_name == 'softwares' or request.resolver_match.url_name == 'tools' %} aria-current="page"{% endif %}>
+                    <i data-lucide="boxes" aria-hidden="true"></i><span>{% translate "Software" %}</span>
+                </a>
+            </li>
+            <li>
+                <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'keraladistrict_profile' or request.resolver_match.url_name == 'change_password' %} is-active{% endif %}"
+                    href="{% url 'web:keraladistrict_profile' %}"{% if request.resolver_match.url_name == 'keraladistrict_profile' or request.resolver_match.url_name == 'change_password' %} aria-current="page"{% endif %}>
+                    <i data-lucide="user-round" aria-hidden="true"></i><span>{% translate "Profile" %}</span>
+                </a>
+            </li>
+            <li>
+                <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'franchise_enquiry_history' or request.resolver_match.url_name == 'franchise_enquiry_compose' or request.resolver_match.url_name == 'franchise_enquiry_detail' or request.resolver_match.url_name == 'franchise_enquiry_attachment' %} is-active{% endif %}"
+                    href="{% url 'web:franchise_enquiry_history' %}"{% if request.resolver_match.url_name == 'franchise_enquiry_history' or request.resolver_match.url_name == 'franchise_enquiry_compose' or request.resolver_match.url_name == 'franchise_enquiry_detail' or request.resolver_match.url_name == 'franchise_enquiry_attachment' %} aria-current="page"{% endif %}>
+                    <i data-lucide="mail" aria-hidden="true"></i><span>{% translate "My enquiries" %}</span>
+                </a>
+            </li>
+
+            <li class="dashboard-sidebar-divider" aria-hidden="true"></li>
+
+            <li>
+                <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'kerala_subcentre' or request.resolver_match.url_name == 'add_kerala_subcentre' %} is-active{% endif %}"
+                    href="{% url 'web:kerala_subcentre' %}"{% if request.resolver_match.url_name == 'kerala_subcentre' or request.resolver_match.url_name == 'add_kerala_subcentre' %} aria-current="page"{% endif %}>
+                    <i data-lucide="network" aria-hidden="true"></i><span>{% translate "Sub Centre" %}</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
