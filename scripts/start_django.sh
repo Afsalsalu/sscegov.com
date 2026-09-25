@@ -1,32 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -Eeuo pipefail
 
-#PROJECT_DIRECTORY="$HOME/sscegov.com//django";
-#VENV_PATH="${PROJECT_DIRECTORY}/venv";
-#APP_NAME="ssc.wsgi:application"
+# Canonical Gunicorn entrypoint for the main Django application.
+# Override these values only when the deployment layout differs.
+PROJECT_DIRECTORY="${PROJECT_DIRECTORY:-${HOME}/sscegov.com/django}"
+VENV_PATH="${VENV_PATH:-${PROJECT_DIRECTORY}/venv}"
+GUNICORN_BIND="${GUNICORN_BIND:-unix:${PROJECT_DIRECTORY}/gunicorn.sock}"
+GUNICORN_WORKERS="${GUNICORN_WORKERS:-3}"
+GUNICORN_UMASK="${GUNICORN_UMASK:-0000}"
 
-
-#source ${VENV_PATH}/bin/activate; 
-#cd ${PROJECT_DIRECTORY};
-
-#${VENV_PATH}/bin/gunicorn -b unix:${PROJECT_DIRECTORY}/gunicorn.sock ${APP_NAME}
-
-#!/bin/bash
-
-PROJECT_DIRECTORY="$HOME/sscegov.com/django"
-VENV_PATH="${PROJECT_DIRECTORY}/venv"
-APP_NAME="ssc.wsgi:application"
-LOG_DIR="$HOME/sscegov.com/logs"
-
-mkdir -p ${LOG_DIR}
-
-source ${VENV_PATH}/bin/activate
-cd ${PROJECT_DIRECTORY}
-
-${VENV_PATH}/bin/gunicorn \
---workers 3 \
---bind unix:${PROJECT_DIRECTORY}/gunicorn.sock \
---log-level debug \
---access-logfile ${LOG_DIR}/gunicorn_access.log \
---error-logfile ${LOG_DIR}/gunicorn_error.log \
-${APP_NAME}
+cd "${PROJECT_DIRECTORY}"
+exec "${VENV_PATH}/bin/gunicorn" \
+    --chdir "${PROJECT_DIRECTORY}" \
+    --workers "${GUNICORN_WORKERS}" \
+    --bind "${GUNICORN_BIND}" \
+    --umask "${GUNICORN_UMASK}" \
+    --access-logfile - \
+    --error-logfile - \
+    ssc.wsgi:application
 

@@ -13,7 +13,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Run test deployment
+      - name: Deploy Django application
         env:
           SSH_KEY: ${{ secrets.SSCEGOV_TEST_SSH_KEY }}
         run: |
@@ -26,4 +26,5 @@ jobs:
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=accept-new \
             -o ConnectTimeout=30 \
-            ssce@65.108.247.141 true
+            ssce@65.108.247.141 \
+            'cd "$HOME/sscegov.com" && DEPLOY_BRANCH=main APP_SERVICE=sscegov-gunicorn.service bash scripts/deploy_django.sh'

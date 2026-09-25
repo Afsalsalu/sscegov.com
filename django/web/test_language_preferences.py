@@ -70,6 +70,15 @@ class DashboardLanguageTests(TestCase):
             "en",
         )
 
+    def test_dashboard_renders_the_language_selector_and_current_static_asset(self):
+        self.client.force_login(self.admin)
+        response = self.client.get(reverse("web:admin_dashboard"))
+
+        self.assertContains(response, 'data-language-switcher')
+        self.assertContains(response, 'web/css/language-switcher.css')
+        self.assertContains(response, reverse("web:set_language"))
+        self.assertContains(response, 'value="ur"')
+
     def test_manual_selection_persists_for_admin_across_login(self):
         self.client.force_login(self.admin)
         response = self.client.post(
