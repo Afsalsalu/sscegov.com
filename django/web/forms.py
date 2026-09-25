@@ -212,7 +212,24 @@ class CentreUserForm(forms.ModelForm):
 
     class Meta:
         model = CentreUserAccount
-        exclude = ["user", "username", "password", "usertype"]
+        exclude = [
+            "user",
+            "username",
+            "password",
+            "usertype",
+            "created_at",
+            "last_successful_login",
+            "manual_disabled",
+            "manual_disabled_at",
+            "manual_disabled_by",
+            "manual_disable_reason",
+            "manual_reactivation_payment_required",
+            "manual_reactivation_fee_override",
+            "inactive_due_to_inactivity",
+            "inactivity_disabled_at",
+            "inactivity_reason",
+            "reactivated_at",
+        ]
 
         widgets = {
             "photo": forms.FileInput(attrs={"accept": "image/*"}),
@@ -230,6 +247,8 @@ class CentreUserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields["is_active"].initial = self.instance.is_active
 
     def clean_mobile(self):
         mobile = self.cleaned_data.get("mobile")

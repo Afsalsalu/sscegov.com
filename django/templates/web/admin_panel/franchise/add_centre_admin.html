@@ -275,11 +275,26 @@
                             <span class="error">{{ form.is_active.errors|striptags }}</span>
                         {% endif %}
                     </div>
+                    <div class="form-group{% if form.reactivation_fee_override.errors %} has-error{% endif %}">
+                        {{ form.reactivation_fee_override.label_tag }}
+                        {{ form.reactivation_fee_override }}
+                        <small>Optional INR override. Leave blank to use the Centre Reactivation Settings amount.</small>
+                        {% if form.reactivation_fee_override.errors %}
+                            <span class="error">{{ form.reactivation_fee_override.errors|striptags }}</span>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="buttons">
                     <button type="submit" id="submit-button" class="buttonF"><i class='bx bx-plus-medical'></i> Submit</button>
                     <a href="{% url 'web:franchise_list' %}"><button type="button" class="buttonN"><i class='bx bx-arrow-back'></i> Cancel</button></a>
                     <a href=""><button type="button" class="buttonN"><i class='bx bx-refresh'></i> Clear Form</button></a>
+                    {% if form.instance.pk %}
+                        {% if form.instance.manual_disabled or form.instance.inactive_due_to_inactivity or not form.instance.is_active %}
+                            <button type="submit" formmethod="post" formnovalidate formaction="{% url 'web:admin_enable_centre' pk=form.instance.pk %}" class="buttonF">Enable Centre</button>
+                        {% else %}
+                            <a href="{% url 'web:admin_disable_centre' pk=form.instance.pk %}" class="buttonN">Disable Centre</a>
+                        {% endif %}
+                    {% endif %}
                 </div>
                 
             </form>

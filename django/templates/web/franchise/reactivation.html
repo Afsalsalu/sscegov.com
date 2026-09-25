@@ -1,0 +1,337 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Centre Reactivation | SSCEGOV</title>
+    <link rel="icon" href="{% static 'web/file/images/logoSSC-blue.png' %}" type="image/x-icon">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        :root { color-scheme: light; --blue: #1e5bea; --ink: #17233d; --muted: #687895; --line: #e5ebf6; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f8fd; }
+        body.modal-open { overflow: hidden; }
+        .shell { width: min(100%, 720px); overflow: hidden; border: 1px solid var(--line); border-radius: 22px; background: #fff; box-shadow: 0 22px 65px rgba(28, 65, 125, .12); }
+        .brand { display: flex; align-items: center; gap: 14px; padding: 24px 30px; border-bottom: 1px solid var(--line); }
+        .brand img { width: 52px; height: 52px; object-fit: contain; }
+        .brand strong { display: block; font-size: 20px; letter-spacing: -.02em; }
+        .brand span { display: block; margin-top: 3px; color: var(--muted); font-size: 13px; }
+        .content { padding: 32px; }
+        .eyebrow { margin: 0 0 10px; color: var(--blue); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+        h1 { margin: 0; font-size: clamp(25px, 4vw, 34px); line-height: 1.15; letter-spacing: -.035em; }
+        .lead { margin: 16px 0 0; color: var(--muted); font-size: 16px; line-height: 1.65; }
+        .message-panel { margin-top: 24px; padding: 18px 20px; border: 1px solid #f2dca6; border-radius: 14px; color: #624b13; background: #fffaf0; line-height: 1.6; }
+        .message-panel[hidden] { display: none; }
+        .meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
+        .meta-card { padding: 15px 16px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcff; }
+        .meta-card small { display: block; margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+        .meta-card strong { font-size: 17px; }
+        .actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 28px; }
+        .actions button, .actions a { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; padding: 0 18px; border: 1px solid transparent; border-radius: 10px; font: inherit; font-size: 14px; font-weight: 750; text-decoration: none; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease, background .15s ease; }
+        .actions button:hover, .actions a:hover { transform: translateY(-1px); }
+        .btn-primary { color: #fff; background: var(--blue); box-shadow: 0 9px 18px rgba(30, 91, 234, .2); }
+        .btn-secondary { color: var(--blue); border-color: #cbd9fb !important; background: #f6f8ff; }
+        .btn-quiet { color: #3b4a65; border-color: var(--line) !important; background: #fff; }
+        .status { min-height: 20px; margin: 16px 0 0; color: #c23b3b; font-size: 13px; }
+        .modal[hidden], .modal-form[hidden], .modal-success[hidden] { display: none; }
+        .modal { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; }
+        .modal-backdrop { position: absolute; inset: 0; background: rgba(23, 35, 61, .42); backdrop-filter: blur(2px); }
+        .modal-panel { position: relative; width: min(100%, 560px); max-height: min(720px, calc(100vh - 40px)); overflow: auto; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: 0 24px 80px rgba(21, 42, 86, .28); }
+        .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 22px 24px 16px; border-bottom: 1px solid var(--line); }
+        .modal-header h2 { margin: 0; font-size: 22px; letter-spacing: -.025em; }
+        .modal-header p { margin: 7px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+        .modal-close { display: inline-grid; width: 36px; height: 36px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 9px; color: #3b4a65; background: #fff; font: inherit; font-size: 22px; line-height: 1; cursor: pointer; }
+        .modal-body { padding: 22px 24px 24px; }
+        .centre-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .centre-summary div { padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: #fbfcff; }
+        .centre-summary small { display: block; margin-bottom: 5px; color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+        .centre-summary strong { display: block; overflow-wrap: anywhere; font-size: 14px; }
+        .form-field { margin-top: 16px; }
+        .form-field label { display: block; margin-bottom: 7px; color: #34425d; font-size: 13px; font-weight: 750; }
+        .form-field input, .form-field textarea { display: block; width: 100%; border: 1px solid #cfd8e8; border-radius: 9px; padding: 11px 12px; color: var(--ink); background: #fff; font: inherit; font-size: 14px; outline: none; }
+        .form-field textarea { min-height: 132px; resize: vertical; line-height: 1.5; }
+        .form-field input:focus, .form-field textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(30, 91, 234, .12); }
+        .form-field input[aria-invalid="true"], .form-field textarea[aria-invalid="true"] { border-color: #c23b3b; }
+        .form-field small { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+        .field-error, .form-error { min-height: 17px; margin: 6px 0 0; color: #b52f2f; font-size: 12px; line-height: 1.4; }
+        .form-error { margin: 0 0 4px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .modal-actions button { min-height: 44px; padding: 0 16px; border: 1px solid transparent; border-radius: 9px; font: inherit; font-size: 14px; font-weight: 750; cursor: pointer; }
+        .modal-actions button:disabled { cursor: wait; opacity: .65; }
+        .modal-success { padding: 18px; border: 1px solid #bce5cc; border-radius: 12px; color: #1e6540; background: #f1fbf4; font-size: 14px; line-height: 1.55; }
+        @media (max-width: 560px) {
+            body { padding: 14px; }
+            .brand, .content { padding: 22px; }
+            .meta { grid-template-columns: 1fr; }
+            .actions { flex-direction: column; }
+            .actions button, .actions a { width: 100%; }
+            .modal { align-items: end; padding: 10px; }
+            .modal-panel { max-height: calc(100vh - 20px); border-radius: 16px; }
+            .modal-header, .modal-body { padding-left: 18px; padding-right: 18px; }
+            .centre-summary { grid-template-columns: 1fr; }
+            .modal-actions { flex-direction: column-reverse; }
+            .modal-actions button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<main class="shell" aria-labelledby="reactivation-title">
+    <header class="brand">
+        <img src="{% static 'web/file/images/logoSSC-blue.png' %}" alt="SSCEGOV">
+        <div><strong>SSCEGOV</strong><span>Centre account reactivation</span></div>
+    </header>
+    <section class="content">
+        <p class="eyebrow">Restricted access</p>
+        <h1 id="reactivation-title">Centre access restricted</h1>
+        <p class="lead">{{ reactivation_message }}</p>
+        <div class="message-panel" id="reactivation-message" role="alert">
+            {{ reactivation_message }}
+        </div>
+        <div class="meta">
+            <div class="meta-card"><small>Centre</small><strong>{{ centre.centre_name|default:centre.owner_centre|default:centre.name|default:centre.user.username }}</strong></div>
+            {% if payment_available %}<div class="meta-card"><small>Reactivation fee</small><strong>&#8377; {{ reactivation_amount|floatformat:2 }}</strong></div>{% endif %}
+        </div>
+        <p class="status" id="reactivation-status" aria-live="polite"></p>
+        <div class="actions">
+            <button class="btn-quiet" type="button" id="dismiss-message" data-home-url="{% url 'web:index' %}">OK</button>
+            <button class="btn-secondary" type="button" id="open-enquiry" aria-haspopup="dialog" aria-controls="reactivation-enquiry-modal">Send Enquiry</button>
+            {% if payment_available %}<button class="btn-primary" type="button" id="pay-reactivation">{% if is_manual_restriction %}Pay &#8377;{{ reactivation_amount|floatformat:2 }}{% else %}Pay Reactivation Fee{% endif %}</button>{% endif %}
+        </div>
+    </section>
+</main>
+<div class="modal" id="reactivation-enquiry-modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" data-close-enquiry></div>
+    <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="reactivation-enquiry-title" aria-describedby="reactivation-enquiry-description">
+        <header class="modal-header">
+            <div>
+                <h2 id="reactivation-enquiry-title">Send Reactivation Enquiry</h2>
+                <p id="reactivation-enquiry-description">Ask Head Office to review this restricted centre account.</p>
+            </div>
+            <button class="modal-close" type="button" id="close-enquiry" aria-label="Close enquiry">&times;</button>
+        </header>
+        <div class="modal-body">
+            <div class="centre-summary" aria-label="Centre details">
+                <div><small>Centre name</small><strong>{{ reactivation_centre_name }}</strong></div>
+                <div><small>Centre ID</small><strong>{{ reactivation_centre_id }}</strong></div>
+            </div>
+            <form class="modal-form" id="reactivation-enquiry-form" action="{% url 'web:franchise_reactivation_enquiry' %}" method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                <p class="form-error" id="enquiry-form-error" role="alert" tabindex="-1"></p>
+                <div class="form-field">
+                    <label for="reactivation-subject">Subject</label>
+                    <input id="reactivation-subject" name="subject" type="text" maxlength="200" value="Centre Enable Request" autocomplete="off" required aria-describedby="reactivation-subject-error">
+                    <p class="field-error" id="reactivation-subject-error" role="alert"></p>
+                </div>
+                <div class="form-field">
+                    <label for="reactivation-message-input">Message</label>
+                    <textarea id="reactivation-message-input" name="message" maxlength="10000" required aria-describedby="reactivation-message-error" placeholder="Explain why Head Office should enable this centre."></textarea>
+                    <p class="field-error" id="reactivation-message-error" role="alert"></p>
+                </div>
+                <div class="form-field">
+                    <label for="reactivation-attachment">Attachment <span>(optional)</span></label>
+                    <input id="reactivation-attachment" name="attachment" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" aria-describedby="reactivation-attachment-help reactivation-attachment-error">
+                    <small id="reactivation-attachment-help">PDF, DOC, DOCX, JPG, JPEG, or PNG. Maximum 10 MB.</small>
+                    <p class="field-error" id="reactivation-attachment-error" role="alert"></p>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-quiet" type="button" id="cancel-enquiry">Cancel</button>
+                    <button class="btn-primary" type="submit" id="submit-enquiry">Send Enquiry</button>
+                </div>
+            </form>
+            <div class="modal-success" id="enquiry-success" hidden role="status" tabindex="-1">Your enquiry has been sent to Head Office successfully.</div>
+        </div>
+    </section>
+</div>
+<script>
+(function () {
+    const statusNode = document.getElementById('reactivation-status');
+    const payButton = document.getElementById('pay-reactivation');
+    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]')?.value || document.querySelector('meta[name="csrf-token"]')?.content || document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
+    const urls = {
+        order: "{% url 'web:centre_reactivation_order' %}",
+        callback: "{% url 'web:centre_reactivation_callback' %}",
+        status: "{% url 'web:centre_reactivation_status' %}",
+        enquiry: "{% url 'web:franchise_reactivation_enquiry' %}"
+    };
+    function setStatus(message) { statusNode.textContent = message || ''; }
+    async function postJson(url, payload) {
+        const response = await fetch(url, {
+            method: 'POST', credentials: 'same-origin',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrfToken, 'X-Requested-With': 'XMLHttpRequest'},
+            body: JSON.stringify(payload || {})
+        });
+        return response.json();
+    }
+    const mainContent = document.querySelector('main');
+    const enquiryModal = document.getElementById('reactivation-enquiry-modal');
+    const enquiryPanel = enquiryModal.querySelector('.modal-panel');
+    const enquiryForm = document.getElementById('reactivation-enquiry-form');
+    const enquirySubject = document.getElementById('reactivation-subject');
+    const enquirySuccess = document.getElementById('enquiry-success');
+    const enquiryFormError = document.getElementById('enquiry-form-error');
+    const enquirySubmit = document.getElementById('submit-enquiry');
+    const fieldErrorNodes = {
+        subject: document.getElementById('reactivation-subject-error'),
+        message: document.getElementById('reactivation-message-error'),
+        attachment: document.getElementById('reactivation-attachment-error')
+    };
+    const fieldNodes = {
+        subject: enquirySubject,
+        message: document.getElementById('reactivation-message-input'),
+        attachment: document.getElementById('reactivation-attachment')
+    };
+    let lastFocusedElement = null;
+
+    function enquiryFocusableElements() {
+        return Array.from(enquiryPanel.querySelectorAll('button, input, textarea, [href], [tabindex]:not([tabindex="-1"])'))
+            .filter((node) => !node.disabled && !node.hidden && node.offsetParent !== null);
+    }
+    function openEnquiry() {
+        lastFocusedElement = document.activeElement;
+        enquiryModal.hidden = false;
+        enquiryModal.setAttribute('aria-hidden', 'false');
+        mainContent.setAttribute('aria-hidden', 'true');
+        document.body.classList.add('modal-open');
+        window.requestAnimationFrame(() => enquirySubject.focus());
+    }
+    function closeEnquiry() {
+        enquiryModal.hidden = true;
+        enquiryModal.setAttribute('aria-hidden', 'true');
+        mainContent.removeAttribute('aria-hidden');
+        document.body.classList.remove('modal-open');
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+            lastFocusedElement.focus();
+        }
+    }
+    function clearEnquiryErrors() {
+        enquiryFormError.textContent = '';
+        Object.keys(fieldErrorNodes).forEach((field) => {
+            fieldErrorNodes[field].textContent = '';
+            fieldNodes[field].removeAttribute('aria-invalid');
+        });
+    }
+    function showEnquiryErrors(payload) {
+        clearEnquiryErrors();
+        enquiryFormError.textContent = payload.message || '';
+        const errors = payload.errors || {};
+        let firstInvalid = null;
+        Object.keys(errors).forEach((field) => {
+            const messages = errors[field] || [];
+            if (fieldErrorNodes[field]) {
+                fieldErrorNodes[field].textContent = messages.join(' ');
+                fieldNodes[field].setAttribute('aria-invalid', 'true');
+                firstInvalid = firstInvalid || fieldNodes[field];
+            } else if (!enquiryFormError.textContent) {
+                enquiryFormError.textContent = messages.join(' ');
+            }
+        });
+        if (firstInvalid) firstInvalid.focus();
+        else enquiryFormError.focus();
+    }
+    document.getElementById('dismiss-message').addEventListener('click', function () {
+        window.location.assign(this.dataset.homeUrl);
+    });
+    document.getElementById('open-enquiry').addEventListener('click', openEnquiry);
+    document.getElementById('close-enquiry').addEventListener('click', closeEnquiry);
+    document.getElementById('cancel-enquiry').addEventListener('click', closeEnquiry);
+    enquiryModal.addEventListener('click', function (event) {
+        if (event.target === enquiryModal || event.target.matches('[data-close-enquiry]')) closeEnquiry();
+    });
+    enquiryModal.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            closeEnquiry();
+            return;
+        }
+        if (event.key !== 'Tab') return;
+        const focusable = enquiryFocusableElements();
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    });
+    enquiryForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        clearEnquiryErrors();
+        enquirySubmit.disabled = true;
+        try {
+            const response = await fetch(urls.enquiry, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {'X-CSRFToken': csrfToken, 'X-Requested-With': 'XMLHttpRequest'},
+                body: new FormData(enquiryForm)
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                showEnquiryErrors(result);
+                return;
+            }
+            enquiryForm.hidden = true;
+            enquirySuccess.textContent = result.message || 'Your enquiry has been sent to Head Office successfully.';
+            enquirySuccess.hidden = false;
+            enquirySuccess.focus();
+        } catch (error) {
+            showEnquiryErrors({message: 'Unable to send your enquiry right now. Please retry.'});
+        } finally {
+            enquirySubmit.disabled = false;
+        }
+    });
+    if (payButton) payButton.addEventListener('click', async function () {
+        payButton.disabled = true;
+        setStatus('Starting secure payment…');
+        try {
+            const order = await postJson(urls.order, {});
+            if (!order.success) throw new Error(order.message || 'Unable to start payment.');
+            const checkout = new Razorpay({
+                key: "{{ razorpay_key_id|escapejs }}",
+                amount: order.amount,
+                currency: order.currency,
+                name: 'SSCEGOV',
+                description: 'Centre Reactivation Fee',
+                order_id: order.razorpay_order_id,
+                handler: async function (response) {
+                    setStatus('Verifying payment…');
+                    const result = await postJson(urls.callback, response);
+                    if (result.success && result.redirect_url) {
+                        window.location.assign(result.redirect_url);
+                    } else {
+                        setStatus(result.message || 'Payment is pending verification. Please retry later.');
+                        payButton.disabled = false;
+                    }
+                },
+                modal: { ondismiss: async function () {
+                    await postJson(urls.status, {razorpay_order_id: order.razorpay_order_id, status: 'cancelled'});
+                    setStatus('Payment cancelled. You may safely retry.');
+                    payButton.disabled = false;
+                } }
+            });
+            checkout.on('payment.failed', async function (response) {
+                const error = response.error || {};
+                await postJson(urls.status, {
+                    razorpay_order_id: order.razorpay_order_id,
+                    razorpay_payment_id: error.metadata?.payment_id || '',
+                    status: 'failed', error_code: error.code || '', error_description: error.description || ''
+                });
+                setStatus(error.description || 'Payment failed. You may safely retry.');
+                payButton.disabled = false;
+            });
+            checkout.open();
+        } catch (error) {
+            setStatus(error.message || 'Unable to start payment. Please retry.');
+            payButton.disabled = false;
+        }
+    });
+    history.replaceState(null, document.title, window.location.href);
+    window.addEventListener('popstate', function () { history.go(1); });
+})();
+</script>
+</body>
+</html>

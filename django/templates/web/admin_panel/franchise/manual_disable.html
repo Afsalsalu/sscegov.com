@@ -1,0 +1,150 @@
+{% extends "web/admin_panel/base.html" %}
+
+{% block content %}
+<style>
+    .manual-disable-page .manual-disable-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .manual-disable-page .manual-disable-actions .confirm-disable,
+    .manual-disable-page .manual-disable-actions .cancel-disable {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.25;
+        text-decoration: none;
+        transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease, opacity .15s ease;
+    }
+
+    .manual-disable-page .manual-disable-actions .confirm-disable {
+        border: 1px solid #b91c1c !important;
+        color: #fff !important;
+        background: #dc2626 !important;
+        box-shadow: 0 5px 12px rgba(185, 28, 28, .2);
+        cursor: pointer;
+    }
+
+    .manual-disable-page .manual-disable-actions .confirm-disable:hover {
+        border-color: #991b1b !important;
+        background: #b91c1c !important;
+    }
+
+    .manual-disable-page .manual-disable-actions .confirm-disable:focus-visible,
+    .manual-disable-page .manual-disable-actions .cancel-disable:focus-visible {
+        outline: 3px solid rgba(30, 91, 234, .28);
+        outline-offset: 2px;
+    }
+
+    .manual-disable-page .manual-disable-actions .confirm-disable:disabled,
+    .manual-disable-page .manual-disable-actions .confirm-disable[aria-busy="true"] {
+        border-color: #fca5a5 !important;
+        color: #fff !important;
+        background: #fca5a5 !important;
+        box-shadow: none;
+        cursor: not-allowed;
+        opacity: .9;
+    }
+
+    .manual-disable-page .manual-disable-actions .cancel-disable {
+        border: 1px solid #cbd5e1 !important;
+        color: #334155 !important;
+        background: #fff !important;
+        cursor: pointer;
+    }
+
+    .manual-disable-page .manual-disable-actions .cancel-disable:hover {
+        border-color: #94a3b8 !important;
+        background: #f8fafc !important;
+    }
+
+    @media (max-width: 640px) {
+        .manual-disable-page .manual-disable-actions {
+            align-items: stretch;
+            flex-direction: column-reverse;
+        }
+
+        .manual-disable-page .manual-disable-actions .confirm-disable,
+        .manual-disable-page .manual-disable-actions .cancel-disable {
+            width: 100%;
+        }
+    }
+</style>
+<div class="group-data-[sidebar-size=sm]:min-h-sm group-data-[sidebar-size=sm]:relative">
+    <div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+        <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4">
+            <div class="container-fluid mx-auto">
+                <main class="manual-disable-page mx-auto max-w-3xl py-6">
+                    <div class="mb-6">
+                        <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-blue-600">Centre control</p>
+                        <h1 class="text-2xl font-semibold text-slate-800">Disable Centre</h1>
+                        <p class="mt-1 text-sm text-slate-500">Set the message and payment option that will be shown when this centre logs in.</p>
+                    </div>
+
+                    <div class="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                        <strong>{{ centre.centre_name|default:centre.owner_centre|default:centre.user.username }}</strong>
+                        <span class="mx-1">&middot;</span>
+                        Centre ID {{ centre.formatted_id }}
+                    </div>
+
+                    <form method="post" class="manual-disable-form rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+                        {% csrf_token %}
+                        <div class="mb-5">
+                            <label for="{{ form.disable_reason.id_for_label }}" class="mb-1.5 block text-sm font-semibold text-slate-700">{{ form.disable_reason.label }}</label>
+                            {{ form.disable_reason }}
+                            {% for error in form.disable_reason.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                        </div>
+
+                        <label class="mb-2 flex items-center gap-3 text-sm font-semibold text-slate-700">
+                            {{ form.payment_required }}
+                            <span>{{ form.payment_required.label }}</span>
+                        </label>
+                        <p class="mb-5 text-xs text-slate-500">The configured default amount is <strong>&#8377; {{ reactivation_settings.default_amount|floatformat:2 }}</strong>. Choose an override only when needed.</p>
+                        {% for error in form.payment_required.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+
+                        <div id="manual-fee-field" class="mb-6" hidden>
+                            <label for="{{ form.amount_override.id_for_label }}" class="mb-1.5 block text-sm font-semibold text-slate-700">{{ form.amount_override.label }}</label>
+                            {{ form.amount_override }}
+                            <p class="mt-1 text-xs text-slate-500">{{ form.amount_override.help_text }}</p>
+                            {% for error in form.amount_override.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                        </div>
+
+                        <div class="manual-disable-actions">
+                            <button type="submit" class="confirm-disable">Confirm Disable</button>
+                            <a href="{% url 'web:admin_centre_profile' pk=centre.pk %}" class="cancel-disable">Cancel</a>
+                        </div>
+                    </form>
+                </main>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+    const toggle = document.getElementById('{{ form.payment_required.id_for_label }}');
+    const field = document.getElementById('manual-fee-field');
+    const form = document.querySelector('.manual-disable-form');
+    const submitButton = form?.querySelector('.confirm-disable');
+    if (toggle && field) {
+        function updateFeeVisibility() { field.hidden = !toggle.checked; }
+        toggle.addEventListener('change', updateFeeVisibility);
+        updateFeeVisibility();
+    }
+    form?.addEventListener('submit', function () {
+        if (!submitButton) return;
+        submitButton.disabled = true;
+        submitButton.setAttribute('aria-busy', 'true');
+        submitButton.textContent = 'Disabling...';
+    });
+})();
+</script>
+{% endblock %}

@@ -1,16 +1,25 @@
 from django.test import TestCase, override_settings
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from PIL import Image
 from io import BytesIO
-from datetime import date
+from datetime import date, timedelta
+from decimal import Decimal
+import json
+from unittest.mock import MagicMock, patch
+
+from django.utils import timezone
 
 from .banner_forms import BannerForm
 from .models import (
     AddState,
     Banner,
     CentreUserAccount,
+    CentreReactivationPayment,
+    CentreReactivationSettings,
+    CentreReactivationAuditLog,
     Department,
     DownloadForm,
     Employee,
@@ -22,6 +31,14 @@ from .models import (
 )
 from .service_forms import StateServiceForm, validate_detail_image
 from .forms import DownloadFormForm, OnlineClassForm
+from .reactivation_services import (
+    calculate_reactivation_amount,
+    manually_disable_centre,
+    manually_enable_centre,
+    complete_reactivation_payment,
+    mark_centre_inactive_if_due,
+    mark_inactive_centres,
+)
 
 
 def image_file(name="banner.png", fmt="PNG"):
@@ -956,4 +973,322 @@ class AdminListPaginationTests(TestCase):
         self.assertContains(response, "q=Searchable&amp;page=1")
         self.assertContains(response, "q=Searchable&amp;page=2")
 
-# Create your tests here.
+class CentreReactivationTests(TestCase):
+    def setUp(self):
+        self.settings_obj = CentreReactivationSettings.get_solo()
+        self.now = timezone.now()
+
+    def create_centre(self, username="reactivation-centre", usertype="centre"):
+        user = get_user_model().objects.create_user(
+            username=username,
+            password="test-password",
+            usertype=usertype,
+            is_active=True,
+        )
+        return CentreUserAccount.objects.create(
+            user=user,
+            owner_centre="Test Centre",
+            mobile=9100000001,
+            aadhaar_number=100000000001,
+            email=f"{username}@example.com",
+            centre_phone_number=9200000001,
+            state="kerala",
+            district="Ernakulam",
+            location="",
+        )
+
+    def app_url(self, name, **kwargs):
+        url = reverse(name, kwargs=kwargs or None)
+        script_name = getattr(settings, "FORCE_SCRIPT_NAME", "") or ""
+        if script_name and url.startswith(script_name + "/"):
+            return url[len(script_name):]
+        return url
+
+    def make_inactive(self, centre):
+        centre.last_successful_login = self.now - timedelta(days=91)
+        centre.save(update_fields=["last_successful_login"])
+        self.assertTrue(mark_centre_inactive_if_due(centre.pk, now=self.now))
+        centre.refresh_from_db()
+        return centre
+
+    def test_old_centre_is_disabled_with_reason_and_audit(self):
+        centre = self.make_inactive(self.create_centre())
+        self.assertFalse(centre.is_active)
+        self.assertTrue(centre.inactive_due_to_inactivity)
+        self.assertFalse(centre.manual_disabled)
+        self.assertEqual(centre.inactivity_reason, "inactive_due_to_inactivity")
+        self.assertTrue(centre.reactivation_audit_logs.filter(event="inactivity_disabled").exists())
+
+    def test_recent_centre_remains_active(self):
+        centre = self.create_centre()
+        centre.last_successful_login = self.now - timedelta(days=10)
+        centre.save(update_fields=["last_successful_login"])
+        self.assertFalse(mark_inactive_centres(now=self.now))
+        centre.refresh_from_db()
+        self.assertTrue(centre.is_active)
+        self.assertFalse(centre.inactive_due_to_inactivity)
+
+    def test_never_logged_centre_uses_creation_date(self):
+        new_centre = self.create_centre("new-centre")
+        self.assertFalse(mark_inactive_centres(now=self.now))
+        old_centre = self.create_centre("old-never-logged")
+        CentreUserAccount.objects.filter(pk=old_centre.pk).update(
+            created_at=self.now - timedelta(days=91)
+        )
+        self.assertEqual(mark_inactive_centres(now=self.now), 1)
+        old_centre.refresh_from_db()
+        self.assertTrue(old_centre.inactive_due_to_inactivity)
+        new_centre.refresh_from_db()
+        self.assertTrue(new_centre.is_active)
+
+    def test_non_centre_users_are_excluded(self):
+        account = self.create_centre("head-office-account", usertype="HeadOffice")
+        account.last_successful_login = self.now - timedelta(days=120)
+        account.save(update_fields=["last_successful_login"])
+        self.assertEqual(mark_inactive_centres(now=self.now), 0)
+        account.refresh_from_db()
+        self.assertTrue(account.is_active)
+
+    def test_inactive_centre_is_restricted_but_can_open_enquiry(self):
+        centre = self.make_inactive(self.create_centre())
+        self.client.force_login(centre.user)
+        dashboard = self.client.get(self.app_url("web:centre_dashboard"))
+        self.assertEqual(dashboard.status_code, 302)
+        self.assertTrue(dashboard.url.endswith("/franchise-dashboard/reactivation/"))
+        restricted = self.client.get(self.app_url("web:centre_reactivation"))
+        self.assertEqual(restricted.status_code, 200)
+        self.assertContains(restricted, "Your centre has been temporarily disabled")
+        self.assertContains(restricted, "OK")
+        self.assertContains(restricted, "Send Enquiry")
+        self.assertContains(restricted, "Pay Reactivation Fee")
+        enquiry = self.client.get(
+            self.app_url("web:franchise_enquiry_compose"),
+            {"subject": "Centre Reactivation Request"},
+        )
+        self.assertEqual(enquiry.status_code, 200)
+        self.assertEqual(
+            enquiry.context["form"]["subject"].value(),
+            "Centre Reactivation Request",
+        )
+
+    def test_amount_override_and_default_are_calculated_server_side(self):
+        centre = self.create_centre()
+        self.settings_obj.default_amount = Decimal("125.50")
+        self.settings_obj.save(update_fields=["default_amount"])
+        self.assertEqual(calculate_reactivation_amount(centre), Decimal("125.50"))
+        centre.reactivation_fee_override = Decimal("250.00")
+        centre.save(update_fields=["reactivation_fee_override"])
+        self.assertEqual(calculate_reactivation_amount(centre), Decimal("250.00"))
+
+    def test_captured_payment_reactivates_and_is_idempotent(self):
+        centre = self.make_inactive(self.create_centre())
+        payment = CentreReactivationPayment.objects.create(
+            centre=centre,
+            amount=Decimal("100.00"),
+            razorpay_order_id="order_reactivation_1",
+        )
+        completed, result = complete_reactivation_payment(
+            payment.pk,
+            payment_id_value="pay_reactivation_1",
+            signature="verified-signature",
+        )
+        self.assertEqual(result, "reactivated")
+        centre.refresh_from_db()
+        self.assertTrue(centre.is_active)
+        self.assertFalse(centre.inactive_due_to_inactivity)
+        completed_again, result_again = complete_reactivation_payment(
+            payment.pk,
+            payment_id_value="pay_reactivation_1",
+            signature="verified-signature",
+        )
+        self.assertEqual(result_again, "already_captured")
+        self.assertEqual(completed_again.pk, completed.pk)
+        self.assertEqual(CentreReactivationPayment.objects.count(), 1)
+
+    def test_verified_razorpay_callback_reactivates_centre(self):
+        centre = self.make_inactive(self.create_centre("callback-centre"))
+        payment = CentreReactivationPayment.objects.create(
+            centre=centre,
+            amount=Decimal("100.00"),
+            razorpay_order_id="order_callback",
+        )
+        gateway = MagicMock()
+        gateway.utility.verify_payment_signature.return_value = None
+        gateway.payment.fetch.return_value = {
+            "id": "pay_callback",
+            "order_id": payment.razorpay_order_id,
+            "status": "captured",
+        }
+        self.client.force_login(centre.user)
+        with patch("web.reactivation_views._razorpay_client", return_value=gateway):
+            response = self.client.post(
+                self.app_url("web:centre_reactivation_callback"),
+                data=json.dumps({
+                    "razorpay_order_id": payment.razorpay_order_id,
+                    "razorpay_payment_id": "pay_callback",
+                    "razorpay_signature": "verified-signature",
+                }),
+                content_type="application/json",
+            )
+        self.assertEqual(response.status_code, 200)
+        centre.refresh_from_db()
+        payment.refresh_from_db()
+        self.assertTrue(centre.is_active)
+        self.assertEqual(payment.status, CentreReactivationPayment.Status.CAPTURED)
+
+    def test_failed_payment_keeps_centre_restricted(self):
+        centre = self.make_inactive(self.create_centre())
+        payment = CentreReactivationPayment.objects.create(
+            centre=centre,
+            amount=Decimal("100.00"),
+            razorpay_order_id="order_reactivation_failed",
+        )
+        self.client.force_login(centre.user)
+        response = self.client.post(
+            self.app_url("web:centre_reactivation_status"),
+            data=json.dumps({
+                "razorpay_order_id": payment.razorpay_order_id,
+                "status": "failed",
+                "error_code": "BAD_REQUEST",
+            }),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        centre.refresh_from_db()
+        payment.refresh_from_db()
+        self.assertTrue(centre.inactive_due_to_inactivity)
+        self.assertEqual(payment.status, CentreReactivationPayment.Status.FAILED)
+
+    def test_manual_disable_payment_is_captured_but_needs_enable_approval(self):
+        centre = self.make_inactive(self.create_centre())
+        centre.manual_disabled = True
+        centre.manual_disable_reason = "Pending document verification"
+        centre.save(update_fields=["manual_disabled", "manual_disable_reason"])
+        payment = CentreReactivationPayment.objects.create(
+            centre=centre,
+            amount=Decimal("100.00"),
+            razorpay_order_id="order_manual_review",
+        )
+        payment, result = complete_reactivation_payment(
+            payment.pk,
+            payment_id_value="pay_manual_review",
+            signature="verified-signature",
+        )
+        centre.refresh_from_db()
+        self.assertEqual(result, "manual_review")
+        self.assertEqual(payment.status, CentreReactivationPayment.Status.CAPTURED)
+        self.assertFalse(centre.is_active)
+        self.assertTrue(centre.inactive_due_to_inactivity)
+
+    def test_manual_disable_without_payment_shows_only_ok_and_enquiry(self):
+        centre = self.create_centre("manual-no-payment")
+        admin = get_user_model().objects.create_user(
+            username="manual-disable-admin",
+            password="test-password",
+            usertype="HeadOffice",
+        )
+        self.client.force_login(admin)
+        response = self.client.post(
+            self.app_url("web:admin_disable_centre", pk=centre.pk),
+            data={
+                "disable_reason": "Pending document verification. Please contact Head Office.",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        centre.refresh_from_db()
+        self.assertTrue(centre.manual_disabled)
+        self.assertFalse(centre.manual_reactivation_payment_required)
+        self.assertTrue(centre.user.is_active)
+
+        self.client.force_login(centre.user)
+        restricted = self.client.get(self.app_url("web:centre_reactivation"))
+        self.assertContains(restricted, "Pending document verification. Please contact Head Office.")
+        self.assertContains(restricted, "OK")
+        self.assertContains(restricted, "Send Enquiry")
+        self.assertNotContains(restricted, "id=\"pay-reactivation\"")
+        enquiry = self.client.get(
+            self.app_url("web:franchise_enquiry_compose"),
+            {"subject": "Centre Enable Request"},
+        )
+        self.assertEqual(enquiry.context["form"]["subject"].value(), "Centre Enable Request")
+        self.assertIn(centre.formatted_id, enquiry.context["form"]["message"].value())
+        self.assertIn("Pending document verification", enquiry.context["form"]["message"].value())
+
+    def test_manual_disable_with_payment_shows_calculated_override(self):
+        centre = self.create_centre("manual-payment")
+        admin = get_user_model().objects.create_user(
+            username="manual-payment-admin",
+            password="test-password",
+            usertype="HeadOffice",
+        )
+        self.client.force_login(admin)
+        response = self.client.post(
+            reverse("web:admin_disable_centre", kwargs={"pk": centre.pk}),
+            data={
+                "disable_reason": "Compliance review",
+                "payment_required": "on",
+                "amount_override": "275.50",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        centre.refresh_from_db()
+        self.assertTrue(centre.manual_reactivation_payment_required)
+        self.assertEqual(centre.manual_reactivation_fee_override, Decimal("275.50"))
+        self.client.force_login(centre.user)
+        restricted = self.client.get(self.app_url("web:centre_reactivation"))
+        self.assertContains(restricted, "Pay &#8377;275.50", html=False)
+        self.assertContains(restricted, 'id="pay-reactivation"')
+
+    def test_manual_disable_takes_priority_over_inactivity_and_dashboard_stays_blocked(self):
+        centre = self.create_centre("manual-priority")
+        centre.last_successful_login = self.now - timedelta(days=120)
+        centre.save(update_fields=["last_successful_login"])
+        manually_disable_centre(
+            centre.pk,
+            actor=None,
+            reason="Manual hold",
+            payment_required=False,
+            now=self.now,
+        )
+        self.assertEqual(mark_inactive_centres(now=self.now), 0)
+        centre.refresh_from_db()
+        self.assertTrue(centre.manual_disabled)
+        self.assertFalse(centre.inactive_due_to_inactivity)
+        self.client.force_login(centre.user)
+        dashboard = self.client.get(self.app_url("web:centre_dashboard"))
+        self.assertEqual(dashboard.status_code, 302)
+        self.assertTrue(dashboard.url.endswith("/franchise-dashboard/reactivation/"))
+
+    def test_admin_enable_restores_access_and_preserves_audit_history(self):
+        centre = self.create_centre("manual-enable")
+        admin = get_user_model().objects.create_user(
+            username="manual-enable-admin",
+            password="test-password",
+            usertype="HeadOffice",
+        )
+        manually_disable_centre(
+            centre.pk,
+            actor=admin,
+            reason="Temporary manual hold",
+            payment_required=False,
+            now=self.now,
+        )
+        self.client.force_login(admin)
+        response = self.client.post(
+            reverse("web:admin_enable_centre", kwargs={"pk": centre.pk})
+        )
+        self.assertEqual(response.status_code, 302)
+        centre.refresh_from_db()
+        self.assertTrue(centre.is_active)
+        self.assertFalse(centre.manual_disabled)
+        self.assertTrue(centre.user.is_active)
+        self.assertTrue(
+            centre.reactivation_audit_logs.filter(
+                event=CentreReactivationAuditLog.Event.MANUAL_DISABLED
+            ).exists()
+        )
+        self.assertTrue(
+            centre.reactivation_audit_logs.filter(
+                event=CentreReactivationAuditLog.Event.MANUAL_ENABLED
+            ).exists()
+        )

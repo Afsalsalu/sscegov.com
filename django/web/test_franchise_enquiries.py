@@ -83,6 +83,70 @@ class FranchiseEnquiryTests(TestCase):
         values.update(overrides)
         return FranchiseEnquiry.objects.create(**values)
 
+    def restrict_centre(self):
+        self.centre.manual_disabled = True
+        self.centre.manual_disable_reason = "Pending document verification"
+        self.centre.save(update_fields=("manual_disabled", "manual_disable_reason"))
+
+    def test_reactivation_page_uses_public_home_and_modal_submission_endpoint(self):
+        self.restrict_centre()
+        self.client.force_login(self.franchise_user)
+
+        response = self.client.get(reverse("web:centre_reactivation"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-home-url="/"')
+        self.assertContains(response, "Send Reactivation Enquiry")
+        self.assertContains(response, reverse("web:franchise_reactivation_enquiry"))
+        self.assertNotContains(response, reverse("web:franchise_enquiry_compose"))
+
+    def test_reactivation_enquiry_uses_server_identity_and_sends_to_head_office(self):
+        self.restrict_centre()
+        self.client.force_login(self.franchise_user)
+
+        response = self.client.post(
+            reverse("web:franchise_reactivation_enquiry"),
+            {
+                "subject": "Centre Enable Request",
+                "message": "Please enable this centre.",
+                "centre_id": "forged-centre-id",
+                "centre_name": "Forged centre",
+                "attachment": SimpleUploadedFile(
+                    "reactivation-proof.pdf", VALID_PDF, "application/pdf"
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["message"], "Your enquiry has been sent to Head Office successfully.")
+        enquiry = FranchiseEnquiry.objects.get()
+        self.assertEqual(enquiry.centre, self.centre)
+        self.assertEqual(enquiry.user, self.franchise_user)
+        self.assertIn(f"Centre ID: {self.centre.formatted_id}", enquiry.message)
+        self.assertIn("Disable reason: Pending document verification", enquiry.message)
+        self.assertNotIn("forged-centre-id", enquiry.message)
+        self.assertNotIn("Forged centre", enquiry.message)
+        self.assertTrue(enquiry.attachment.name.startswith("franchise_enquiries/"))
+        self.assertEqual(mail.outbox[0].to, [settings.ENQUIRY_ADMIN_EMAIL])
+        self.client.force_login(self.head_office_user)
+        inbox = self.client.get(reverse("web:franchise_enquiry_inbox"))
+        self.assertContains(inbox, "Centre Enable Request")
+        detail = self.client.get(reverse("web:franchise_enquiry_admin_detail", args=[enquiry.pk]))
+        self.assertContains(detail, "Disable reason: Pending document verification")
+
+    def test_reactivation_enquiry_validation_errors_stay_in_json_and_do_not_create_record(self):
+        self.restrict_centre()
+        self.client.force_login(self.franchise_user)
+
+        response = self.client.post(
+            reverse("web:franchise_reactivation_enquiry"),
+            {"subject": "Centre Enable Request", "message": ""},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("message", response.json()["errors"])
+        self.assertEqual(FranchiseEnquiry.objects.count(), 0)
+
     def test_franchise_submission_saves_server_identity_and_uses_configured_recipient(self):
         self.client.force_login(self.franchise_user)
         response = self.client.post(

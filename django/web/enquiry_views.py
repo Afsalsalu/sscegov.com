@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage, get_connection
 from django.core.validators import validate_email
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import View
@@ -16,7 +16,7 @@ from django.views.generic import FormView, ListView
 
 from .enquiry_forms import FranchiseEnquiryForm, FranchiseEnquiryReplyForm
 from .models import FranchiseEnquiry
-from .views import AdminOrHeadOfficeRequiredMixin, KeralaRequiredMixin
+from .views import AdminOrHeadOfficeRequiredMixin, FranchiseAuthenticatedMixin
 
 
 logger = logging.getLogger(__name__)
@@ -39,6 +39,44 @@ def _safe_reply_to(value):
 
 def _franchise_enquiries_for_user(user):
     return FranchiseEnquiry.objects.filter(user=user).select_related("centre", "user", "replied_by")
+
+
+def _franchise_centre_for_request(request):
+    try:
+        return request.user.centre
+    except AttributeError:
+        raise Http404("This account is not linked to a franchise centre.")
+
+
+def _reactivation_message_context(centre):
+    centre_id = getattr(centre, "formatted_id", centre.pk)
+    disable_reason = centre.manual_disable_reason or centre.inactivity_reason or "Not specified"
+    return f"Centre ID: {centre_id}\nDisable reason: {disable_reason}"
+
+
+def _create_franchise_enquiry(request, form, centre, include_reactivation_context=False):
+    centre_name = (centre.centre_name or centre.owner_centre or "Franchise Centre").strip()
+    franchise_user_name = (centre.name or "").strip()
+    if not franchise_user_name or franchise_user_name.casefold() == "none":
+        franchise_user_name = request.user.get_full_name().strip() or request.user.username
+    phone = centre.mobile or centre.centre_phone_number or ""
+    message = form.cleaned_data["message"]
+    if include_reactivation_context or form.cleaned_data["subject"] == "Centre Enable Request":
+        context_header = _reactivation_message_context(centre)
+        if not message.startswith(context_header):
+            message = f"{context_header}\n\n{message}"
+
+    return FranchiseEnquiry.objects.create(
+        user=request.user,
+        centre=centre,
+        franchise_centre_name=centre_name,
+        franchise_user_name=franchise_user_name,
+        franchise_email=centre.email or request.user.email,
+        contact_phone=str(phone),
+        subject=form.cleaned_data["subject"],
+        message=message,
+        attachment=form.cleaned_data.get("attachment"),
+    )
 
 
 def _send_enquiry_notification(enquiry):
@@ -147,32 +185,36 @@ def _send_enquiry_reply(enquiry):
         return False
 
 
-class FranchiseEnquiryComposeView(KeralaRequiredMixin, FormView):
+class FranchiseEnquiryComposeView(FranchiseAuthenticatedMixin, FormView):
     template_name = "web/franchise/enquiries/compose.html"
     form_class = FranchiseEnquiryForm
 
-    def form_valid(self, form):
-        try:
-            centre = self.request.user.centre
-        except AttributeError:
-            raise Http404("This account is not linked to a franchise centre.")
+    def get_initial(self):
+        initial = super().get_initial()
+        requested_subject = self.request.GET.get("subject", "").strip()
+        if requested_subject in {
+            "Centre Reactivation Request",
+            "Centre Enable Request",
+        }:
+            initial["subject"] = requested_subject
+            if requested_subject == "Centre Enable Request":
+                try:
+                    centre = self.request.user.centre
+                except AttributeError:
+                    centre = None
+                if centre:
+                    centre_id = getattr(centre, "formatted_id", centre.pk)
+                    reason = centre.manual_disable_reason or centre.inactivity_reason or "Not specified"
+                    initial["message"] = (
+                        f"Centre ID: {centre_id}\n"
+                        f"Disable reason: {reason}\n\n"
+                        "Please review and enable this centre."
+                    )
+        return initial
 
-        centre_name = (centre.centre_name or centre.owner_centre or "Franchise Centre").strip()
-        franchise_user_name = (centre.name or "").strip()
-        if not franchise_user_name or franchise_user_name.casefold() == "none":
-            franchise_user_name = self.request.user.get_full_name().strip() or self.request.user.username
-        phone = centre.mobile or centre.centre_phone_number or ""
-        enquiry = FranchiseEnquiry.objects.create(
-            user=self.request.user,
-            centre=centre,
-            franchise_centre_name=centre_name,
-            franchise_user_name=franchise_user_name,
-            franchise_email=centre.email or self.request.user.email,
-            contact_phone=str(phone),
-            subject=form.cleaned_data["subject"],
-            message=form.cleaned_data["message"],
-            attachment=form.cleaned_data.get("attachment"),
-        )
+    def form_valid(self, form):
+        centre = _franchise_centre_for_request(self.request)
+        enquiry = _create_franchise_enquiry(self.request, form, centre)
 
         if _send_enquiry_notification(enquiry):
             messages.success(self.request, "Your enquiry was submitted successfully.")
@@ -184,7 +226,60 @@ class FranchiseEnquiryComposeView(KeralaRequiredMixin, FormView):
         return redirect("web:franchise_enquiry_detail", pk=enquiry.pk)
 
 
-class FranchiseEnquiryHistoryView(KeralaRequiredMixin, ListView):
+class FranchiseReactivationEnquiryView(FranchiseAuthenticatedMixin, View):
+    """Submit the reactivation enquiry without leaving the restricted page."""
+
+    def post(self, request, *args, **kwargs):
+        centre = _franchise_centre_for_request(request)
+        if not (centre.inactive_due_to_inactivity or centre.manual_disabled):
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "This centre is not currently restricted.",
+                },
+                status=409,
+            )
+
+        form = FranchiseEnquiryForm(request.POST, request.FILES)
+        if not form.is_valid():
+            return JsonResponse(
+                {
+                    "success": False,
+                    "errors": {
+                        field: [str(error) for error in errors]
+                        for field, errors in form.errors.items()
+                    },
+                },
+                status=400,
+            )
+
+        enquiry = _create_franchise_enquiry(
+            request,
+            form,
+            centre,
+            include_reactivation_context=True,
+        )
+        if not _send_enquiry_notification(enquiry):
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": (
+                        "Your enquiry was saved, but email notification could not be sent. "
+                        "Please retry or contact Head Office."
+                    ),
+                },
+                status=502,
+            )
+
+        return JsonResponse(
+            {
+                "success": True,
+                "message": "Your enquiry has been sent to Head Office successfully.",
+            }
+        )
+
+
+class FranchiseEnquiryHistoryView(FranchiseAuthenticatedMixin, ListView):
     template_name = "web/franchise/enquiries/history.html"
     context_object_name = "enquiries"
     paginate_by = 20
@@ -193,7 +288,7 @@ class FranchiseEnquiryHistoryView(KeralaRequiredMixin, ListView):
         return _franchise_enquiries_for_user(self.request.user)
 
 
-class FranchiseEnquiryDetailView(KeralaRequiredMixin, View):
+class FranchiseEnquiryDetailView(FranchiseAuthenticatedMixin, View):
     template_name = "web/franchise/enquiries/detail.html"
 
     def get(self, request, pk):

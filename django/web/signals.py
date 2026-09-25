@@ -3,7 +3,8 @@ from django.contrib.auth.signals import user_logged_in
 from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Register, UserActivityLog
+from django.utils import timezone
+from .models import CentreUserAccount, Register, UserActivityLog
 
 # Function to get the client's IP address
 def get_client_ip(request):
@@ -19,6 +20,20 @@ def get_client_ip(request):
 def log_user_login(sender, request, user, **kwargs):
     ip_address = get_client_ip(request)
     UserActivityLog.objects.create(user=user, ip_address=ip_address)
+    if getattr(user, "usertype", None) != "centre":
+        return
+    try:
+        centre = CentreUserAccount.objects.get(user=user)
+    except CentreUserAccount.DoesNotExist:
+        return
+    if centre.inactive_due_to_inactivity or centre.manual_disabled:
+        # Reaching the restricted page is not a fresh successful centre login.
+        return
+    now = timezone.now()
+    CentreUserAccount.objects.filter(pk=centre.pk).update(
+        last_login=now,
+        last_successful_login=now,
+    )
 
 # Signal receiver function to send user credentials upon registration
 @receiver(post_save, sender=Register)

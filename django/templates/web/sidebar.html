@@ -463,7 +463,19 @@
 <li class="px-4 py-1 text-vertical-menu-item uppercase font-medium text-[11px] tracking-wider group-data-[sidebar-size=sm]:hidden group-data-[layout=horizontal]:hidden"><span style="color:white;">{% translate "Support" %}</span></li>
 <li class="relative group-data-[layout=horizontal]:shrink-0 group/sm"><a class="sidebar-enquiry-link cos11 relative flex items-center mx-3 my-1 py-2.5 group/menu-link{% if request.resolver_match.url_name == 'franchise_enquiry_inbox' or request.resolver_match.url_name == 'franchise_enquiry_admin_detail' %} active{% endif %}" href="{% url 'web:franchise_enquiry_inbox' %}"{% if request.resolver_match.url_name == 'franchise_enquiry_inbox' or request.resolver_match.url_name == 'franchise_enquiry_admin_detail' %} aria-current="page"{% endif %}><span class="min-w-[1.75rem] inline-block text-start"><i data-lucide="inbox" class="h-4 w-4" aria-hidden="true"></i></span><span>{% translate "Enquiry Details" %}</span>{% if open_enquiry_count %}<span class="sidebar-enquiry-badge" aria-label="{{ open_enquiry_count }} {% translate 'open enquiries' %}">{{ open_enquiry_count }}</span>{% endif %}</a></li>
 
+<li class="relative group-data-[layout=horizontal]:shrink-0 group/sm">
+  <a class="cos11 relative flex items-center mx-3 my-1 py-2.5 group/menu-link" href="{% url 'web:centre_reactivation_settings' %}">
+    <span class="min-w-[1.75rem] inline-block text-start"><i data-lucide="shield-check" class="h-4 w-4" aria-hidden="true"></i></span>
+    <span>{% translate "Centre Reactivation Settings" %}</span>
+  </a>
+</li>
 {% elif user.usertype == 'HeadOffice' %}
+<li class="relative group-data-[layout=horizontal]:shrink-0 group/sm">
+  <a class="cos11 relative flex items-center mx-3 my-1 py-2.5 group/menu-link" href="{% url 'web:centre_reactivation_settings' %}">
+    <span class="min-w-[1.75rem] inline-block text-start"><i data-lucide="shield-check" class="h-4 w-4" aria-hidden="true"></i></span>
+    <span>{% translate "Centre Reactivation Settings" %}</span>
+  </a>
+</li>
 <li class="px-4 py-1 text-vertical-menu-item group-data-[sidebar=dark]:text-vertical-menu-item-dark group-data-[sidebar=brand]:text-vertical-menu-item-brand group-data-[sidebar=modern]:text-vertical-menu-item-modern uppercase font-medium text-[11px] cursor-default tracking-wider group-data-[sidebar-size=sm]:hidden group-data-[layout=horizontal]:hidden inline-block group-data-[sidebar-size=md]:block group-data-[sidebar-size=md]:underline group-data-[sidebar-size=md]:text-center group-data-[sidebar=dark]:dark:text-zink-200"><span data-key="t-menu" style="color:white;">{% translate "Menu" %}</span></li>
 <li class="px-4 py-1 text-vertical-menu-item uppercase font-medium text-[11px] tracking-wider group-data-[sidebar-size=sm]:hidden group-data-[layout=horizontal]:hidden"><span style="color:white;">{% translate "Support" %}</span></li>
 <li class="relative group-data-[layout=horizontal]:shrink-0 group/sm"><a class="sidebar-enquiry-link cos11 relative flex items-center mx-3 my-1 py-2.5 group/menu-link{% if request.resolver_match.url_name == 'franchise_enquiry_inbox' or request.resolver_match.url_name == 'franchise_enquiry_admin_detail' %} active{% endif %}" href="{% url 'web:franchise_enquiry_inbox' %}"{% if request.resolver_match.url_name == 'franchise_enquiry_inbox' or request.resolver_match.url_name == 'franchise_enquiry_admin_detail' %} aria-current="page"{% endif %}><span class="min-w-[1.75rem] inline-block text-start"><i data-lucide="inbox" class="h-4 w-4" aria-hidden="true"></i></span><span>{% translate "Enquiry Details" %}</span>{% if open_enquiry_count %}<span class="sidebar-enquiry-badge" aria-label="{{ open_enquiry_count }} {% translate 'open enquiries' %}">{{ open_enquiry_count }}</span>{% endif %}</a></li>

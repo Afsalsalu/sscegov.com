@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
@@ -405,6 +406,39 @@ class CentreUserAccount(models.Model):
     address = models.CharField(max_length=550, blank=True)
     is_active = models.BooleanField(default=True)
     last_login = models.DateTimeField(null=True, blank=True)
+    last_successful_login = models.DateTimeField(null=True, blank=True)
+    # Older centre records predate this feature; use the linked user's
+    # date_joined as a safe fallback when this field is empty.
+    created_at = models.DateTimeField(null=True, blank=True, editable=False)
+    manual_disabled = models.BooleanField(default=False, db_index=True)
+    manual_disabled_at = models.DateTimeField(null=True, blank=True)
+    manual_disabled_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="manually_disabled_centres",
+    )
+    manual_disable_reason = models.TextField(blank=True, default="")
+    manual_reactivation_payment_required = models.BooleanField(default=False)
+    manual_reactivation_fee_override = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
+    inactive_due_to_inactivity = models.BooleanField(default=False, db_index=True)
+    inactivity_disabled_at = models.DateTimeField(null=True, blank=True)
+    inactivity_reason = models.CharField(max_length=100, blank=True, default="")
+    reactivated_at = models.DateTimeField(null=True, blank=True)
+    reactivation_fee_override = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -418,6 +452,19 @@ class CentreUserAccount(models.Model):
     is_approved = models.BooleanField(default=False)
     is_olduser = models.BooleanField(default=False)
     another_name = models.CharField(max_length=1025, default='-', blank=True)
+
+    @property
+    def disable_source(self):
+        if self.manual_disabled:
+            return "manual"
+        if self.inactive_due_to_inactivity:
+            return "inactivity"
+        return ""
+
+    def save(self, *args, **kwargs):
+        if self.created_at is None:
+            self.created_at = timezone.now()
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.owner_centre
@@ -508,6 +555,118 @@ class CertificatePayment(models.Model):
 
     def __str__(self):
         return f"{self.user_registration.name} - {self.amount} - {self.status}"
+
+
+class CentreReactivationSettings(models.Model):
+    inactivity_days = models.PositiveIntegerField(
+        default=90,
+        validators=[MinValueValidator(1)],
+        help_text="Number of days without a successful login before inactivity disablement.",
+    )
+    default_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("100.00"),
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
+    payment_enabled = models.BooleanField(default=True)
+    admin_message = models.TextField(
+        default=(
+            "Your centre has been temporarily disabled because there has been no login "
+            "activity for more than 3 months. Please contact Head Office or complete the "
+            "reactivation payment to continue."
+        )
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Centre Reactivation Setting"
+        verbose_name_plural = "Centre Reactivation Settings"
+
+    @classmethod
+    def get_solo(cls):
+        settings, _ = cls.objects.get_or_create(pk=1)
+        return settings
+
+
+class CentreReactivationPayment(models.Model):
+    class Status(models.TextChoices):
+        CREATED = "created", "Created"
+        PENDING = "pending", "Pending"
+        AUTHORIZED = "authorized", "Authorized"
+        CAPTURED = "captured", "Captured"
+        FAILED = "failed", "Failed"
+        CANCELLED = "cancelled", "Cancelled"
+        MANUAL_REVIEW = "manual_review", "Manual review"
+
+    centre = models.ForeignKey(
+        CentreUserAccount,
+        on_delete=models.CASCADE,
+        related_name="reactivation_payments",
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3, default="INR")
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.CREATED,
+        db_index=True,
+    )
+    razorpay_order_id = models.CharField(
+        max_length=80, unique=True, null=True, blank=True
+    )
+    razorpay_payment_id = models.CharField(
+        max_length=80, unique=True, null=True, blank=True
+    )
+    razorpay_signature = models.CharField(max_length=256, blank=True, default="")
+    failure_code = models.CharField(max_length=100, blank=True, default="")
+    failure_description = models.TextField(blank=True, default="")
+    idempotency_key = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("-created_at", "-pk")
+
+    def __str__(self):
+        return f"Centre {self.centre_id} reactivation payment {self.pk}"
+
+
+class CentreReactivationAuditLog(models.Model):
+    class Event(models.TextChoices):
+        INACTIVITY_DISABLED = "inactivity_disabled", "Inactivity disabled"
+        MANUAL_DISABLED = "manual_disabled", "Manual disable"
+        MANUAL_ENABLED = "manual_enabled", "Manual enable"
+        PAYMENT_ATTEMPT = "payment_attempt", "Payment attempt"
+        PAYMENT_PENDING = "payment_pending", "Payment pending"
+        PAYMENT_FAILED = "payment_failed", "Payment failed"
+        PAYMENT_CANCELLED = "payment_cancelled", "Payment cancelled"
+        PAYMENT_SUCCESS = "payment_success", "Payment success"
+        REACTIVATED = "reactivated", "Reactivated"
+        MANUAL_REVIEW = "manual_review", "Manual review"
+
+    centre = models.ForeignKey(
+        CentreUserAccount,
+        on_delete=models.CASCADE,
+        related_name="reactivation_audit_logs",
+    )
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="centre_reactivation_audit_events",
+    )
+    event = models.CharField(max_length=32, choices=Event.choices)
+    details = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-created_at", "-pk")
+
+    def __str__(self):
+        return f"Centre {self.centre_id}: {self.get_event_display()}"
 
 
 class KeralaSubCentre(models.Model):

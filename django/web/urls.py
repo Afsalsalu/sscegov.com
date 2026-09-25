@@ -14,9 +14,20 @@ from .enquiry_views import (
     FranchiseEnquiryDetailView,
     FranchiseEnquiryHistoryView,
     FranchiseEnquiryInboxView,
+    FranchiseReactivationEnquiryView,
 )
 from .language_views import set_language
 from .whatsapp_views import WhatsAppManagementView
+from .reactivation_views import (
+    CentreReactivationCallbackView,
+    CentreManualDisableView,
+    CentreManualEnableView,
+    CentreReactivationOrderView,
+    CentreReactivationSettingsView,
+    CentreReactivationStatusView,
+    CentreReactivationView,
+    CentreReactivationWebhookView,
+)
 from .views import (AddCentreUserAdminView, logout_view,
                     AddDownloadFormView, AddEmployeeView, AddHeadOfficeView,
                     AddKeralaSubCentreView, AddOnlineClassView,
@@ -158,6 +169,21 @@ urlpatterns = [
         "head-office/franchise/list/",
         AdminCentreUserListView.as_view(),
         name="franchise_list",
+    ),
+    path(
+        "head-office/franchise/reactivation-settings/",
+        CentreReactivationSettingsView.as_view(),
+        name="centre_reactivation_settings",
+    ),
+    path(
+        "head-office/franchise/profile/<int:pk>/disable/",
+        CentreManualDisableView.as_view(),
+        name="admin_disable_centre",
+    ),
+    path(
+        "head-office/franchise/profile/<int:pk>/enable/",
+        CentreManualEnableView.as_view(),
+        name="admin_enable_centre",
     ),
     path(
         "head-office/franchise/profile/<int:pk>/edit/",
@@ -404,6 +430,36 @@ path(
         "franchise-dashboard/dashboard/",
         DistrictDashboardView.as_view(),
         name="centre_dashboard",
+    ),
+    path(
+        "franchise-dashboard/reactivation/",
+        CentreReactivationView.as_view(),
+        name="centre_reactivation",
+    ),
+    path(
+        "franchise-dashboard/reactivation/order/",
+        CentreReactivationOrderView.as_view(),
+        name="centre_reactivation_order",
+    ),
+    path(
+        "franchise-dashboard/reactivation/callback/",
+        CentreReactivationCallbackView.as_view(),
+        name="centre_reactivation_callback",
+    ),
+    path(
+        "franchise-dashboard/reactivation/status/",
+        CentreReactivationStatusView.as_view(),
+        name="centre_reactivation_status",
+    ),
+    path(
+        "franchise-dashboard/reactivation/webhook/",
+        CentreReactivationWebhookView.as_view(),
+        name="centre_reactivation_webhook",
+    ),
+    path(
+        "franchise-dashboard/reactivation/enquiry/",
+        FranchiseReactivationEnquiryView.as_view(),
+        name="franchise_reactivation_enquiry",
     ),
     path(
         "franchise-dashboard/enquiries/new/",

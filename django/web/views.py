@@ -41,6 +41,7 @@ from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.utils import timezone
 from django.utils.translation import gettext
 # CRUD operations
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
@@ -59,6 +60,7 @@ from .forms import (CentreUserForm, DownloadFormForm, OnlineClassForm,
                     ServiceFilterForm, StateForm)
 # models
 from .models import (AboutBlog, AboutPage, AddState, Career, CareerForm,
+                     CentreReactivationAuditLog, CentreReactivationSettings,
                      CentreUserAccount, CertificatePayment, Contact,
                      Department, DownloadForm, Employee, FailedLoginAttempt,
                      FranchiseEnquiry,
@@ -70,6 +72,7 @@ from .models import (AboutBlog, AboutPage, AddState, Career, CareerForm,
                      Wallet,Table_Accountsmaster,Table_Acntchild,Table_Companydetailsmaster,Table_companyDetailschild,Table_DrCrNote,
 		     Table_Journal_Entry,Table_Contra_Entry,Ledger,
 		     Table_Voucher)
+from .reactivation_services import calculate_reactivation_amount, mark_centre_inactive_if_due
 
 from datetime import datetime
 
@@ -152,6 +155,29 @@ def login_view(request):
 
             if user and captcha_response:  # Check if user is authenticated and CAPTCHA is valid
                 if user.is_active:
+                    centre = None
+                    if user.usertype == "centre":
+                        try:
+                            centre = user.centre
+                        except CentreUserAccount.DoesNotExist:
+                            centre = None
+                        if centre:
+                            mark_centre_inactive_if_due(centre.pk)
+                            centre.refresh_from_db()
+                            if (
+                                not centre.is_active
+                                and not centre.inactive_due_to_inactivity
+                                and not centre.manual_disabled
+                            ):
+                                form.add_error(
+                                    None,
+                                    "Your centre account is manually disabled. Please contact Head Office.",
+                                )
+                                return render(
+                                    request,
+                                    "web/registration/login.html",
+                                    {"form": form},
+                                )
                     login(request, user)
                     # Clear previous failed login attempts for this user
                     FailedLoginAttempt.objects.filter(user=user).delete()
@@ -160,6 +186,10 @@ def login_view(request):
                     if user.is_superuser:
                         return redirect("web:admin_dashboard")
                     elif user.usertype == "centre":
+                        if centre and (
+                            centre.inactive_due_to_inactivity or centre.manual_disabled
+                        ):
+                            return redirect("web:centre_reactivation")
                         return redirect("web:centre_dashboard")
                     elif user.usertype == "Employee":
                         return redirect("web:employee_dashboard")
@@ -806,6 +836,8 @@ class AddCentreUserAdminView(CreateView):
         self.object.user = user
         self.object.username = username
         self.object.is_active = form.cleaned_data.get("is_active", True)
+        self.object.manual_disabled = not self.object.is_active
+        self.object.created_at = timezone.now()
         self.object.created_by = self.request.user
         self.object.save()
 
@@ -869,10 +901,35 @@ class EditCentreUserView(AdminOrHeadOfficeRequiredMixin, UpdateView):
             if password:
                 user.set_password(password)
 
-            user.is_active = form.cleaned_data.get("is_active", True)
+            requested_active = form.cleaned_data.get("is_active", True)
+            was_manual_disabled = self.object.manual_disabled
+            user.is_active = requested_active
+            if was_manual_disabled and not requested_active:
+                # Manual restrictions keep the authentication account active so
+                # the user can reach the restricted/reactivation workflow.
+                user.is_active = True
             user.save()
             form.instance.user = user
-            form.instance.is_active = user.is_active
+            form.instance.is_active = requested_active
+            if "is_active" in form.changed_data:
+                form.instance.manual_disabled = not form.instance.is_active
+            if (
+                "is_active" in form.changed_data
+                and form.instance.is_active
+                and form.instance.inactive_due_to_inactivity
+            ):
+                now = timezone.now()
+                form.instance.inactive_due_to_inactivity = False
+                form.instance.inactivity_reason = ""
+                form.instance.reactivated_at = now
+                form.instance.last_successful_login = now
+                form.instance.last_login = now
+                CentreReactivationAuditLog.objects.create(
+                    centre=form.instance,
+                    actor=self.request.user,
+                    event=CentreReactivationAuditLog.Event.REACTIVATED,
+                    details={"source": "head_office_manual_reactivation"},
+                )
             return super().form_valid(form)
         except Exception as e:
             messages.error(self.request, f"Error: {e}")
@@ -899,6 +956,14 @@ class AdminCenterUserDetailView(AdminOrHeadOfficeRequiredMixin, DetailView):
         context["created_by_username"] = (
             created_by.username if created_by else "Unknown"
         )
+        settings_obj = CentreReactivationSettings.get_solo()
+        context["reactivation_amount"] = calculate_reactivation_amount(
+            self.object, settings_obj
+        )
+        context["reactivation_payments"] = self.object.reactivation_payments.all()
+        context["reactivation_audit_logs"] = self.object.reactivation_audit_logs.select_related(
+            "actor"
+        ).all()
         return context
 
 
@@ -917,14 +982,16 @@ class CentreWalletTransListView(AdminOrHeadOfficeRequiredMixin, TemplateView):
     template_name = "web/admin_panel/franchise/wallet_transactions.html"
 
 
-class CentreNonActiveListView(LoginRequiredMixin, ListView):
+class CentreNonActiveListView(AdminOrHeadOfficeRequiredMixin, ListView):
     model = CentreUserAccount
     template_name = "web/admin_panel/franchise/non_active_centre.html"
     context_object_name = "non_active_centres"
 
     def get_queryset(self):
-        # Filter to get only inactive users
-        return CentreUserAccount.objects.filter(user__is_active=False)
+        # Include both legacy/manual disables and inactivity-restricted centres.
+        return CentreUserAccount.objects.filter(
+            Q(user__is_active=False) | Q(inactive_due_to_inactivity=True)
+        ).distinct()
 
 
 class AddSoftwareView(AdminOrHeadOfficeRequiredMixin, CreateView):
@@ -1609,7 +1676,7 @@ def service_list(request):
 # ----------------------------------------------------------------------------------------------- #
 
 
-class KeralaRequiredMixin(LoginRequiredMixin):
+class FranchiseAuthenticatedMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
@@ -1617,6 +1684,32 @@ class KeralaRequiredMixin(LoginRequiredMixin):
             messages.error(request, gettext("You do not have permission to access this page."))
             return redirect("web:not_found")
         return super().dispatch(request, *args, **kwargs)
+
+
+class FranchiseAccessMixin(FranchiseAuthenticatedMixin):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or request.user.usertype != "centre":
+            return super().dispatch(request, *args, **kwargs)
+        try:
+            centre = request.user.centre
+        except CentreUserAccount.DoesNotExist:
+            # Preserve the existing behaviour for legacy centre logins that
+            # have no linked profile; inactivity enforcement only applies to
+            # real CentreUserAccount records.
+            return super().dispatch(request, *args, **kwargs)
+        if centre.inactive_due_to_inactivity or centre.manual_disabled:
+            return redirect("web:centre_reactivation")
+        if not centre.is_active:
+            messages.error(
+                request,
+                gettext("Your centre account is disabled. Please contact Head Office."),
+            )
+            return redirect("web:not_found")
+        return super().dispatch(request, *args, **kwargs)
+
+
+class KeralaRequiredMixin(FranchiseAccessMixin):
+    pass
 
 
 class DistrictDashboardView(KeralaRequiredMixin, TemplateView):

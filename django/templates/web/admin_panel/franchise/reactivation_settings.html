@@ -1,0 +1,207 @@
+{% extends "web/headoffice/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<style>
+    .reactivation-page {
+        width: 100%;
+        max-width: 1440px;
+        box-sizing: border-box;
+        margin: 0 auto;
+        padding: 28px 32px 48px;
+        color: #172033;
+    }
+
+    .reactivation-page *,
+    .reactivation-page *::before,
+    .reactivation-page *::after {
+        box-sizing: border-box;
+    }
+
+    .reactivation-content {
+        width: 100%;
+    }
+
+    .reactivation-page input:not([type="checkbox"]),
+    .reactivation-page textarea {
+        width: 100%;
+        border: 1px solid #d7e1ef;
+        border-radius: 10px;
+        padding: 11px 12px;
+        color: #17233d;
+        background: #fff;
+        font-size: 14px;
+        line-height: 1.4;
+        transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .reactivation-page input:not([type="checkbox"]):focus,
+    .reactivation-page textarea:focus {
+        outline: none;
+        border-color: #1e5bea;
+        box-shadow: 0 0 0 3px rgba(30, 91, 234, .12);
+    }
+
+    .reactivation-page textarea {
+        min-height: 112px;
+        resize: vertical;
+    }
+
+    .reactivation-page form,
+    .reactivation-page section {
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(25, 55, 100, .045);
+    }
+
+    .reactivation-page form > .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .reactivation-page form > .grid > div:nth-child(n+3) {
+        grid-column: 1 / -1;
+        min-width: 0;
+    }
+
+    .reactivation-page form > .grid > div:nth-child(3) {
+        display: flex;
+        align-items: center;
+        min-height: 22px;
+    }
+
+    .reactivation-page form > .grid > div:nth-child(3) input[type="checkbox"] {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 auto;
+        accent-color: #1e5bea;
+    }
+
+    .reactivation-page section {
+        overflow: hidden;
+    }
+
+    .reactivation-page section > div:last-child {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .reactivation-page section table {
+        min-width: 980px;
+    }
+
+    @media (max-width: 1199px) {
+        .reactivation-page {
+            padding: 24px 20px 40px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .reactivation-page {
+            padding: 20px 16px 32px;
+        }
+
+        .reactivation-page form > .grid {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 16px;
+        }
+
+        .reactivation-page form > .grid > div:nth-child(n+3) {
+            grid-column: auto;
+        }
+    }
+</style>
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+    <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:md:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:md:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:md:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0">
+        <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+            <main class="reactivation-page">
+    <div class="reactivation-content">
+        <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <div>
+                <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-blue-600">Franchise controls</p>
+                <h1 class="text-2xl font-semibold text-slate-800">Centre Reactivation Settings</h1>
+                <p class="mt-1 text-sm text-slate-500">Configure inactivity rules and review reactivation activity without changing centre records.</p>
+            </div>
+        </div>
+
+        <form method="post" class="mb-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+            {% csrf_token %}
+            <div class="grid gap-5 md:grid-cols-2">
+                <div>
+                    <label for="{{ form.inactivity_days.id_for_label }}" class="mb-1.5 block text-sm font-medium text-slate-700">Inactivity period (days)</label>
+                    {{ form.inactivity_days }}
+                    {% for error in form.inactivity_days.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                <div>
+                    <label for="{{ form.default_amount.id_for_label }}" class="mb-1.5 block text-sm font-medium text-slate-700">Default reactivation amount (INR)</label>
+                    {{ form.default_amount }}
+                    {% for error in form.default_amount.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+                <div class="flex items-center gap-3 md:col-span-2">
+                    {{ form.payment_enabled }}
+                    <label for="{{ form.payment_enabled.id_for_label }}" class="text-sm font-medium text-slate-700">Enable online reactivation payment</label>
+                </div>
+                <div class="md:col-span-2">
+                    <label for="{{ form.admin_message.id_for_label }}" class="mb-1.5 block text-sm font-medium text-slate-700">Blocked-centre message</label>
+                    {{ form.admin_message }}
+                    {% for error in form.admin_message.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+            <button type="submit" class="mt-5 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700">Save settings</button>
+        </form>
+
+        <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 px-5 py-4 md:px-6">
+                <h2 class="text-lg font-semibold text-slate-800">Centre reactivation status</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+                    <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                        <tr>
+                            <th class="whitespace-nowrap px-5 py-3">Centre / ID</th>
+                            <th class="whitespace-nowrap px-5 py-3">Last successful login</th>
+                            <th class="whitespace-nowrap px-5 py-3">Inactive date / reason</th>
+                            <th class="whitespace-nowrap px-5 py-3">Payable amount</th>
+                            <th class="whitespace-nowrap px-5 py-3">Payment status</th>
+                            <th class="whitespace-nowrap px-5 py-3">Reactivated date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                    {% for centre in centres %}
+                        <tr class="align-top hover:bg-slate-50/70">
+                            <td class="px-5 py-4">
+                                <div class="font-semibold text-slate-800">{{ centre.centre_name|default:centre.owner_centre|default:centre.name|default:centre.user.username }}</div>
+                                <div class="mt-1 text-xs text-slate-500">#{{ centre.pk }} · {{ centre.user.username }}</div>
+                            </td>
+                            <td class="whitespace-nowrap px-5 py-4 text-slate-600">{{ centre.last_successful_login|date:"d M Y, H:i"|default:"—" }}</td>
+                            <td class="px-5 py-4">
+                                {% if centre.manual_disabled %}
+                                    <div class="text-slate-600">{{ centre.manual_disabled_at|date:"d M Y, H:i"|default:"—" }}</div>
+                                    <div class="mt-1 text-xs text-slate-500">Manual: {{ centre.manual_disable_reason|default:"—" }}</div>
+                                {% else %}
+                                    <div class="text-slate-600">{{ centre.inactivity_disabled_at|date:"d M Y, H:i"|default:"—" }}</div>
+                                    <div class="mt-1 text-xs text-slate-500">{{ centre.inactivity_reason|default:"—" }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="whitespace-nowrap px-5 py-4 font-semibold text-slate-800">₹ {{ centre.reactivation_amount|floatformat:2 }}</td>
+                            <td class="whitespace-nowrap px-5 py-4">
+                                {% if centre.inactive_due_to_inactivity %}<span class="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">Inactive</span>{% elif centre.is_active %}<span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">Active</span>{% else %}<span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">Manually disabled</span>{% endif %}
+                                <div class="mt-2 text-xs text-slate-500">{{ centre.latest_reactivation_payment.get_status_display|default:"No payment" }}</div>
+                            </td>
+                            <td class="whitespace-nowrap px-5 py-4 text-slate-600">{{ centre.reactivated_at|date:"d M Y, H:i"|default:"—" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6" class="px-5 py-10 text-center text-sm text-slate-500">No centre records found.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+            </main>
+        </div>
+    </div>
+</div>
+{% endblock %}

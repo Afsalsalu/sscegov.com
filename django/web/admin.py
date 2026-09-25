@@ -2,11 +2,13 @@ from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.http import urlencode
 
 from .models import (AboutBlog, AboutPage, AddState, Career, CareerForm,
                      CentreUserAccount, Contact, Department, DownloadForm,
+                     CentreReactivationAuditLog,
                      Employee, HeadOffice, HomeCompleteSolutions,
                      HomeLogoBrand, HomeService, LatestNewsCentre, Media,
                      OnlineClass, Software, StateService, User,Table_Accountsmaster,Table_Companydetailsmaster,
@@ -514,15 +516,65 @@ class CentreUserAccountAdmin(admin.ModelAdmin):
 
     # Action to mark selected users as active
     def mark_active(self, request, queryset):
-        queryset.update(is_active=True)
+        now = timezone.now()
+        for centre in queryset:
+            if centre.user_id:
+                centre.user.is_active = True
+                centre.user.save(update_fields=["is_active"])
+            centre.is_active = True
+            centre.manual_disabled = False
+            centre.inactive_due_to_inactivity = False
+            centre.inactivity_reason = ""
+            centre.reactivated_at = now
+            centre.last_successful_login = now
+            centre.last_login = now
+            centre.save(update_fields=[
+                "is_active", "manual_disabled", "inactive_due_to_inactivity",
+                "inactivity_reason", "reactivated_at", "last_successful_login",
+                "last_login"
+            ])
+            CentreReactivationAuditLog.objects.create(
+                centre=centre,
+                actor=request.user,
+                event=CentreReactivationAuditLog.Event.REACTIVATED,
+                details={"source": "django_admin_action"},
+            )
 
     mark_active.short_description = "Mark selected users as Active"
 
     # Action to mark selected users as inactive
     def mark_inactive(self, request, queryset):
-        queryset.update(is_active=False)
+        for centre in queryset:
+            if centre.user_id:
+                centre.user.is_active = False
+                centre.user.save(update_fields=["is_active"])
+            centre.is_active = False
+            centre.manual_disabled = True
+            centre.inactive_due_to_inactivity = False
+            centre.inactivity_reason = ""
+            centre.save(update_fields=[
+                "is_active", "manual_disabled", "inactive_due_to_inactivity",
+                "inactivity_reason"
+            ])
 
     mark_inactive.short_description = "Mark selected users as Inactive"
+
+    def save_model(self, request, obj, form, change):
+        if change and "is_active" in form.changed_data:
+            obj.manual_disabled = not obj.is_active
+            if obj.is_active and obj.inactive_due_to_inactivity:
+                obj.inactive_due_to_inactivity = False
+                obj.inactivity_reason = ""
+                obj.reactivated_at = timezone.now()
+                obj.last_successful_login = obj.reactivated_at
+                obj.last_login = obj.reactivated_at
+                CentreReactivationAuditLog.objects.create(
+                    centre=obj,
+                    actor=request.user,
+                    event=CentreReactivationAuditLog.Event.REACTIVATED,
+                    details={"source": "django_admin"},
+                )
+        super().save_model(request, obj, form, change)
 
 
     def certificate_paid_link(self, obj):
