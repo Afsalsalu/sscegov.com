@@ -1,3 +1,5 @@
+
+
 """
 Django settings for ssc project.
 
@@ -192,7 +194,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 STATIC_URL = '/test/static/'
 MEDIA_URL = '/test/media/'
-FORCE_SCRIPT_NAME = '/test'
+FORCE_SCRIPT_NAME = '/test/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_DIRS = [BASE_DIR / 'static']
