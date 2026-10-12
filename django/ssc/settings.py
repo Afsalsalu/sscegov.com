@@ -17,6 +17,8 @@ from decouple import config
 import os
 
 from dotenv import load_dotenv
+from web.language import SUPPORTED_LANGUAGES
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -72,6 +74,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     #  'web.middleware.ContentSecurityPolicyMiddleware',
     # 'axes.middleware.AxesMiddleware',
+    'web.language_middleware.UserLanguageMiddleware',
+
 ]
 
 # MIDDLEWARE += [
@@ -96,6 +100,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'web.context_processors.franchise_service_navigation',
+                'web.context_processors.language_preferences',
+
             ],
         },
     },
@@ -175,13 +181,18 @@ DEFAULT_FROM_EMAIL = "samatwaservicecenter.gov.in@gmail.com"
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = SUPPORTED_LANGUAGES
+
+LOCALE_PATHS = [BASE_DIR / 'locale']
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_TZ = True
+
 
 # Whitenoise settings
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
