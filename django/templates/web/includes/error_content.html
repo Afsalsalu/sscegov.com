@@ -1,0 +1,24 @@
+<style>
+    .franchise-error-page { display: flex; align-items: flex-start; justify-content: center; min-height: 100%; padding: 8px; }
+    .franchise-error-card { width: min(100%, 560px); margin: 0 auto; padding: 10px; border: 1px solid #dfe7f2; border-radius: 12px; background: #fff; box-shadow: 0 8px 24px rgba(22, 51, 92, .06); text-align: center; }
+    .franchise-error-code { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; min-height: 24px; border-radius: 999px; color: #3158d5; background: #edf4ff; font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+    .franchise-error-card h1 { margin: 8px 0 4px; color: #17233b; font-size: 20px; line-height: 1.25; }
+    .franchise-error-card p { margin: 0; color: #66758f; font-size: 13px; line-height: 1.45; }
+    .franchise-error-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 10px; }
+    .franchise-error-button { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: 0 11px; border: 1px solid #d5e1f1; border-radius: 7px; color: #3158d5; background: #fff; font: inherit; font-size: 12px; font-weight: 750; text-decoration: none; cursor: pointer; }
+    .franchise-error-button-primary { border-color: #3158d5; color: #fff; background: #3158d5; }
+    .franchise-error-button:hover { filter: brightness(.97); }
+    @media (max-width: 560px) { .franchise-error-page { padding: 8px 0; } .franchise-error-card { padding: 10px; } }
+</style>
+
+<main class="franchise-error-page" role="main" aria-labelledby="error-title">
+    <section class="franchise-error-card" role="alert">
+        <span class="franchise-error-code">{{ error_status_code }}</span>
+        <h1 id="error-title">{{ error_title }}</h1>
+        <p>{{ error_message }}</p>
+        <div class="franchise-error-actions">
+            <a class="franchise-error-button franchise-error-button-primary" href="{{ error_dashboard_url }}">{{ error_dashboard_label }}</a>
+            <button class="franchise-error-button" type="button" onclick="window.location.reload()">Try Again</button>
+        </div>
+    </section>
+</main>

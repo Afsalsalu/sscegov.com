@@ -146,6 +146,7 @@
 </div>
 <script>
 (function () {
+    const genericRequestError = "Unable to complete this request right now. Please try again later.";
     const statusNode = document.getElementById('reactivation-status');
     const payButton = document.getElementById('pay-reactivation');
     const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]')?.value || document.querySelector('meta[name="csrf-token"]')?.content || document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
@@ -214,7 +215,7 @@
     }
     function showEnquiryErrors(payload) {
         clearEnquiryErrors();
-        enquiryFormError.textContent = payload.message || '';
+        enquiryFormError.textContent = payload.message || genericRequestError;
         const errors = payload.errors || {};
         let firstInvalid = null;
         Object.keys(errors).forEach((field) => {
@@ -279,7 +280,7 @@
             enquirySuccess.hidden = false;
             enquirySuccess.focus();
         } catch (error) {
-            showEnquiryErrors({message: 'Unable to send your enquiry right now. Please retry.'});
+            showEnquiryErrors({message: genericRequestError});
         } finally {
             enquirySubmit.disabled = false;
         }
@@ -320,12 +321,12 @@
                     razorpay_payment_id: error.metadata?.payment_id || '',
                     status: 'failed', error_code: error.code || '', error_description: error.description || ''
                 });
-                setStatus(error.description || 'Payment failed. You may safely retry.');
+                setStatus('Payment failed. You may safely retry.');
                 payButton.disabled = false;
             });
             checkout.open();
         } catch (error) {
-            setStatus(error.message || 'Unable to start payment. Please retry.');
+            setStatus(genericRequestError);
             payButton.disabled = false;
         }
     });

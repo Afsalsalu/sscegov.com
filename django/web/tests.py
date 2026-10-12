@@ -459,7 +459,7 @@ class DownloadFormFilteringTests(TestCase):
 
 
 class LatestNewsTests(TestCase):
-    def make_franchise_user(self):
+    def make_franchise_user(self, state=""):
         user = get_user_model().objects.create_user(
             username="latest-news-franchise", password="test-password", usertype="centre"
         )
@@ -470,7 +470,7 @@ class LatestNewsTests(TestCase):
             aadhaar_number=999999999999,
             email="latest-news-franchise@example.com",
             centre_phone_number=9999999999,
-            state="",
+            state=state,
             location="",
         )
         return user
@@ -511,6 +511,121 @@ class LatestNewsTests(TestCase):
         self.assertNotContains(response, 'src=""')
         self.assertContains(response, f'data-edit-url="{reverse("web:latest_news_edit", kwargs={"pk": news.pk})}"')
         self.assertContains(response, f'data-delete-url="{reverse("web:latest_news_delete", kwargs={"pk": missing.pk})}"')
+
+    def test_latest_news_requires_an_authenticated_franchise_user(self):
+        response = self.client.get(reverse("web:franchise_latest_news"))
+        self.assertEqual(response.status_code, 302)
+
+        head_office_user = get_user_model().objects.create_user(
+            username="latest-news-head-office", password="test-password", usertype="HeadOffice"
+        )
+        self.client.force_login(head_office_user)
+        response = self.client.get(reverse("web:franchise_latest_news"))
+        self.assertEqual(response.status_code, 403)
+        self.assertContains(
+            response,
+            "You do not have permission to access this page.",
+            status_code=403,
+        )
+
+    def test_latest_news_list_shows_only_active_global_and_matching_state_items(self):
+        kerala = AddState.objects.create(state_name="Kerala", logo=image_file("latest-kerala.png"))
+        tamil_nadu = AddState.objects.create(state_name="Tamil Nadu", logo=image_file("latest-tamil.png"))
+        visible_global = LatestNewsCentre.objects.create(
+            image=image_file("latest-global.png"), title="Global active update", content="Visible to every franchise."
+        )
+        visible_state = LatestNewsCentre.objects.create(
+            image=image_file("latest-state.png"),
+            title="Kerala active update",
+            content="Visible to Kerala franchises.",
+            state=kerala,
+        )
+        LatestNewsCentre.objects.create(
+            image=image_file("latest-inactive.png"),
+            title="Inactive update",
+            content="This must not be shown.",
+            is_active=False,
+        )
+        LatestNewsCentre.objects.create(
+            image=image_file("latest-other-state.png"),
+            title="Tamil Nadu update",
+            content="This must not be shown to Kerala.",
+            state=tamil_nadu,
+        )
+
+        self.client.force_login(self.make_franchise_user(state="kerala"))
+        response = self.client.get(reverse("web:franchise_latest_news"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Latest News")
+        self.assertContains(response, visible_global.title)
+        self.assertContains(response, visible_state.title)
+        self.assertNotContains(response, "Inactive update")
+        self.assertNotContains(response, "Tamil Nadu update")
+        self.assertContains(response, '<div class="franchise-news-grid">')
+        self.assertContains(response, '<button class="franchise-news-card"', count=2)
+        self.assertContains(response, 'data-news-title=', count=2)
+        self.assertContains(response, visible_global.content)
+        self.assertContains(response, visible_state.content)
+        self.assertContains(response, 'id="franchise-news-modal"')
+        self.assertContains(response, 'aria-modal="true"')
+        self.assertContains(response, 'data-news-modal-backdrop')
+        self.assertContains(response, 'data-news-modal-close')
+        self.assertNotContains(response, "Read more")
+        self.assertNotContains(response, "franchise_latest_news_detail")
+        self.assertContains(response, "aria-current=\"page\"")
+
+    def test_latest_news_detail_uses_same_visibility_rules_and_has_back_link(self):
+        kerala = AddState.objects.create(state_name="Kerala", logo=image_file("detail-kerala.png"))
+        tamil_nadu = AddState.objects.create(state_name="Tamil Nadu", logo=image_file("detail-tamil.png"))
+        visible = LatestNewsCentre.objects.create(
+            image=image_file("detail-visible.png"),
+            title="Detailed franchise announcement",
+            content="The full announcement content is shown here.",
+            state=kerala,
+        )
+        inactive = LatestNewsCentre.objects.create(
+            image=image_file("detail-inactive.png"),
+            title="Inactive detailed announcement",
+            content="This is not published.",
+            is_active=False,
+        )
+        other_state = LatestNewsCentre.objects.create(
+            image=image_file("detail-other-state.png"),
+            title="Other state announcement",
+            content="This is for another state.",
+            state=tamil_nadu,
+        )
+
+        self.client.force_login(self.make_franchise_user(state=kerala.slug))
+        response = self.client.get(
+            reverse("web:franchise_latest_news_detail", kwargs={"pk": visible.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, visible.title)
+        self.assertContains(response, visible.content)
+        self.assertContains(response, "Back to Latest News")
+        self.assertContains(response, reverse("web:franchise_latest_news"))
+
+        for hidden_item in (inactive, other_state):
+            hidden_response = self.client.get(
+                reverse("web:franchise_latest_news_detail", kwargs={"pk": hidden_item.pk})
+            )
+            self.assertEqual(hidden_response.status_code, 404)
+
+    def test_dashboard_latest_news_actions_link_to_the_real_list_page(self):
+        LatestNewsCentre.objects.create(
+            image=image_file("dashboard-link-news.png"),
+            title="Dashboard link update",
+            content="This makes both dashboard actions render.",
+        )
+        self.client.force_login(self.make_franchise_user())
+        response = self.client.get(reverse("web:centre_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        latest_news_url = reverse("web:franchise_latest_news")
+        self.assertGreaterEqual(response.content.decode().count(f'href="{latest_news_url}"'), 3)
+        self.assertNotContains(response, 'href="#latest-updates"')
 
     def test_dashboard_latest_news_falls_back_only_when_image_is_empty(self):
         news = LatestNewsCentre.objects.create(
@@ -686,6 +801,67 @@ class FranchiseSidebarNavigationTests(TestCase):
         response = self.client.get(reverse("web:state_list"))
 
         self.assertEqual(response.status_code, 200)
+
+    def test_support_controls_are_shared_across_franchise_pages_only(self):
+        state = AddState.objects.create(
+            state_name="Kerala",
+            logo=image_file("support-kerala.png"),
+            whatsapp_number="919999999999",
+        )
+        service = StateService.objects.create(
+            state=state,
+            service_name="Support Test Service",
+            is_active=True,
+        )
+        user = self.make_franchise_user(state.slug)
+        self.client.force_login(user)
+
+        franchise_urls = (
+            reverse("web:centre_dashboard"),
+            reverse("web:state_list"),
+            reverse("web:state_detail", kwargs={"slug": state.slug}),
+            reverse("web:service_detail", kwargs={"state_slug": state.slug, "pk": service.pk}),
+            reverse("web:franchise_latest_news"),
+            reverse("web:download_form_list"),
+            reverse("web:keraladistrict_profile"),
+        )
+        for url in franchise_urls:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, 'class="franchise-support-floats"')
+                self.assertContains(response, 'id="franchise-enquiry-open"')
+                self.assertContains(response, 'id="franchise-enquiry-modal" hidden aria-hidden="true"')
+                self.assertContains(response, 'aria-expanded="false"')
+                self.assertContains(response, "modal.dataset.enquiryInitialized = 'true'")
+                self.assertContains(response, "openButton.addEventListener('click', openModal)")
+                self.assertContains(response, "https://wa.me/919999999999")
+
+        self.client.logout()
+        public_response = self.client.get(reverse("web:state_list"))
+        self.assertNotContains(public_response, 'class="franchise-support-floats"')
+
+        head_office = get_user_model().objects.create_user(
+            username="support-head-office", password="test-password", usertype="HeadOffice"
+        )
+        self.client.force_login(head_office)
+        head_office_response = self.client.get(reverse("web:state_list"))
+        self.assertNotContains(head_office_response, 'class="franchise-support-floats"')
+
+    @patch("web.enquiry_views._send_enquiry_notification", return_value=True)
+    def test_floating_enquiry_form_submits_without_redirecting_to_compose_page(self, send_notification):
+        user = self.make_franchise_user("kerala")
+        self.client.force_login(user)
+
+        response = self.client.post(
+            reverse("web:franchise_enquiry_compose"),
+            data={"subject": "Support request", "message": "Please help with this request."},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["success"], True)
+        self.assertTrue(send_notification.called)
 
 
 class OnlineClassTests(TestCase):

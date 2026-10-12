@@ -1,0 +1,160 @@
+{% load i18n %}
+
+{% if request.user.is_authenticated and request.user.usertype == "centre" %}
+<aside class="franchise-support-floats" aria-label="{% translate 'Franchise support actions' %}">
+    <button class="franchise-support-float franchise-support-float-enquiry" id="franchise-enquiry-open" type="button" aria-haspopup="dialog" aria-controls="franchise-enquiry-modal" aria-expanded="false" aria-label="{% translate 'Write an enquiry to Head Office' %}" title="{% translate 'Write an enquiry to Head Office' %}"{% if franchise_support_service_context and franchise_support_service_id %} data-service-id="{{ franchise_support_service_id }}"{% endif %}><i data-lucide="mail" aria-hidden="true"></i><span>{% translate "Enquiry" %}</span></button>
+    {% if support_whatsapp_url %}<a class="franchise-support-float franchise-support-float-whatsapp" href="{{ support_whatsapp_url }}" target="_blank" rel="noopener noreferrer" aria-label="{% translate 'Contact support on WhatsApp' %}" title="{% translate 'Contact support on WhatsApp' %}"><i data-lucide="message-circle" aria-hidden="true"></i><span>{% translate "WhatsApp" %}</span></a>{% else %}
+        <span class="franchise-support-unavailable-message" id="support-unavailable-message" role="status">{% translate "WhatsApp support is currently unavailable. Please send an enquiry to Head Office." %}</span>
+        <button class="franchise-support-float franchise-support-float-unavailable" id="support-unavailable-button" type="button" aria-label="{% translate 'WhatsApp support unavailable. Use Enquiry instead.' %}" title="{% translate 'WhatsApp support is not configured' %}" aria-expanded="false" aria-controls="support-unavailable-message"><i data-lucide="message-circle" aria-hidden="true"></i><span>{% translate "WhatsApp" %}</span></button>
+    {% endif %}
+</aside>
+
+<div class="franchise-enquiry-modal" id="franchise-enquiry-modal" hidden aria-hidden="true">
+    <div class="franchise-enquiry-modal-backdrop" data-enquiry-modal-backdrop></div>
+    <section class="franchise-enquiry-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="franchise-enquiry-modal-title" aria-describedby="franchise-enquiry-modal-description" tabindex="-1">
+        <button class="franchise-enquiry-modal-close" type="button" data-enquiry-modal-close aria-label="{% translate 'Close enquiry form' %}"><i data-lucide="x" aria-hidden="true"></i></button>
+        <div class="franchise-enquiry-modal-body">
+            <p class="franchise-enquiry-modal-eyebrow">{% translate "Franchise support" %}</p>
+            <h2 id="franchise-enquiry-modal-title">{% translate "Write to Head Office" %}</h2>
+            <p id="franchise-enquiry-modal-description">{% translate "Send your question or request to the Head Office support team." %}</p>
+            <p class="franchise-enquiry-modal-status" id="franchise-enquiry-modal-status" role="status" hidden></p>
+            <form id="franchise-enquiry-modal-form" method="post" action="{% url 'web:franchise_enquiry_compose' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label class="franchise-enquiry-field">
+                    <span>{% translate "Subject" %}</span>
+                    <input id="franchise-enquiry-subject" name="subject" type="text" maxlength="200" required autocomplete="off" placeholder="{% translate 'What do you need help with?' %}">
+                </label>
+                {% if franchise_support_service_context %}
+                <label class="franchise-enquiry-field">
+                    <span>{% translate "Related Service" %}</span>
+                    <select id="franchise-enquiry-service" name="service">
+                        <option value=""{% if not franchise_support_service_id %} selected{% endif %}>{% translate "General enquiry" %}</option>
+                        {% for service in franchise_support_services %}
+                            <option value="{{ service.pk }}"{% if service.pk == franchise_support_service_id %} selected{% endif %}>{{ service.service_name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                {% endif %}
+                <label class="franchise-enquiry-field">
+                    <span>{% translate "Message" %}</span>
+                    <textarea id="franchise-enquiry-message" name="message" rows="6" maxlength="10000" required placeholder="{% translate 'Share the details so our Head Office team can help.' %}"></textarea>
+                </label>
+                <label class="franchise-enquiry-field">
+                    <span>{% translate "Attachment" %} <small>({% translate "optional" %})</small></span>
+                    <input id="franchise-enquiry-attachment" name="attachment" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                </label>
+                <div class="franchise-enquiry-modal-actions">
+                    <button class="franchise-enquiry-modal-secondary" type="button" data-enquiry-modal-close>{% translate "Cancel" %}</button>
+                    <button class="franchise-enquiry-modal-primary" id="franchise-enquiry-submit" type="submit"><i data-lucide="send" aria-hidden="true"></i><span>{% translate "Send enquiry" %}</span></button>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+<script>
+    (() => {
+        const openButton = document.getElementById('franchise-enquiry-open');
+        const modal = document.getElementById('franchise-enquiry-modal');
+        const dialog = modal?.querySelector('.franchise-enquiry-modal-dialog');
+        const closeButtons = modal ? Array.from(modal.querySelectorAll('[data-enquiry-modal-close]')) : [];
+        const backdrop = modal?.querySelector('[data-enquiry-modal-backdrop]');
+        const form = document.getElementById('franchise-enquiry-modal-form');
+        const subject = document.getElementById('franchise-enquiry-subject');
+        const service = document.getElementById('franchise-enquiry-service');
+        const status = document.getElementById('franchise-enquiry-modal-status');
+        const submit = document.getElementById('franchise-enquiry-submit');
+        let lastFocused = null;
+
+        if (!openButton || !modal || !dialog || !form || !subject || !submit) return;
+        if (modal.dataset.enquiryInitialized === 'true') return;
+        modal.dataset.enquiryInitialized = 'true';
+
+        const focusableSelector = 'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
+        const focusableElements = () => Array.from(dialog.querySelectorAll(focusableSelector));
+        const setStatus = (message, isError = false) => {
+            status.textContent = message || '';
+            status.hidden = !message;
+            status.classList.toggle('is-error', isError);
+        };
+        const closeModal = () => {
+            modal.hidden = true;
+            modal.setAttribute('aria-hidden', 'true');
+            openButton.setAttribute('aria-expanded', 'false');
+            document.body.classList.remove('franchise-enquiry-modal-open');
+            setStatus('');
+            lastFocused?.focus();
+            lastFocused = null;
+        };
+        const openModal = () => {
+            lastFocused = document.activeElement;
+            modal.hidden = false;
+            modal.setAttribute('aria-hidden', 'false');
+            openButton.setAttribute('aria-expanded', 'true');
+            document.body.classList.add('franchise-enquiry-modal-open');
+            setStatus('');
+            if (service && openButton.dataset.serviceId) {
+                service.value = openButton.dataset.serviceId;
+            }
+            subject.focus();
+        };
+
+        openButton.addEventListener('click', openModal);
+        closeButtons.forEach((button) => button.addEventListener('click', closeModal));
+        backdrop?.addEventListener('click', closeModal);
+        dialog.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closeModal();
+                return;
+            }
+            if (event.key !== 'Tab') return;
+            const focusable = focusableElements();
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (!first || !last) return;
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        });
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (!form.reportValidity() || submit.disabled) return;
+            submit.disabled = true;
+            setStatus('{% translate "Sending your enquiry…" %}');
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    credentials: 'same-origin',
+                    headers: {'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json'}
+                });
+                const payload = await response.json();
+                if (!response.ok || !payload.success) {
+                    const errors = payload.errors ? Object.values(payload.errors).flat().join(' ') : (payload.message || '{% translate "Please check the form and try again." %}');
+                    setStatus(errors, true);
+                    return;
+                }
+                form.reset();
+                setStatus(payload.message || '{% translate "Your enquiry was submitted successfully." %}');
+            } catch (error) {
+                setStatus('{% translate "Unable to complete this request right now. Please try again later." %}', true);
+            } finally {
+                submit.disabled = false;
+            }
+        });
+
+        const unavailableButton = document.getElementById('support-unavailable-button');
+        const unavailableMessage = document.getElementById('support-unavailable-message');
+        unavailableButton?.addEventListener('click', () => {
+            const isOpen = unavailableMessage.style.display === 'block';
+            unavailableMessage.style.display = isOpen ? 'none' : 'block';
+            unavailableButton.setAttribute('aria-expanded', String(!isOpen));
+        });
+    })();
+</script>
+{% endif %}

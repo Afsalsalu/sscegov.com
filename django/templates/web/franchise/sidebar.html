@@ -12,6 +12,12 @@
                 </a>
             </li>
             <li>
+                <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'franchise_latest_news' or request.resolver_match.url_name == 'franchise_latest_news_detail' %} is-active{% endif %}"
+                    href="{% url 'web:franchise_latest_news' %}"{% if request.resolver_match.url_name == 'franchise_latest_news' or request.resolver_match.url_name == 'franchise_latest_news_detail' %} aria-current="page"{% endif %}>
+                    <i data-lucide="newspaper" aria-hidden="true"></i><span>{% translate "Latest News" %}</span>
+                </a>
+            </li>
+            <li>
                 <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'state_list' or request.resolver_match.url_name == 'state_detail' or request.resolver_match.url_name == 'service_detail' %} is-active{% endif %}"
                     href="{{ franchise_service_url }}"{% if request.resolver_match.url_name == 'state_list' or request.resolver_match.url_name == 'state_detail' or request.resolver_match.url_name == 'service_detail' %} aria-current="page"{% endif %}>
                     <i data-lucide="grid-2x2" aria-hidden="true"></i><span>{% translate "Service" %}</span>

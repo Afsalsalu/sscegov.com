@@ -9,7 +9,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from .models import CentreUserAccount, FranchiseEnquiry
+from .models import AddState, CentreUserAccount, FranchiseEnquiry, StateService
 from .enquiry_utils import get_support_whatsapp_url
 
 
@@ -83,6 +83,16 @@ class FranchiseEnquiryTests(TestCase):
         values.update(overrides)
         return FranchiseEnquiry.objects.create(**values)
 
+    def make_service(self, state_name="Kerala", slug="kerala", **overrides):
+        state = AddState.objects.create(logo="", state_name=state_name, slug=slug)
+        values = {
+            "state": state,
+            "service_name": "Bill Payments",
+            "is_active": True,
+        }
+        values.update(overrides)
+        return StateService.objects.create(**values)
+
     def restrict_centre(self):
         self.centre.manual_disabled = True
         self.centre.manual_disable_reason = "Pending document verification"
@@ -134,6 +144,33 @@ class FranchiseEnquiryTests(TestCase):
         detail = self.client.get(reverse("web:franchise_enquiry_admin_detail", args=[enquiry.pk]))
         self.assertContains(detail, "Disable reason: Pending document verification")
 
+    def test_failed_ajax_reactivation_enquiry_returns_safe_message_and_keeps_modal_in_place(self):
+        self.restrict_centre()
+        self.client.force_login(self.franchise_user)
+
+        with patch(
+            "web.enquiry_views._create_franchise_enquiry",
+            side_effect=RuntimeError("database details must never reach the browser"),
+        ):
+            response = self.client.post(
+                reverse("web:franchise_reactivation_enquiry"),
+                {
+                    "subject": "Centre Enable Request",
+                    "message": "Please review this request.",
+                },
+                HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+            )
+
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(
+            response.json(),
+            {
+                "success": False,
+                "message": "Unable to complete this request right now. Please try again later.",
+            },
+        )
+        self.assertNotContains(response, "database details", status_code=500)
+        self.assertEqual(FranchiseEnquiry.objects.count(), 0)
     def test_reactivation_enquiry_validation_errors_stay_in_json_and_do_not_create_record(self):
         self.restrict_centre()
         self.client.force_login(self.franchise_user)
@@ -176,6 +213,8 @@ class FranchiseEnquiryTests(TestCase):
         self.assertEqual(enquiry.contact_phone, str(self.centre.mobile))
         self.assertEqual(mail.outbox[0].to, [settings.ENQUIRY_ADMIN_EMAIL])
         self.assertEqual(mail.outbox[0].reply_to, [enquiry.franchise_email])
+        self.assertIsNone(enquiry.related_service)
+        self.assertIn("Related Service: General enquiry", mail.outbox[0].body)
         self.assertNotIn("attacker@example.test", mail.outbox[0].to)
         self.assertIn(f"#{enquiry.pk}", mail.outbox[0].body)
         self.assertTrue(enquiry.original_notification_message_id)
@@ -261,6 +300,109 @@ class FranchiseEnquiryTests(TestCase):
             self.client.get(reverse("web:franchise_enquiry_detail", args=[first.pk])).status_code,
             200,
         )
+
+    def test_service_pages_show_only_permitted_services_and_auto_select_detail_service(self):
+        service = self.make_service(service_name="Bill Payments")
+        inactive = StateService.objects.create(
+            state=service.state,
+            service_name="Inactive Service",
+            is_active=False,
+        )
+        other_state = AddState.objects.create(logo="", state_name="Tamil Nadu", slug="tamil-nadu")
+        other_service = StateService.objects.create(
+            state=other_state,
+            service_name="Other State Service",
+            is_active=True,
+        )
+        self.client.force_login(self.franchise_user)
+
+        state_response = self.client.get(
+            reverse("web:state_detail", kwargs={"slug": service.state.slug})
+        )
+        self.assertContains(state_response, 'id="franchise-enquiry-service"')
+        self.assertContains(state_response, service.service_name)
+        self.assertNotContains(state_response, inactive.service_name)
+        self.assertNotContains(state_response, other_service.service_name)
+        self.assertContains(state_response, 'value="" selected')
+
+        detail_response = self.client.get(
+            reverse(
+                "web:service_detail",
+                kwargs={"state_slug": service.state.slug, "pk": service.pk},
+            )
+        )
+        self.assertContains(detail_response, f'value="{service.pk}" selected')
+
+        dashboard_response = self.client.get(reverse("web:centre_dashboard"))
+        self.assertNotContains(dashboard_response, 'id="franchise-enquiry-service"')
+
+    def test_service_selection_is_validated_for_state_and_persisted_with_head_office_display(self):
+        service = self.make_service(service_name="Bill Payments")
+        inactive = StateService.objects.create(
+            state=service.state,
+            service_name="Inactive Service",
+            is_active=False,
+        )
+        other_state = AddState.objects.create(logo="", state_name="Tamil Nadu", slug="tamil-nadu")
+        cross_state = StateService.objects.create(
+            state=other_state,
+            service_name="Cross State Service",
+            is_active=True,
+        )
+        self.client.force_login(self.franchise_user)
+        compose_url = reverse("web:franchise_enquiry_compose")
+
+        for invalid_service in (inactive, cross_state):
+            with self.subTest(service=invalid_service.service_name):
+                response = self.client.post(
+                    compose_url,
+                    {
+                        "subject": "Invalid service selection",
+                        "message": "This must not be saved.",
+                        "service": invalid_service.pk,
+                    },
+                )
+                self.assertEqual(response.status_code, 200)
+                self.assertTrue(response.context["form"].errors.get("service"))
+                self.assertEqual(FranchiseEnquiry.objects.count(), 0)
+
+        response = self.client.post(
+            compose_url,
+            {
+                "subject": "Bill payment question",
+                "message": "Please explain this service.",
+                "service": service.pk,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        enquiry = FranchiseEnquiry.objects.get()
+        self.assertEqual(enquiry.related_service, service)
+        self.assertIn("Related Service: Bill Payments", mail.outbox[0].body)
+
+        self.client.force_login(self.head_office_user)
+        inbox = self.client.get(reverse("web:franchise_enquiry_inbox"))
+        detail = self.client.get(
+            reverse("web:franchise_enquiry_admin_detail", args=[enquiry.pk])
+        )
+        self.assertContains(inbox, "Bill Payments")
+        self.assertContains(detail, "Related Service")
+        self.assertContains(detail, "Bill Payments")
+
+    def test_service_context_can_submit_general_enquiry(self):
+        service = self.make_service(service_name="Bill Payments")
+        self.client.force_login(self.franchise_user)
+        response = self.client.post(
+            reverse("web:franchise_enquiry_compose"),
+            {
+                "subject": "General question",
+                "message": "This does not concern a specific service.",
+                "service": "",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        enquiry = FranchiseEnquiry.objects.get()
+        self.assertIsNone(enquiry.related_service)
+        self.assertIn("Related Service: General enquiry", mail.outbox[0].body)
 
     def test_head_office_reply_is_saved_and_sent_to_registered_franchise_email(self):
         original_message_id = "<original-enquiry@example.test>"

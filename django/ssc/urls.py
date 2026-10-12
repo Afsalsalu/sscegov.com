@@ -20,6 +20,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from django.http import HttpResponse   # 👈 add this import
+from web.error_handlers import (
+    handler403 as custom_handler403,
+    handler404 as custom_handler404,
+    handler500 as custom_handler500,
+)
 
 def validation_file(request):
         return HttpResponse(
@@ -43,3 +48,7 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+handler403 = custom_handler403
+handler404 = custom_handler404
+handler500 = custom_handler500

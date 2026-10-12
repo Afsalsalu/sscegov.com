@@ -1,4 +1,3 @@
-from django.conf.urls import handler404
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import LogoutView
 from django.shortcuts import redirect
@@ -57,7 +56,8 @@ from .views import (AddCentreUserAdminView, logout_view,
                     DeleteHeadOfficeView,
                     DeleteLatestNewsCentreView, DeleteMediaView,
                     DeleteOnlineClassView, DeleteStateView, DepartmentListView,
-                    DistrictDashboardView, DistrictProfileView,
+                     DistrictDashboardView, DistrictProfileView,
+                     FranchiseLatestNewsDetailView, FranchiseLatestNewsListView,
                     DownloadFileView, DownloadFormAdminListView,
                     DownloadFormListView, 
                     EditCentreUserView,
@@ -432,6 +432,16 @@ path(
         name="centre_dashboard",
     ),
     path(
+        "franchise-dashboard/latest-news/",
+        FranchiseLatestNewsListView.as_view(),
+        name="franchise_latest_news",
+    ),
+    path(
+        "franchise-dashboard/latest-news/<int:pk>/",
+        FranchiseLatestNewsDetailView.as_view(),
+        name="franchise_latest_news_detail",
+    ),
+    path(
         "franchise-dashboard/reactivation/",
         CentreReactivationView.as_view(),
         name="centre_reactivation",
@@ -765,4 +775,3 @@ path(
 
 
 ]
-handler404 = notfound

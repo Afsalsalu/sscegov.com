@@ -69,6 +69,7 @@
                                 <div><small>{% translate "Contact phone" %}</small><strong>{% if enquiry.contact_phone %}{{ enquiry.contact_phone }}{% else %}{% translate "Not provided" %}{% endif %}</strong></div>
                                 <div><small>{% translate "Submitted" %}</small><strong>{{ enquiry.created_at|date:"d M Y, g:i A" }}</strong></div>
                                 <div><small>{% translate "Subject" %}</small><strong>{{ enquiry.subject }}</strong></div>
+                                <div><small>{% translate "Related Service" %}</small><strong>{% if enquiry.related_service %}{{ enquiry.related_service.service_name }}{% else %}{% translate "General enquiry" %}{% endif %}</strong></div>
                                 {% if enquiry.replied_at %}<div><small>{% translate "Replied" %}</small><strong>{{ enquiry.replied_at|date:"d M Y, g:i A" }}{% if enquiry.replied_by %} · {{ enquiry.replied_by.get_full_name|default:enquiry.replied_by.username }}{% endif %}</strong></div>{% endif %}
                             </div>
                             <div class="ho-detail-content"><p class="ho-detail-label">{% translate "Message" %}</p><div class="ho-detail-message">{{ enquiry.message }}</div></div>
@@ -88,6 +89,7 @@
 
                     <section class="ho-detail-card ho-detail-reply-box" aria-labelledby="reply-heading">
                         <h2 id="reply-heading">{% translate "Reply to franchise" %}</h2>
+                        <p class="ho-reply-note">{% translate "Related Service" %}: {% if enquiry.related_service %}{{ enquiry.related_service.service_name }}{% else %}{% translate "General enquiry" %}{% endif %}</p>
                         {% if reply_form.non_field_errors %}<ul class="ho-reply-errors">{% for error in reply_form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
                         <form method="post" class="ho-reply-form">
                             {% csrf_token %}

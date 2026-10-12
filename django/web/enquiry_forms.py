@@ -3,6 +3,8 @@ import zipfile
 
 from django import forms
 
+from .models import StateService
+
 
 MAX_ENQUIRY_ATTACHMENT_SIZE = 10 * 1024 * 1024
 ALLOWED_ENQUIRY_EXTENSIONS = {".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png"}
@@ -25,6 +27,12 @@ class FranchiseEnquiryForm(forms.Form):
                 "placeholder": "Share the details so our Head Office team can help.",
             }
         ),
+    )
+    service = forms.ModelChoiceField(
+        queryset=StateService.objects.none(),
+        required=False,
+        label="Related Service",
+        empty_label="General enquiry",
     )
     attachment = forms.FileField(
         label="Attachment",

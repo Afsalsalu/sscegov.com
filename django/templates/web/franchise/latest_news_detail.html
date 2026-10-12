@@ -1,0 +1,28 @@
+{% extends "web/franchise/base.html" %}
+{% load static i18n %}
+
+{% block content %}
+<div class="relative min-h-screen franchise-dashboard-layout">
+    <div class="franchise-dashboard-content franchise-news-content">
+        <main aria-labelledby="franchise-news-detail-title">
+            <a class="franchise-news-back-link franchise-news-detail-back" href="{% url 'web:franchise_latest_news' %}"><i data-lucide="arrow-left" aria-hidden="true"></i>{% translate "Back to Latest News" %}</a>
+            <article class="franchise-news-detail-card">
+                <header class="franchise-news-detail-header">
+                    <h1 id="franchise-news-detail-title">{{ news_item.title }}</h1>
+                    <time datetime="{{ news_item.created_at|date:'c' }}">{{ news_item.created_at|date:"d M Y" }}</time>
+                </header>
+                <div class="franchise-news-detail-image">
+                    {% if news_item.image %}
+                        <img src="{{ news_item.image.url }}" alt="{{ news_item.title }}" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                        <span class="franchise-news-thumbnail-placeholder" hidden aria-hidden="true"><i data-lucide="newspaper"></i></span>
+                    {% else %}
+                        <span class="franchise-news-thumbnail-placeholder" aria-hidden="true"><i data-lucide="newspaper"></i></span>
+                    {% endif %}
+                </div>
+                <div class="franchise-news-detail-content">{{ news_item.content|linebreaks }}</div>
+            </article>
+        </main>
+    </div>
+</div>
+
+{% endblock content %}

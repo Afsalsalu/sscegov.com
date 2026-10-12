@@ -512,6 +512,13 @@ class FranchiseEnquiry(models.Model):
     contact_phone = models.CharField(max_length=30, blank=True)
     subject = models.CharField(max_length=200)
     message = models.TextField(max_length=10000)
+    related_service = models.ForeignKey(
+        "StateService",
+        on_delete=models.SET_NULL,
+        related_name="franchise_enquiries",
+        null=True,
+        blank=True,
+    )
     attachment = models.FileField(
         upload_to=franchise_enquiry_attachment_path,
         storage=FranchiseEnquiryStorage(),
@@ -862,6 +869,14 @@ class LatestNewsCentre(models.Model):
     title = models.CharField(max_length=55)
     content = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
+    state = models.ForeignKey(
+        AddState,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="latest_news_items",
+    )
+    is_active = models.BooleanField(default=True, db_index=True)
 
 
 # ///////////////////////////////////////////// CENTRE MODELS END ////////////////////////////////////////////// #

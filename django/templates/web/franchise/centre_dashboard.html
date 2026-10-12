@@ -59,7 +59,7 @@
             <section class="franchise-dashboard-section" aria-label="{% translate 'Dashboard summaries' %}">
                 <div class="franchise-dashboard-panels">
                     <article class="franchise-dashboard-panel" id="latest-updates">
-                        <header class="franchise-dashboard-panel-header"><h2>{% translate "Latest Updates" %}</h2><a href="#latest-updates">{% translate "View all" %}</a></header>
+                        <header class="franchise-dashboard-panel-header"><h2>{% translate "Latest Updates" %}</h2><a href="{% url 'web:franchise_latest_news' %}">{% translate "View all" %}</a></header>
                         <div class="franchise-dashboard-panel-body dashboard-news-grid">
                             {% for latestnews in latest_news %}
                                 <article class="dashboard-news-card">
@@ -70,7 +70,7 @@
                                     <time class="franchise-update-date" datetime="{{ latestnews.created_at|date:'c' }}">{{ latestnews.created_at|date:"d M Y" }}</time>
                                 </article>
                             {% empty %}<div class="franchise-panel-empty">{% translate "There are no latest updates right now." %}</div>{% endfor %}
-                            <div class="franchise-panel-footer"><a href="#latest-updates">{% translate "View all updates" %}<i data-lucide="arrow-right" aria-hidden="true"></i></a></div>
+                            <div class="franchise-panel-footer"><a href="{% url 'web:franchise_latest_news' %}">{% translate "View all updates" %}<i data-lucide="arrow-right" aria-hidden="true"></i></a></div>
                         </div>
                     </article>
 
@@ -110,14 +110,6 @@
     </div>
 </div>
 
-<aside class="franchise-support-floats" aria-label="{% translate 'Franchise support actions' %}">
-    <a class="franchise-support-float franchise-support-float-enquiry" href="{% url 'web:franchise_enquiry_compose' %}" aria-label="{% translate 'Write an enquiry to Head Office' %}" title="{% translate 'Write an enquiry to Head Office' %}"><i data-lucide="mail" aria-hidden="true"></i><span>{% translate "Enquiry" %}</span></a>
-    {% if support_whatsapp_url %}<a class="franchise-support-float franchise-support-float-whatsapp" href="{{ support_whatsapp_url }}" target="_blank" rel="noopener noreferrer" aria-label="{% translate 'Contact support on WhatsApp' %}" title="{% translate 'Contact support on WhatsApp' %}"><i data-lucide="message-circle" aria-hidden="true"></i><span>{% translate "WhatsApp" %}</span></a>{% else %}
-        <span class="franchise-support-unavailable-message" id="support-unavailable-message" role="status">{% translate "WhatsApp support is currently unavailable. Please send an enquiry to Head Office." %}</span>
-        <button class="franchise-support-float franchise-support-float-unavailable" id="support-unavailable-button" type="button" aria-label="{% translate 'WhatsApp support unavailable. Use Enquiry instead.' %}" title="{% translate 'WhatsApp support is not configured' %}" aria-expanded="false" aria-controls="support-unavailable-message"><i data-lucide="message-circle" aria-hidden="true"></i><span>{% translate "WhatsApp" %}</span></button>
-    {% endif %}
-</aside>
-
 <script>
     (() => {
         const carousel = document.querySelector('[data-banner-carousel]');
@@ -144,13 +136,6 @@
             carousel.addEventListener('keydown', (event) => { if (event.key === 'ArrowLeft') show(index - 1); if (event.key === 'ArrowRight') show(index + 1); });
             start();
         }
-        const unavailableButton = document.getElementById('support-unavailable-button');
-        const unavailableMessage = document.getElementById('support-unavailable-message');
-        unavailableButton?.addEventListener('click', () => {
-            const isOpen = unavailableMessage.style.display === 'block';
-            unavailableMessage.style.display = isOpen ? 'none' : 'block';
-            unavailableButton.setAttribute('aria-expanded', String(!isOpen));
-        });
     })();
 </script>
 {% endblock content %}

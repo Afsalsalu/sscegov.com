@@ -1,4 +1,5 @@
 import json
+import logging
 import uuid
 from datetime import timedelta
 from decimal import Decimal
@@ -33,6 +34,8 @@ from .reactivation_services import (
     set_payment_status,
 )
 from .views import AdminOrHeadOfficeRequiredMixin, FranchiseAuthenticatedMixin
+
+logger = logging.getLogger(__name__)
 
 
 def _razorpay_client():
@@ -143,6 +146,10 @@ class CentreReactivationOrderView(FranchiseAuthenticatedMixin, View):
                     }
                 )
             except Exception:
+                logger.exception(
+                    "Razorpay reactivation order creation failed for centre %s.",
+                    centre.pk,
+                )
                 return JsonResponse(
                     {"success": False, "message": "Unable to start payment right now. Please retry or contact Head Office."},
                     status=502,
@@ -219,6 +226,10 @@ class CentreReactivationCallbackView(FranchiseAuthenticatedMixin, View):
             )
             return JsonResponse({"success": False, "message": "Payment verification failed."}, status=400)
         except Exception:
+            logger.exception(
+                "Razorpay payment verification failed for centre %s.",
+                payment.centre_id,
+            )
             return JsonResponse({"success": False, "message": "Payment verification is temporarily unavailable."}, status=502)
 
         provider_order_id = payment_details.get("order_id")

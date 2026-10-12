@@ -744,13 +744,14 @@ class SoftwareAdmin(admin.ModelAdmin):
 
 @admin.register(LatestNewsCentre)
 class LatestNewsCentreAdmin(admin.ModelAdmin):
-    list_display = ("title", "image_tag", "content", "created_at")
+    list_display = ("title", "state", "is_active", "image_tag", "content", "created_at")
     search_fields = ("title", "content")
+    list_filter = ("is_active", "state")
     readonly_fields = ("image_tag",)
     ordering = ("-created_at",)
 
     fieldsets = (
-        ("News Details", {"fields": ("title", "image", "content")}),
+        ("News Details", {"fields": ("title", "image", "content", "state", "is_active")}),
         ("Image Preview", {"fields": ("image_tag",), "classes": ("collapse",)}),
     )
 

@@ -35,7 +35,7 @@ from django.contrib.auth.views import (PasswordResetCompleteView,
                                        PasswordResetConfirmView,
                                        PasswordResetDoneView,
                                        PasswordResetView)
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.http import Http404, HttpResponseBadRequest
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
@@ -314,7 +314,9 @@ class CustomPasswordResetCompleteView(PasswordResetCompleteView):
 
 # Home Page
 def notfound(request, exception=None):
-    return render(request, "web/404.html", status=404)
+    from .error_handlers import render_error_response
+
+    return render_error_response(request, 404)
 
 
 def index(request):
@@ -1575,7 +1577,7 @@ class StateServiceByStateView(AdminListPaginationMixin, AdminOrHeadOfficeRequire
 class LatestNewsCentreAddView(AdminOrHeadOfficeRequiredMixin, CreateView):
     model = LatestNewsCentre
     template_name = "web/admin_panel/franchise/add_news_centre.html"
-    fields = ["image", "title", "content"]
+    fields = ["image", "title", "content", "state", "is_active"]
     success_url = reverse_lazy("web:latest_news_list")
 
 
@@ -1587,7 +1589,7 @@ class LatestNewsCentreListView(AdminOrHeadOfficeRequiredMixin, ListView):
 
 class EditLatestNewsCentreView(AdminOrHeadOfficeRequiredMixin, UpdateView):
     model = LatestNewsCentre
-    fields = ["image", "title", "content"]  # Use fields instead of form_class list
+    fields = ["image", "title", "content", "state", "is_active"]
     template_name = "web/admin_panel/franchise/add_news_centre.html"
     success_url = reverse_lazy("web:latest_news_list")
 
@@ -1681,8 +1683,7 @@ class FranchiseAuthenticatedMixin(LoginRequiredMixin):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
         if request.user.usertype != "centre":
-            messages.error(request, gettext("You do not have permission to access this page."))
-            return redirect("web:not_found")
+            raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -1712,6 +1713,58 @@ class KeralaRequiredMixin(FranchiseAccessMixin):
     pass
 
 
+def get_franchise_state_for_centre(district_detail):
+    state_value = (district_detail.state or "").strip()
+    if not state_value:
+        return None
+    return AddState.objects.filter(
+        Q(slug__iexact=state_value) | Q(state_name__iexact=state_value)
+    ).first()
+
+
+def get_franchise_latest_news_queryset(district_detail):
+    queryset = LatestNewsCentre.objects.filter(is_active=True).select_related("state")
+    franchise_state = get_franchise_state_for_centre(district_detail)
+    if franchise_state:
+        return queryset.filter(Q(state__isnull=True) | Q(state=franchise_state)).order_by(
+            "-created_at", "-pk"
+        )
+    return queryset.filter(state__isnull=True).order_by("-created_at", "-pk")
+
+
+class FranchiseLatestNewsContextMixin:
+    def get_district_detail(self):
+        try:
+            return self.request.user.centre
+        except ObjectDoesNotExist as exc:
+            raise Http404("User has no associated centre.") from exc
+
+    def get_queryset(self):
+        return get_franchise_latest_news_queryset(self.get_district_detail())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        district_detail = self.get_district_detail()
+        from .enquiry_utils import get_support_whatsapp_url
+
+        ac_master = Table_Accountsmaster.objects.filter(user=user).first()
+        context.update(
+            {
+                "district_detail": district_detail,
+                "centre_display_name": (
+                    district_detail.centre_name
+                    or district_detail.owner_centre
+                    or user.get_username()
+                ),
+                "agency_identifier": district_detail.username or user.get_username(),
+                "wallet_total": ac_master.currentbalance if ac_master else None,
+                "support_whatsapp_url": get_support_whatsapp_url(user),
+            }
+        )
+        return context
+
+
 class DistrictDashboardView(KeralaRequiredMixin, TemplateView):
     template_name = "web/franchise/centre_dashboard.html"
 
@@ -1728,18 +1781,13 @@ class DistrictDashboardView(KeralaRequiredMixin, TemplateView):
         except ObjectDoesNotExist:
             raise Http404("User has no associated centre.")
 
-        latest_news_queryset = LatestNewsCentre.objects.order_by("-created_at")
-        latest_news_count = latest_news_queryset.count()
-        latest_news = latest_news_queryset[:3]
         popular_services = StateService.objects.filter(
             is_popular=True, is_active=True
         ).select_related("state").order_by("-updated_at", "-created_at", "pk")
-        state_value = (district_detail.state or "").strip()
-        franchise_state = None
-        if state_value:
-            franchise_state = AddState.objects.filter(
-                Q(slug__iexact=state_value) | Q(state_name__iexact=state_value)
-            ).first()
+        franchise_state = get_franchise_state_for_centre(district_detail)
+        latest_news_queryset = get_franchise_latest_news_queryset(district_detail)
+        latest_news_count = latest_news_queryset.count()
+        latest_news = latest_news_queryset[:3]
 
         priority_services = list(popular_services.none())
         other_services = list(popular_services)
@@ -1804,6 +1852,20 @@ class DistrictDashboardView(KeralaRequiredMixin, TemplateView):
         context["ip"] = ip
 
         return context
+
+
+class FranchiseLatestNewsListView(
+    FranchiseLatestNewsContextMixin, KeralaRequiredMixin, ListView
+):
+    template_name = "web/franchise/latest_news.html"
+    context_object_name = "latest_news"
+
+
+class FranchiseLatestNewsDetailView(
+    FranchiseLatestNewsContextMixin, KeralaRequiredMixin, DetailView
+):
+    template_name = "web/franchise/latest_news_detail.html"
+    context_object_name = "news_item"
 
 
 class CenterWalletHistoryView(KeralaRequiredMixin, TemplateView):

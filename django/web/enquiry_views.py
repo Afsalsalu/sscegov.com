@@ -15,6 +15,8 @@ from django.views import View
 from django.views.generic import FormView, ListView
 
 from .enquiry_forms import FranchiseEnquiryForm, FranchiseEnquiryReplyForm
+from .enquiry_utils import get_permitted_franchise_services
+from .error_handlers import GENERAL_ERROR_MESSAGE
 from .models import FranchiseEnquiry
 from .views import AdminOrHeadOfficeRequiredMixin, FranchiseAuthenticatedMixin
 
@@ -38,7 +40,9 @@ def _safe_reply_to(value):
 
 
 def _franchise_enquiries_for_user(user):
-    return FranchiseEnquiry.objects.filter(user=user).select_related("centre", "user", "replied_by")
+    return FranchiseEnquiry.objects.filter(user=user).select_related(
+        "centre", "user", "replied_by", "related_service"
+    )
 
 
 def _franchise_centre_for_request(request):
@@ -75,6 +79,7 @@ def _create_franchise_enquiry(request, form, centre, include_reactivation_contex
         contact_phone=str(phone),
         subject=form.cleaned_data["subject"],
         message=message,
+        related_service=form.cleaned_data.get("service"),
         attachment=form.cleaned_data.get("attachment"),
     )
 
@@ -87,6 +92,11 @@ def _send_enquiry_notification(enquiry):
 
     created_at = timezone.localtime(enquiry.created_at).strftime("%d %b %Y, %I:%M %p %Z")
     phone = enquiry.contact_phone or "Not provided"
+    related_service = (
+        enquiry.related_service.service_name
+        if enquiry.related_service
+        else "General enquiry"
+    )
     body = (
         f"Franchise enquiry reference: #{enquiry.pk}\n"
         f"Centre: {enquiry.franchise_centre_name}\n"
@@ -94,6 +104,7 @@ def _send_enquiry_notification(enquiry):
         f"Registered email: {enquiry.franchise_email}\n"
         f"Phone: {phone}\n"
         f"Subject: {enquiry.subject}\n"
+        f"Related Service: {related_service}\n"
         f"Created: {created_at}\n\n"
         f"Message:\n{enquiry.message}"
     )
@@ -153,11 +164,17 @@ def _send_enquiry_reply(enquiry):
         return False
 
     created_at = timezone.localtime(enquiry.created_at).strftime("%d %b %Y, %I:%M %p %Z")
+    related_service = (
+        enquiry.related_service.service_name
+        if enquiry.related_service
+        else "General enquiry"
+    )
     body = (
         f"Hello {enquiry.franchise_user_name},\n\n"
         f"Head Office has replied to your franchise enquiry #{enquiry.pk}.\n\n"
         f"Centre: {enquiry.franchise_centre_name}\n"
         f"Original subject: {enquiry.subject}\n"
+        f"Related Service: {related_service}\n"
         f"Submitted: {created_at}\n\n"
         f"Your message:\n{enquiry.message}\n\n"
         f"Head Office reply:\n{enquiry.admin_reply}\n"
@@ -189,6 +206,13 @@ class FranchiseEnquiryComposeView(FranchiseAuthenticatedMixin, FormView):
     template_name = "web/franchise/enquiries/compose.html"
     form_class = FranchiseEnquiryForm
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields["service"].queryset = get_permitted_franchise_services(
+            self.request.user
+        )
+        return form
+
     def get_initial(self):
         initial = super().get_initial()
         requested_subject = self.request.GET.get("subject", "").strip()
@@ -214,16 +238,56 @@ class FranchiseEnquiryComposeView(FranchiseAuthenticatedMixin, FormView):
 
     def form_valid(self, form):
         centre = _franchise_centre_for_request(self.request)
-        enquiry = _create_franchise_enquiry(self.request, form, centre)
+        try:
+            enquiry = _create_franchise_enquiry(self.request, form, centre)
+            notification_sent = _send_enquiry_notification(enquiry)
+        except Exception:
+            logger.exception(
+                "Unexpected franchise enquiry submission failure for user %s.",
+                self.request.user.pk,
+            )
+            if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return JsonResponse(
+                    {"success": False, "message": GENERAL_ERROR_MESSAGE},
+                    status=500,
+                )
+            context = self.get_context_data(form=form)
+            context["submission_error"] = GENERAL_ERROR_MESSAGE
+            return self.render_to_response(context, status=500)
 
-        if _send_enquiry_notification(enquiry):
+        if notification_sent:
             messages.success(self.request, "Your enquiry was submitted successfully.")
         else:
             messages.warning(
                 self.request,
                 "Your enquiry was saved, but email notification could not be sent.",
             )
+        if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": (
+                        "Your enquiry was submitted successfully."
+                        if notification_sent
+                        else "Your enquiry was saved, but email notification could not be sent."
+                    ),
+                }
+            )
         return redirect("web:franchise_enquiry_detail", pk=enquiry.pk)
+
+    def form_invalid(self, form):
+        if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse(
+                {
+                    "success": False,
+                    "errors": {
+                        field: [str(error) for error in errors]
+                        for field, errors in form.errors.items()
+                    },
+                },
+                status=400,
+            )
+        return super().form_invalid(form)
 
 
 class FranchiseReactivationEnquiryView(FranchiseAuthenticatedMixin, View):
@@ -253,21 +317,27 @@ class FranchiseReactivationEnquiryView(FranchiseAuthenticatedMixin, View):
                 status=400,
             )
 
-        enquiry = _create_franchise_enquiry(
-            request,
-            form,
-            centre,
-            include_reactivation_context=True,
-        )
-        if not _send_enquiry_notification(enquiry):
+        try:
+            enquiry = _create_franchise_enquiry(
+                request,
+                form,
+                centre,
+                include_reactivation_context=True,
+            )
+            notification_sent = _send_enquiry_notification(enquiry)
+        except Exception:
+            logger.exception(
+                "Unexpected reactivation enquiry submission failure for user %s.",
+                request.user.pk,
+            )
             return JsonResponse(
-                {
-                    "success": False,
-                    "message": (
-                        "Your enquiry was saved, but email notification could not be sent. "
-                        "Please retry or contact Head Office."
-                    ),
-                },
+                {"success": False, "message": GENERAL_ERROR_MESSAGE},
+                status=500,
+            )
+
+        if not notification_sent:
+            return JsonResponse(
+                {"success": False, "message": GENERAL_ERROR_MESSAGE},
                 status=502,
             )
 
@@ -302,7 +372,9 @@ class FranchiseEnquiryInboxView(AdminOrHeadOfficeRequiredMixin, ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        queryset = FranchiseEnquiry.objects.select_related("centre", "user", "replied_by")
+        queryset = FranchiseEnquiry.objects.select_related(
+            "centre", "user", "replied_by", "related_service"
+        )
         status_filter = self.request.GET.get("status", "").strip().lower()
         if status_filter in FranchiseEnquiry.Status.values:
             queryset = queryset.filter(status=status_filter)
@@ -338,7 +410,10 @@ class FranchiseEnquiryAdminDetailView(AdminOrHeadOfficeRequiredMixin, View):
 
     def get_object(self, pk):
         return get_object_or_404(
-            FranchiseEnquiry.objects.select_related("centre", "user", "replied_by"), pk=pk
+            FranchiseEnquiry.objects.select_related(
+                "centre", "user", "replied_by", "related_service"
+            ),
+            pk=pk,
         )
 
     def get(self, request, pk):

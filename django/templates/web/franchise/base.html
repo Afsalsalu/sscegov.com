@@ -29,7 +29,7 @@
 </head>
 
 <body
-    class="text-base bg-body-bg text-body font-public dark:text-zink-100 dark:bg-zink-800 group-data-[skin=bordered]:bg-body-bordered group-data-[skin=bordered]:dark:bg-zink-700 franchise-app-page{% if request.resolver_match.url_name == 'centre_dashboard' %} franchise-dashboard-page{% endif %}">
+    class="text-base bg-body-bg text-body font-public dark:text-zink-100 dark:bg-zink-800 group-data-[skin=bordered]:bg-body-bordered group-data-[skin=bordered]:dark:bg-zink-700 franchise-app-page{% if request.resolver_match.url_name == 'centre_dashboard' or request.resolver_match.url_name == 'franchise_latest_news' or request.resolver_match.url_name == 'franchise_latest_news_detail' or is_franchise_dashboard_error %} franchise-dashboard-page{% endif %}">
     <div class="group-data-[sidebar-size=sm]:min-h-sm group-data-[sidebar-size=sm]:relative">
 
 
@@ -67,7 +67,7 @@
             <div class="layout-width">
                 <div
                     class="flex items-center px-4 mx-auto bg-topbar border-b-2 border-topbar group-data-[topbar=dark]:bg-topbar-dark group-data-[topbar=dark]:border-topbar-dark group-data-[topbar=brand]:bg-topbar-brand group-data-[topbar=brand]:border-topbar-brand shadow-md h-header shadow-slate-200/50 group-data-[navbar=bordered]:rounded-md group-data-[navbar=bordered]:group-[.is-sticky]/topbar:rounded-t-none group-data-[topbar=dark]:dark:bg-zink-700 group-data-[topbar=dark]:dark:border-zink-700 dark:shadow-none dark:shadow-zink-500 group-data-[topbar=dark]:group-[.is-sticky]/topbar:dark:shadow-zink-500 group-data-[topbar=dark]:group-[.is-sticky]/topbar:dark:shadow-md group-data-[navbar=bordered]:shadow-none group-data-[layout=horizontal]:group-data-[navbar=bordered]:rounded-b-none group-data-[layout=horizontal]:shadow-none group-data-[layout=horizontal]:dark:group-[.is-sticky]/topbar:shadow-none">
-                    {% if request.resolver_match.url_name == 'centre_dashboard' %}
+                    {% if request.resolver_match.url_name == 'centre_dashboard' or request.resolver_match.url_name == 'franchise_latest_news' or request.resolver_match.url_name == 'franchise_latest_news_detail' or is_franchise_dashboard_error %}
                     <div class="franchise-dashboard-topbar">
                         <button type="button" class="franchise-dashboard-menu hamburger-icon" id="topnav-hamburger-icon" aria-label="{% translate 'Toggle navigation' %}">
                             <i data-lucide="menu" aria-hidden="true"></i>
@@ -161,6 +161,10 @@
             {% block content %}
             {% endblock %}
         </div>
+
+        {% if request.resolver_match.url_name != 'centre_reactivation' %}
+            {% include "web/franchise/includes/support_floats.html" %}
+        {% endif %}
 
     </div>
     <!-- end main content -->

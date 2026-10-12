@@ -1,0 +1,142 @@
+{% extends "web/franchise/base.html" %}
+{% load static i18n %}
+
+{% block content %}
+<div class="relative min-h-screen franchise-dashboard-layout">
+    <div class="franchise-dashboard-content franchise-news-content">
+        <main aria-labelledby="franchise-latest-news-title">
+            <header class="franchise-news-page-header">
+                <div>
+                    <h1 id="franchise-latest-news-title">{% translate "Latest News" %}</h1>
+                    <p>{% translate "Updates and announcements for your franchise." %}</p>
+                </div>
+                <a class="franchise-news-back-link" href="{% url 'web:centre_dashboard' %}">{% translate "Back to Dashboard" %}</a>
+            </header>
+
+            {% if latest_news %}
+                <div class="franchise-news-grid">
+                    {% for news in latest_news %}
+                        <button class="franchise-news-card" type="button" data-news-modal-trigger
+                            data-news-title="{{ news.title }}"
+                            data-news-date="{{ news.created_at|date:'d M Y' }}"
+                            data-news-content="{{ news.content }}"
+                            {% if news.image %}data-news-image="{{ news.image.url }}"{% endif %}
+                            aria-haspopup="dialog" aria-controls="franchise-news-modal" aria-label="{% translate 'Open news item' %}: {{ news.title }}">
+                            <span class="franchise-news-thumbnail">
+                                {% if news.image %}
+                                    <img src="{{ news.image.url }}" alt="" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+                                    <span class="franchise-news-thumbnail-placeholder" hidden aria-hidden="true"><i data-lucide="newspaper"></i></span>
+                                {% else %}
+                                    <span class="franchise-news-thumbnail-placeholder" aria-hidden="true"><i data-lucide="newspaper"></i></span>
+                                {% endif %}
+                            </span>
+                            <span class="franchise-news-card-content">
+                                <span class="franchise-news-card-title">{{ news.title }}</span>
+                                <time datetime="{{ news.created_at|date:'c' }}">{{ news.created_at|date:"d M Y" }}</time>
+                            </span>
+                        </button>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="franchise-news-empty">
+                    <i data-lucide="newspaper" aria-hidden="true"></i>
+                    <strong>{% translate "No latest news available" %}</strong>
+                    <span>{% translate "There are no updates to show right now." %}</span>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+
+<div class="franchise-news-modal" id="franchise-news-modal" hidden>
+    <div class="franchise-news-modal-backdrop" data-news-modal-backdrop></div>
+    <section class="franchise-news-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="franchise-news-modal-title" aria-describedby="franchise-news-modal-content" tabindex="-1">
+        <button class="franchise-news-modal-close" type="button" data-news-modal-close aria-label="{% translate 'Close news details' %}">
+            <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+        <div class="franchise-news-modal-body">
+            <div class="franchise-news-modal-media" id="franchise-news-modal-media">
+                <img id="franchise-news-modal-image" alt="" hidden>
+                <span class="franchise-news-thumbnail-placeholder" id="franchise-news-modal-placeholder" aria-hidden="true"><i data-lucide="newspaper"></i></span>
+            </div>
+            <h2 id="franchise-news-modal-title"></h2>
+            <time id="franchise-news-modal-date"></time>
+            <div id="franchise-news-modal-content" class="franchise-news-modal-content"></div>
+        </div>
+    </section>
+</div>
+
+<script>
+    (() => {
+        const modal = document.getElementById('franchise-news-modal');
+        const dialog = modal?.querySelector('.franchise-news-modal-dialog');
+        const closeButton = modal?.querySelector('[data-news-modal-close]');
+        const backdrop = modal?.querySelector('[data-news-modal-backdrop]');
+        const modalImage = document.getElementById('franchise-news-modal-image');
+        const modalPlaceholder = document.getElementById('franchise-news-modal-placeholder');
+        const modalTitle = document.getElementById('franchise-news-modal-title');
+        const modalDate = document.getElementById('franchise-news-modal-date');
+        const modalContent = document.getElementById('franchise-news-modal-content');
+        let lastTrigger = null;
+
+        if (!modal || !dialog || !closeButton) return;
+
+        const focusableSelector = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        const focusableElements = () => Array.from(dialog.querySelectorAll(focusableSelector));
+
+        const closeModal = () => {
+            modal.hidden = true;
+            document.body.classList.remove('franchise-news-modal-open');
+            lastTrigger?.focus();
+            lastTrigger = null;
+        };
+
+        const openModal = (trigger) => {
+            lastTrigger = trigger;
+            modalTitle.textContent = trigger.dataset.newsTitle || '';
+            modalDate.textContent = trigger.dataset.newsDate || '';
+            modalContent.textContent = trigger.dataset.newsContent || '';
+            modalImage.hidden = !trigger.dataset.newsImage;
+            modalPlaceholder.hidden = Boolean(trigger.dataset.newsImage);
+            modalImage.alt = trigger.dataset.newsTitle || '';
+            modalImage.src = trigger.dataset.newsImage || '';
+            modalImage.onerror = () => {
+                modalImage.hidden = true;
+                modalPlaceholder.hidden = false;
+            };
+            modal.hidden = false;
+            document.body.classList.add('franchise-news-modal-open');
+            closeButton.focus();
+        };
+
+        document.querySelectorAll('[data-news-modal-trigger]').forEach((trigger) => {
+            trigger.addEventListener('click', () => openModal(trigger));
+        });
+        closeButton.addEventListener('click', closeModal);
+        backdrop?.addEventListener('click', closeModal);
+        dialog.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closeModal();
+                return;
+            }
+            if (event.key !== 'Tab') return;
+            const focusable = focusableElements();
+            if (!focusable.length) {
+                event.preventDefault();
+                closeButton.focus();
+                return;
+            }
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        });
+    })();
+</script>
+{% endblock content %}

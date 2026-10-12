@@ -57,7 +57,7 @@
         </header>
         <form class="enquiry-form" method="post" enctype="multipart/form-data" id="enquiry-compose-form">
             {% csrf_token %}
-            {% if form.non_field_errors %}<ul class="enquiry-errors">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+            {% if form.non_field_errors %}<ul class="enquiry-errors">{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}{% if submission_error %}<div class="enquiry-alert warning" role="alert">{{ submission_error }}</div>{% endif %}
             <div class="enquiry-field">
                 <label for="enquiry-recipient">To</label>
                 <input id="enquiry-recipient" type="text" value="Head Office Admin" readonly aria-readonly="true">
@@ -68,6 +68,7 @@
                 {{ form.subject }}
                 {% if form.subject.errors %}<ul class="enquiry-errors">{% for error in form.subject.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
             </div>
+            {% if form.service.errors %}<ul class="enquiry-errors">{% for error in form.service.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
             <div class="enquiry-field">
                 <label for="id_message">{{ form.message.label }} <span aria-hidden="true">*</span></label>
                 {{ form.message }}

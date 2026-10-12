@@ -72,7 +72,7 @@
                     {% if enquiries %}
                         <div class="ho-enquiry-table-wrap">
                             <table class="ho-enquiry-table">
-                                <thead><tr><th scope="col">{% translate "Franchise / Centre" %}</th><th scope="col">{% translate "Subject" %}</th><th scope="col">{% translate "Created" %}</th><th scope="col">{% translate "Status" %}</th><th scope="col">{% translate "Action" %}</th></tr></thead>
+                                <thead><tr><th scope="col">{% translate "Franchise / Centre" %}</th><th scope="col">{% translate "Subject" %}</th><th scope="col">{% translate "Related Service" %}</th><th scope="col">{% translate "Created" %}</th><th scope="col">{% translate "Status" %}</th><th scope="col">{% translate "Action" %}</th></tr></thead>
                                 <tbody>
                                     {% for enquiry in enquiries %}
                                     <tr>
@@ -83,6 +83,7 @@
                                             <span class="ho-enquiry-reference">#{% translate "Enquiry" %} {{ enquiry.pk }}</span>
                                         </td>
                                         <td class="ho-enquiry-subject">{{ enquiry.subject }}</td>
+                                        <td>{% if enquiry.related_service %}{{ enquiry.related_service.service_name }}{% else %}{% translate "General enquiry" %}{% endif %}</td>
                                         <td>{{ enquiry.created_at|date:"d M Y" }}<span class="ho-enquiry-date">{{ enquiry.created_at|date:"g:i A" }}</span></td>
                                         <td><span class="ho-enquiry-status status-{{ enquiry.status }}">{{ enquiry.get_status_display }}</span></td>
                                         <td><a class="ho-enquiry-action" href="{% url 'web:franchise_enquiry_admin_detail' enquiry.pk %}" aria-label="{% blocktranslate with subject=enquiry.subject %}View enquiry: {{ subject }}{% endblocktranslate %}"><i data-lucide="arrow-up-right" aria-hidden="true"></i>{% translate "View enquiry" %}</a></td>
