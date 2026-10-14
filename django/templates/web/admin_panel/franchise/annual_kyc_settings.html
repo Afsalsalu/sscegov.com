@@ -3,64 +3,199 @@
 
 {% block content %}
 <style>
-    .annual-admin { padding: 22px; }
-    .annual-admin h1 { margin: 0 0 6px; color: #14213d; font-size: 24px; font-weight: 800; }
-    .annual-admin .intro { margin: 0 0 18px; color: #6c7a90; }
-    .annual-admin-card { margin-bottom: 18px; padding: 18px; border: 1px solid #e5ebf3; border-radius: 12px; background: #fff; }
-    .annual-admin-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-    .annual-admin-field { display: flex; flex-direction: column; gap: 4px; }
-    .annual-admin-field label { color: #324867; font-size: 12px; font-weight: 750; }
-    .annual-admin-field input, .annual-admin-field textarea, .annual-admin-field select { width: 100%; padding: 8px 9px; border: 1px solid #d5dfec; border-radius: 7px; }
-    .annual-admin-field textarea { min-height: 62px; }
-    .annual-admin-check { display: flex; align-items: center; gap: 8px; min-height: 38px; }
-    .annual-admin-check label { color: #324867; font-size: 13px; font-weight: 750; }
-    .annual-admin-button { display: inline-block; margin-top: 14px; padding: 8px 13px; border: 0; border-radius: 7px; background: #1f5eea; color: white; font-weight: 750; cursor: pointer; }
-    .annual-admin-errors { color: #a32b36; font-size: 12px; }
+    .annual-admin { padding: 18px 0 24px; color: #203454; }
+    .annual-admin-header { margin-bottom: 14px; }
+    .annual-admin h1 { margin: 0 0 4px; color: #14213d; font-size: 22px; font-weight: 800; line-height: 1.25; }
+    .annual-admin .intro { margin: 0; color: #6c7a90; font-size: 13px; line-height: 1.5; }
+    .annual-admin-card { margin-bottom: 14px; padding: 15px 16px; border: 1px solid #e5ebf3; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(20, 33, 61, .03); }
+    .annual-admin-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
+    .annual-admin-section-heading h2 { margin: 0; color: #203454; font-size: 15px; font-weight: 800; line-height: 1.35; }
+    .annual-admin-section-heading p { margin: 0; color: #8290a5; font-size: 11px; }
+    .annual-admin-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px 16px; }
+    .annual-admin-field { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+    .annual-admin-field--full { grid-column: 1 / -1; }
+    .annual-admin-field label, .annual-admin-toggle-label { color: #324867; font-size: 11px; font-weight: 750; line-height: 1.35; }
+    .annual-admin-field input, .annual-admin-field textarea, .annual-admin-field select { box-sizing: border-box; width: 100%; min-height: 36px; padding: 7px 9px; border: 1px solid #d5dfec; border-radius: 7px; color: #203454; background: #fff; font-size: 13px; line-height: 1.35; }
+    .annual-admin-field textarea { min-height: 70px; resize: vertical; line-height: 1.45; }
+    .annual-admin-toggle { justify-content: flex-start; }
+    .annual-admin-toggle-control { display: flex; align-items: center; gap: 8px; min-height: 36px; color: #5d718d; font-size: 12px; }
+    .annual-admin-toggle-control input { width: 16px; height: 16px; min-height: 16px; margin: 0; accent-color: #1f5eea; }
+    .annual-admin-errors { color: #a32b36; font-size: 11px; line-height: 1.35; }
+    .annual-admin-actions { display: flex; justify-content: flex-end; margin: 0 0 14px; padding-top: 12px; border-top: 1px solid #edf1f6; }
+    .annual-admin-button { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 8px 14px; border: 0; border-radius: 7px; color: #fff; font-size: 12px; font-weight: 750; cursor: pointer; }
     .annual-admin-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    .annual-admin-table th, .annual-admin-table td { padding: 9px 8px; border-bottom: 1px solid #edf1f6; text-align: left; vertical-align: top; }
-    .annual-admin-table th { color: #5d718d; font-size: 11px; text-transform: uppercase; }
+    .annual-admin-table th, .annual-admin-table td { padding: 8px 7px; border-bottom: 1px solid #edf1f6; text-align: left; vertical-align: top; }
+    .annual-admin-table th { color: #5d718d; font-size: 10px; text-transform: uppercase; letter-spacing: .03em; }
     .annual-admin-table a { color: #1f5eea; font-weight: 750; text-decoration: none; }
     .annual-admin-table .status { font-weight: 800; text-transform: capitalize; }
-    @media (max-width: 900px) { .annual-admin-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .annual-admin-table { min-width: 800px; } .annual-admin-table-wrap { overflow-x: auto; } }
-    @media (max-width: 560px) { .annual-admin { padding: 12px; } .annual-admin-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) {
+        .annual-admin-grid { grid-template-columns: 1fr; }
+        .annual-admin-field--full { grid-column: auto; }
+        .annual-admin-table { min-width: 800px; }
+        .annual-admin-table-wrap { overflow-x: auto; }
+    }
+    @media (max-width: 560px) {
+        .annual-admin { padding: 14px 0 20px; }
+        .annual-admin-card { padding: 13px; }
+        .annual-admin-section-heading { display: block; }
+        .annual-admin-section-heading p { margin-top: 3px; }
+        .annual-admin-actions { justify-content: stretch; }
+        .annual-admin-button { width: 100%; }
+    }
 </style>
-<div class="annual-admin">
-    <h1>Annual Centre KYC Renewal</h1>
-    <p class="intro">Configure the annual KYC cycle and review every centre’s current payment and OTP state. This is separate from 3-month reactivation.</p>
-    <section class="annual-admin-card">
-        <h2 style="margin:0 0 12px;font-size:17px;color:#203454;">Global settings</h2>
-        <form method="post">
-            {% csrf_token %}
-            {% if form.non_field_errors %}<div class="annual-admin-errors">{{ form.non_field_errors }}</div>{% endif %}
-            <div class="annual-admin-grid">
-                <div class="annual-admin-check">{{ form.enabled }}{{ form.enabled.label_tag }}</div>
-                <div class="annual-admin-check">{{ form.payment_enabled }}{{ form.payment_enabled.label_tag }}</div>
-                {% for field in form %}{% if field.name not in 'enabled payment_enabled' %}<div class="annual-admin-field">{{ field.label_tag }}{{ field }}{% for error in field.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}</div>{% endif %}{% endfor %}
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+    <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+        <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+            <div class="annual-admin">
+                <header class="annual-admin-header">
+                    <h1>Annual Centre KYC Settings</h1>
+                    <p class="intro">Manage annual renewal timing, payment, OTP verification, and support messaging.</p>
+                </header>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}<div class="annual-admin-errors">{{ form.non_field_errors }}</div>{% endif %}
+
+                    <section class="annual-admin-card">
+                        <div class="annual-admin-section-heading">
+                            <h2>Renewal &amp; Payment</h2>
+                            <p>Set the renewal cycle and payment availability.</p>
+                        </div>
+                        <div class="annual-admin-grid">
+                            <div class="annual-admin-field annual-admin-toggle">
+                                <span class="annual-admin-toggle-label">{{ form.enabled.label }}</span>
+                                <div class="annual-admin-toggle-control">{{ form.enabled }}<span>Enable annual KYC enforcement</span></div>
+                                {% for error in form.enabled.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field annual-admin-toggle">
+                                <span class="annual-admin-toggle-label">{{ form.payment_enabled.label }}</span>
+                                <div class="annual-admin-toggle-control">{{ form.payment_enabled }}<span>Allow online renewal payment</span></div>
+                                {% for error in form.payment_enabled.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field">
+                                <label for="{{ form.renewal_interval_months.id_for_label }}">{{ form.renewal_interval_months.label }}</label>
+                                {{ form.renewal_interval_months }}
+                                {% for error in form.renewal_interval_months.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field">
+                                <label for="{{ form.warning_period_days.id_for_label }}">{{ form.warning_period_days.label }}</label>
+                                {{ form.warning_period_days }}
+                                {% for error in form.warning_period_days.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field">
+                                <label for="{{ form.grace_period_days.id_for_label }}">{{ form.grace_period_days.label }}</label>
+                                {{ form.grace_period_days }}
+                                {% for error in form.grace_period_days.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field">
+                                <label for="{{ form.default_amount.id_for_label }}">{{ form.default_amount.label }}</label>
+                                {{ form.default_amount }}
+                                {% for error in form.default_amount.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="annual-admin-card">
+                        <div class="annual-admin-section-heading">
+                            <h2>OTP Verification</h2>
+                            <p>Control OTP expiry, resend timing, and attempts.</p>
+                        </div>
+                        <div class="annual-admin-grid">
+                            <div class="annual-admin-field">
+                                <label for="{{ form.otp_expiry_minutes.id_for_label }}">{{ form.otp_expiry_minutes.label }}</label>
+                                {{ form.otp_expiry_minutes }}
+                                {% for error in form.otp_expiry_minutes.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field">
+                                <label for="{{ form.otp_resend_cooldown_seconds.id_for_label }}">{{ form.otp_resend_cooldown_seconds.label }}</label>
+                                {{ form.otp_resend_cooldown_seconds }}
+                                {% for error in form.otp_resend_cooldown_seconds.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field">
+                                <label for="{{ form.max_otp_verification_attempts.id_for_label }}">{{ form.max_otp_verification_attempts.label }}</label>
+                                {{ form.max_otp_verification_attempts }}
+                                {% for error in form.max_otp_verification_attempts.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="annual-admin-card">
+                        <div class="annual-admin-section-heading">
+                            <h2>Messages &amp; WhatsApp Support</h2>
+                            <p>Keep centre-facing notices and support details current.</p>
+                        </div>
+                        <div class="annual-admin-grid">
+                            <div class="annual-admin-field annual-admin-field--full">
+                                <label for="{{ form.dashboard_warning_text.id_for_label }}">{{ form.dashboard_warning_text.label }}</label>
+                                {{ form.dashboard_warning_text }}
+                                {% for error in form.dashboard_warning_text.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field">
+                                <label for="{{ form.due_date_popup_title.id_for_label }}">{{ form.due_date_popup_title.label }}</label>
+                                {{ form.due_date_popup_title }}
+                                {% for error in form.due_date_popup_title.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field annual-admin-field--full">
+                                <label for="{{ form.due_date_popup_message.id_for_label }}">{{ form.due_date_popup_message.label }}</label>
+                                {{ form.due_date_popup_message }}
+                                {% for error in form.due_date_popup_message.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field annual-admin-field--full">
+                                <label for="{{ form.grace_period_warning_text.id_for_label }}">{{ form.grace_period_warning_text.label }}</label>
+                                {{ form.grace_period_warning_text }}
+                                {% for error in form.grace_period_warning_text.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field annual-admin-field--full">
+                                <label for="{{ form.expired_message.id_for_label }}">{{ form.expired_message.label }}</label>
+                                {{ form.expired_message }}
+                                {% for error in form.expired_message.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field">
+                                <label for="{{ form.whatsapp_support_number.id_for_label }}">{{ form.whatsapp_support_number.label }}</label>
+                                {{ form.whatsapp_support_number }}
+                                {% for error in form.whatsapp_support_number.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-admin-field annual-admin-field--full">
+                                <label for="{{ form.whatsapp_message_template.id_for_label }}">{{ form.whatsapp_message_template.label }}</label>
+                                {{ form.whatsapp_message_template }}
+                                {% for error in form.whatsapp_message_template.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="annual-admin-actions">
+                        <button class="annual-admin-button text-white transition-all duration-200 ease-linear btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20" type="submit">Save Settings</button>
+                    </div>
+                </form>
+
+                <section class="annual-admin-card">
+                    <div class="annual-admin-section-heading">
+                        <h2>Centre Status</h2>
+                        <p>Review each centre's current payment and OTP state.</p>
+                    </div>
+                    <div class="annual-admin-table-wrap">
+                        <table class="annual-admin-table">
+                            <thead><tr><th>Centre</th><th>Status</th><th>Last verified</th><th>Next due</th><th>Days</th><th>Payment</th><th>OTP</th><th></th></tr></thead>
+                            <tbody>
+                            {% for row in centre_rows %}
+                                <tr>
+                                    <td><strong>{{ row.snapshot.centre_name }}</strong><br><small>{{ row.snapshot.centre_id }}</small></td>
+                                    <td class="status">{{ row.snapshot.state }}</td>
+                                    <td>{{ row.status.last_kyc_verified_at|date:"d M Y H:i"|default:"&mdash;" }}</td>
+                                    <td>{{ row.snapshot.due_date|date:"d M Y"|default:"&mdash;" }}</td>
+                                    <td>{% if row.snapshot.state == 'warning' %}{{ row.snapshot.days_to_due }} remaining{% elif row.snapshot.state == 'grace' or row.snapshot.state == 'due' %}{{ row.snapshot.grace_days }} grace{% elif row.snapshot.state == 'expired' %}overdue{% else %}&mdash;{% endif %}</td>
+                                    <td>{{ row.payment.get_status_display|default:"&mdash;" }}</td>
+                                    <td>{{ row.otp.get_status_display|default:"&mdash;" }}</td>
+                                    <td><a href="{% url 'web:annual_kyc_centre' pk=row.centre.pk %}">Manage</a></td>
+                                </tr>
+                            {% empty %}<tr><td colspan="8">No centre accounts found.</td></tr>{% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
-            <button class="annual-admin-button" type="submit">Save annual KYC settings</button>
-        </form>
-    </section>
-    <section class="annual-admin-card">
-        <h2 style="margin:0 0 12px;font-size:17px;color:#203454;">Centre status</h2>
-        <div class="annual-admin-table-wrap">
-            <table class="annual-admin-table">
-                <thead><tr><th>Centre</th><th>Status</th><th>Last verified</th><th>Next due</th><th>Days</th><th>Payment</th><th>OTP</th><th></th></tr></thead>
-                <tbody>
-                {% for row in centre_rows %}
-                    <tr>
-                        <td><strong>{{ row.snapshot.centre_name }}</strong><br><small>{{ row.snapshot.centre_id }}</small></td>
-                        <td class="status">{{ row.snapshot.state }}</td>
-                        <td>{{ row.status.last_kyc_verified_at|date:"d M Y H:i"|default:"—" }}</td>
-                        <td>{{ row.snapshot.due_date|date:"d M Y"|default:"—" }}</td>
-                        <td>{% if row.snapshot.state == 'warning' %}{{ row.snapshot.days_to_due }} remaining{% elif row.snapshot.state == 'grace' or row.snapshot.state == 'due' %}{{ row.snapshot.grace_days }} grace{% elif row.snapshot.state == 'expired' %}overdue{% else %}—{% endif %}</td>
-                        <td>{{ row.payment.get_status_display|default:"—" }}</td>
-                        <td>{{ row.otp.get_status_display|default:"—" }}</td>
-                        <td><a href="{% url 'web:annual_kyc_centre' pk=row.centre.pk %}">Manage</a></td>
-                    </tr>
-                {% empty %}<tr><td colspan="8">No centre accounts found.</td></tr>{% endfor %}
-                </tbody>
-            </table>
         </div>
-    </section>
+    </div>
 </div>
 {% endblock content %}
