@@ -116,14 +116,29 @@ class AnnualKYCTestCase(TestCase):
         response = client.get(reverse("web:annual_kyc"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Annual Centre KYC Renewal")
+        self.assertContains(response, "Annual KYC Renewal")
+        self.assertContains(response, "Review your centre verification status and renewal details.")
+        self.assertContains(response, "Not due yet")
         self.assertContains(response, "Your annual KYC renewal is not due yet.")
         self.assertContains(response, "Last verified")
         self.assertContains(response, "days remaining")
-        self.assertContains(response, "Current renewal fee")
+        self.assertContains(response, "Renewal fee")
         self.assertContains(response, "Annual KYC Renewal")
         self.assertContains(response, f'href="{reverse("web:annual_kyc")}"')
+        self.assertNotContains(response, "Not_due")
         self.assertNotContains(response, "Pay &amp; Get OTP")
+
+    def test_due_page_uses_friendly_status_label_and_keeps_payment_action(self):
+        self.status.next_kyc_due_at = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        self.status.save(update_fields=("next_kyc_due_at", "updated_at"))
+        client = Client()
+        client.force_login(self.user)
+        response = client.get(reverse("web:annual_kyc"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Renewal due")
+        self.assertContains(response, "Pay &amp; Get OTP")
+        self.assertNotContains(response, "Not_due")
 
     def test_expired_page_is_whatsapp_only_and_contains_centre_identity(self):
         client = Client()
@@ -137,6 +152,7 @@ class AnnualKYCTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Online KYC renewal is no longer available", body)
         self.assertIn("Contact us on WhatsApp", body)
+        self.assertIn("Online renewal expired", body)
         self.assertNotIn("Pay &amp; Get OTP", body)
         self.assertIn("Annual+Centre", body)
         self.assertIn(self.centre.formatted_id, body)

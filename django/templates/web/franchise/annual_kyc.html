@@ -3,86 +3,179 @@
 
 {% block content %}
 <style>
-    .annual-kyc-page { max-width: 920px; margin: 0 auto; padding: 14px 10px 34px; }
-    .annual-kyc-panel { border: 1px solid #e4ebf5; border-radius: 12px; background: #fff; padding: 18px; box-shadow: 0 8px 22px rgba(22, 51, 92, .05); }
-    .annual-kyc-panel h1 { margin: 0 0 6px; color: #14213d; font-size: 22px; font-weight: 800; }
-    .annual-kyc-copy { margin: 0 0 14px; color: #62728b; line-height: 1.5; }
-    .annual-kyc-meta { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 12px 0 16px; }
-    .annual-kyc-meta div { min-width: 0; padding: 9px 10px; border: 1px solid #edf1f7; border-radius: 8px; background: #f8fbff; }
-    .annual-kyc-meta small { display: block; color: #7b8aa1; font-size: 10px; line-height: 1.35; }
-    .annual-kyc-meta strong { display: block; margin-top: 2px; color: #203454; font-size: 13px; line-height: 1.35; overflow-wrap: anywhere; }
-    .annual-kyc-status-label { text-transform: capitalize; }
-    .annual-kyc-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-    .annual-kyc-button, .annual-kyc-whatsapp { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 8px 14px; border: 0; border-radius: 8px; background: #1f5eea; color: #fff; font-weight: 750; text-decoration: none; cursor: pointer; }
+    .annual-kyc-page { box-sizing: border-box; width: 100%; min-width: 0; padding: 76px 8px 24px; }
+    .annual-kyc-page *, .annual-kyc-page *::before, .annual-kyc-page *::after { box-sizing: border-box; }
+    .annual-kyc-content { width: 100%; max-width: 1120px; min-width: 0; margin: 0 auto; }
+    .annual-kyc-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin: 0 0 10px; }
+    .annual-kyc-eyebrow { margin: 0 0 3px; color: #7a8ca7; font-size: 10px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+    .annual-kyc-title { margin: 0; color: #17233b; font-size: 22px; font-weight: 850; line-height: 1.2; }
+    .annual-kyc-subtitle { margin: 4px 0 0; color: #718096; font-size: 12px; line-height: 1.4; }
+    .annual-kyc-status-pill { display: inline-flex; align-items: center; flex: 0 0 auto; gap: 6px; min-height: 28px; padding: 5px 9px; border: 1px solid #d7e5fb; border-radius: 999px; background: #f3f7ff; color: #2d5fae; font-size: 11px; font-weight: 800; line-height: 1.2; white-space: nowrap; }
+    .annual-kyc-status-pill::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
+    .annual-kyc-panel { min-width: 0; margin-top: 8px; padding: 12px; border: 1px solid #e2eaf4; border-radius: 10px; background: #fff; box-shadow: 0 5px 16px rgba(22, 51, 92, .035); }
+    .annual-kyc-notice { display: flex; align-items: flex-start; gap: 9px; margin-top: 0; padding: 10px; border: 1px solid #d8e6fb; border-left: 3px solid #1f5eea; border-radius: 8px; background: #f5f9ff; }
+    .annual-kyc-notice-icon { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; flex: 0 0 26px; border-radius: 7px; background: #e5efff; color: #1f5eea; }
+    .annual-kyc-notice-icon svg { width: 15px; height: 15px; }
+    .annual-kyc-notice-copy { min-width: 0; }
+    .annual-kyc-notice-copy strong { display: block; color: #203454; font-size: 13px; font-weight: 850; line-height: 1.3; }
+    .annual-kyc-notice-copy p { margin: 2px 0 0; color: #5d6d84; font-size: 12px; line-height: 1.4; }
+    .annual-kyc-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+    .annual-kyc-section-heading h2 { margin: 0; color: #253653; font-size: 13px; font-weight: 850; line-height: 1.3; }
+    .annual-kyc-section-heading span { color: #8b98aa; font-size: 10px; }
+    .annual-kyc-details { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
+    .annual-kyc-detail { min-width: 0; padding: 9px; border: 1px solid #edf2f7; border-radius: 8px; background: #f8fbff; }
+    .annual-kyc-detail span { display: block; color: #7b8aa1; font-size: 10px; line-height: 1.35; }
+    .annual-kyc-detail strong { display: block; margin-top: 3px; overflow-wrap: anywhere; color: #203454; font-size: 13px; font-weight: 800; line-height: 1.3; }
+    .annual-kyc-action-panel { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .annual-kyc-action-copy { min-width: 0; }
+    .annual-kyc-action-copy strong { display: block; color: #253653; font-size: 13px; font-weight: 850; line-height: 1.3; }
+    .annual-kyc-action-copy p { margin: 3px 0 0; color: #718096; font-size: 12px; line-height: 1.4; }
+    .annual-kyc-actions { display: flex; flex: 0 0 auto; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; }
+    .annual-kyc-button, .annual-kyc-whatsapp { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 7px 11px; border: 0; border-radius: 7px; background: #1f5eea; color: #fff; font-size: 11px; font-weight: 800; line-height: 1.2; text-decoration: none; cursor: pointer; }
     .annual-kyc-button:hover, .annual-kyc-whatsapp:hover { background: #164dc5; color: #fff; }
     .annual-kyc-button.secondary { border: 1px solid #dce5f1; background: #f5f8fd; color: #315174; }
+    .annual-kyc-button.secondary:hover { border-color: #bdd3f4; background: #edf4ff; color: #1f5eea; }
     .annual-kyc-button:disabled { cursor: wait; opacity: .65; }
-    .annual-kyc-status { min-height: 20px; margin: 10px 0 0; color: #536782; font-size: 13px; }
+    .annual-kyc-next { display: flex; align-items: flex-start; gap: 9px; }
+    .annual-kyc-next-icon { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; flex: 0 0 26px; border-radius: 7px; background: #edf4ff; color: #1f5eea; }
+    .annual-kyc-next-icon svg { width: 15px; height: 15px; }
+    .annual-kyc-next-copy { min-width: 0; }
+    .annual-kyc-next-copy strong { display: block; color: #253653; font-size: 13px; font-weight: 850; line-height: 1.3; }
+    .annual-kyc-next-copy p { margin: 3px 0 0; color: #718096; font-size: 12px; line-height: 1.4; }
+    .annual-kyc-status { margin: 7px 0 0; color: #536782; font-size: 12px; line-height: 1.4; }
+    .annual-kyc-status:empty { display: none; }
     .annual-kyc-status.error { color: #a32b36; }
-    .annual-kyc-otp { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid #edf1f7; }
+    .annual-kyc-otp { display: none; margin-top: 8px; }
     .annual-kyc-otp.is-visible { display: block; }
-    .annual-kyc-otp label { display: block; margin-bottom: 5px; color: #314767; font-size: 13px; font-weight: 700; }
-    .annual-kyc-otp input { width: 170px; padding: 9px 10px; border: 1px solid #ccd8e8; border-radius: 7px; letter-spacing: .22em; }
-    .annual-kyc-overlay { position: fixed; inset: 0; z-index: 1100; display: grid; place-items: center; padding: 18px; background: rgba(19, 36, 66, .56); }
-    .annual-kyc-dialog { width: min(480px, 100%); padding: 22px; border-radius: 14px; background: #fff; box-shadow: 0 24px 80px rgba(8, 26, 58, .3); }
-    .annual-kyc-dialog h2 { margin: 0 0 8px; color: #14213d; font-size: 20px; font-weight: 800; }
-    .annual-kyc-dialog p { margin: 0 0 14px; color: #5d6d84; line-height: 1.5; }
-    @media (max-width: 900px) { .annual-kyc-meta { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-    @media (max-width: 620px) { .annual-kyc-meta { grid-template-columns: 1fr 1fr; } .annual-kyc-panel { padding: 14px; } }
-    @media (max-width: 420px) { .annual-kyc-meta { grid-template-columns: 1fr; } }
+    .annual-kyc-otp-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+    .annual-kyc-otp label { display: block; margin-bottom: 5px; color: #314767; font-size: 12px; font-weight: 700; }
+    .annual-kyc-otp input { width: 170px; padding: 8px 9px; border: 1px solid #ccd8e8; border-radius: 7px; color: #1f2f4b; letter-spacing: .22em; }
+    .annual-kyc-overlay { position: fixed; inset: 0; z-index: 1100; display: grid; place-items: center; padding: 12px; background: rgba(19, 36, 66, .56); }
+    .annual-kyc-dialog { width: min(440px, 100%); padding: 18px; border-radius: 11px; background: #fff; box-shadow: 0 24px 80px rgba(8, 26, 58, .3); }
+    .annual-kyc-dialog h2 { margin: 0 0 7px; color: #14213d; font-size: 18px; font-weight: 850; line-height: 1.3; }
+    .annual-kyc-dialog p { margin: 0 0 11px; color: #5d6d84; font-size: 13px; line-height: 1.45; }
+    .annual-kyc-dialog .annual-kyc-actions { justify-content: flex-start; }
+    @media (max-width: 980px) { .annual-kyc-details { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 767px) { .annual-kyc-page { padding: 74px 8px 20px; } .annual-kyc-header, .annual-kyc-action-panel, .annual-kyc-otp-inner { align-items: flex-start; flex-direction: column; } .annual-kyc-status-pill { align-self: flex-start; } .annual-kyc-actions { justify-content: flex-start; } }
+    @media (max-width: 560px) { .annual-kyc-details { grid-template-columns: 1fr 1fr; } .annual-kyc-panel { padding: 10px; } }
+    @media (max-width: 380px) { .annual-kyc-details { grid-template-columns: 1fr; } .annual-kyc-title { font-size: 20px; } }
 </style>
 
-<div class="annual-kyc-page">
-    <section class="annual-kyc-panel" aria-labelledby="annual-kyc-title">
-        <h1 id="annual-kyc-title">Annual Centre KYC Renewal</h1>
-        <p class="annual-kyc-copy">
-            {% if annual_kyc.state == 'disabled' %}
-                Annual KYC renewal is currently disabled by Head Office.
-            {% elif annual_kyc.state == 'not_due' %}
-                Your annual KYC renewal is not due yet. You can review your current status here.
-            {% elif annual_kyc.state == 'warning' %}
-                {{ annual_kyc.message }}
-            {% elif annual_kyc.state == 'due' %}
-                {{ annual_kyc.popup_message }}
-            {% elif annual_kyc.state == 'grace' %}
-                {{ annual_kyc.message }}
-            {% else %}
-                {{ annual_kyc_settings.expired_message }}
-            {% endif %}
-        </p>
-        <div class="annual-kyc-meta">
-            <div><small>Current status</small><strong class="annual-kyc-status-label">{{ annual_kyc.state }}</strong></div>
-            <div><small>Last verified</small><strong>{{ annual_kyc.status_obj.last_kyc_verified_at|date:"d M Y"|default:"&mdash;" }}</strong></div>
-            <div><small>Next due date</small><strong>{{ annual_kyc.due_date|date:"d M Y"|default:"&mdash;" }}</strong></div>
-            <div><small>Renewal timing</small><strong>{% if annual_kyc.state == 'not_due' or annual_kyc.state == 'warning' %}{{ annual_kyc.days_to_due }} days remaining{% elif annual_kyc.state == 'due' %}Due today{% elif annual_kyc.state == 'grace' %}{{ annual_kyc.grace_days }} grace days remaining{% elif annual_kyc.state == 'expired' %}{{ annual_kyc_days_overdue }} days overdue{% elif annual_kyc.state == 'blocked' %}Access blocked{% else %}Not required{% endif %}</strong></div>
-            <div><small>Current renewal fee</small><strong>&#8377;{{ annual_kyc_amount|floatformat:2 }}</strong></div>
-        </div>
+<main class="annual-kyc-page" aria-labelledby="annual-kyc-title">
+    <div class="annual-kyc-content">
+        <header class="annual-kyc-header">
+            <div>
+                <p class="annual-kyc-eyebrow">Centre account</p>
+                <h1 class="annual-kyc-title" id="annual-kyc-title">Annual KYC Renewal</h1>
+                <p class="annual-kyc-subtitle">Review your centre verification status and renewal details.</p>
+            </div>
+            <span class="annual-kyc-status-pill">
+                {% if annual_kyc.state == 'not_due' %}Not due yet
+                {% elif annual_kyc.state == 'warning' %}Renewal due soon
+                {% elif annual_kyc.state == 'due' %}Renewal due
+                {% elif annual_kyc.state == 'grace' %}Grace period active
+                {% elif annual_kyc.state == 'expired' %}Online renewal expired
+                {% elif annual_kyc.state == 'blocked' %}Account restricted
+                {% elif annual_kyc.state == 'disabled' %}Annual KYC currently unavailable
+                {% else %}Annual KYC status{% endif %}
+            </span>
+        </header>
+
+        <section class="annual-kyc-panel annual-kyc-notice" aria-live="polite">
+            <span class="annual-kyc-notice-icon"><i data-lucide="shield-check" aria-hidden="true"></i></span>
+            <div class="annual-kyc-notice-copy">
+                <strong>
+                    {% if annual_kyc.state == 'not_due' %}Not due yet
+                    {% elif annual_kyc.state == 'warning' %}Renewal due soon
+                    {% elif annual_kyc.state == 'due' %}Renewal due
+                    {% elif annual_kyc.state == 'grace' %}Grace period active
+                    {% elif annual_kyc.state == 'expired' %}Online renewal expired
+                    {% elif annual_kyc.state == 'blocked' %}Account restricted
+                    {% elif annual_kyc.state == 'disabled' %}Annual KYC currently unavailable
+                    {% else %}Annual KYC status{% endif %}
+                </strong>
+                <p>
+                    {% if annual_kyc.state == 'disabled' %}
+                        Annual KYC renewal is currently disabled by Head Office.
+                    {% elif annual_kyc.state == 'not_due' %}
+                        Your annual KYC renewal is not due yet.
+                    {% elif annual_kyc.state == 'warning' %}
+                        {{ annual_kyc.message }}
+                    {% elif annual_kyc.state == 'due' %}
+                        {{ annual_kyc.popup_message }}
+                    {% elif annual_kyc.state == 'grace' %}
+                        {{ annual_kyc.message }}
+                    {% else %}
+                        {{ annual_kyc_settings.expired_message }}
+                    {% endif %}
+                </p>
+            </div>
+        </section>
+
+        <section class="annual-kyc-panel" aria-labelledby="annual-kyc-details-title">
+            <div class="annual-kyc-section-heading">
+                <h2 id="annual-kyc-details-title">Your KYC details</h2>
+                <span>Updated from your centre account</span>
+            </div>
+            <div class="annual-kyc-details">
+                <div class="annual-kyc-detail"><span>KYC status</span><strong>{% if annual_kyc.state == 'not_due' %}Not due yet{% elif annual_kyc.state == 'warning' %}Renewal due soon{% elif annual_kyc.state == 'due' %}Renewal due{% elif annual_kyc.state == 'grace' %}Grace period active{% elif annual_kyc.state == 'expired' %}Online renewal expired{% elif annual_kyc.state == 'blocked' %}Account restricted{% elif annual_kyc.state == 'disabled' %}Annual KYC currently unavailable{% else %}Annual KYC status{% endif %}</strong></div>
+                <div class="annual-kyc-detail"><span>Last verified</span><strong>{{ annual_kyc.status_obj.last_kyc_verified_at|date:"d M Y"|default:"—" }}</strong></div>
+                <div class="annual-kyc-detail"><span>Next due date</span><strong>{{ annual_kyc.due_date|date:"d M Y"|default:"—" }}</strong></div>
+                <div class="annual-kyc-detail"><span>Days remaining / overdue</span><strong>{% if annual_kyc.state == 'not_due' or annual_kyc.state == 'warning' %}{{ annual_kyc.days_to_due }} days remaining{% elif annual_kyc.state == 'due' %}Due today{% elif annual_kyc.state == 'grace' %}{{ annual_kyc.grace_days }} grace days remaining{% elif annual_kyc.state == 'expired' %}{{ annual_kyc_days_overdue }} days overdue{% elif annual_kyc.state == 'blocked' %}Access blocked{% else %}Not required{% endif %}</strong></div>
+                <div class="annual-kyc-detail"><span>Renewal fee</span><strong>&#8377;{{ annual_kyc_amount|floatformat:2 }}</strong></div>
+            </div>
+        </section>
 
         {% if annual_kyc.state == 'expired' or annual_kyc.state == 'blocked' %}
-            <p class="annual-kyc-copy">{{ annual_kyc_settings.expired_message }}</p>
-            {% if annual_kyc_whatsapp_url %}<a class="annual-kyc-whatsapp" href="{{ annual_kyc_whatsapp_url }}" target="_blank" rel="noopener noreferrer">Contact us on WhatsApp</a>{% else %}<p class="annual-kyc-status">Please contact Head Office for renewal support.</p>{% endif %}
-        {% else %}
-            <div class="annual-kyc-actions">
-                {% if annual_kyc.online_allowed %}<button class="annual-kyc-button" id="annual-pay-button" type="button">Pay &amp; Get OTP &#183; &#8377;{{ annual_kyc_amount|floatformat:2 }}</button>{% endif %}
-                {% if annual_kyc_whatsapp_url and annual_kyc.state != 'not_due' and annual_kyc.state != 'disabled' %}<a class="annual-kyc-button secondary" href="{{ annual_kyc_whatsapp_url }}" target="_blank" rel="noopener noreferrer">Contact support</a>{% endif %}
-            </div>
-            {% if annual_kyc.state == 'not_due' %}<p class="annual-kyc-status">Online renewal will be available during the configured warning period before the due date.</p>{% endif %}
+            <section class="annual-kyc-panel annual-kyc-action-panel" aria-labelledby="annual-kyc-support-title">
+                <div class="annual-kyc-action-copy">
+                    <strong id="annual-kyc-support-title">Online renewal is no longer available</strong>
+                    <p>{{ annual_kyc_settings.expired_message }}</p>
+                </div>
+                <div class="annual-kyc-actions">
+                    {% if annual_kyc_whatsapp_url %}<a class="annual-kyc-whatsapp" href="{{ annual_kyc_whatsapp_url }}" target="_blank" rel="noopener noreferrer">Contact us on WhatsApp</a>{% else %}<span class="annual-kyc-status">Please contact Head Office for renewal support.</span>{% endif %}
+                </div>
+            </section>
+        {% elif annual_kyc.state == 'warning' or annual_kyc.state == 'due' or annual_kyc.state == 'grace' %}
+            <section class="annual-kyc-panel annual-kyc-action-panel" aria-labelledby="annual-kyc-action-title">
+                <div class="annual-kyc-action-copy">
+                    <strong id="annual-kyc-action-title">Complete your annual renewal</strong>
+                    <p>Pay securely and verify the OTP sent to your registered mobile number.</p>
+                </div>
+                <div class="annual-kyc-actions">
+                    {% if annual_kyc.online_allowed %}<button class="annual-kyc-button" id="annual-pay-button" type="button">Pay &amp; Get OTP &#183; &#8377;{{ annual_kyc_amount|floatformat:2 }}</button>{% endif %}
+                    {% if annual_kyc_whatsapp_url %}<a class="annual-kyc-button secondary" href="{{ annual_kyc_whatsapp_url }}" target="_blank" rel="noopener noreferrer">Contact support</a>{% endif %}
+                </div>
+            </section>
+        {% elif annual_kyc.state == 'not_due' %}
+            <section class="annual-kyc-panel annual-kyc-next" aria-labelledby="annual-kyc-next-title">
+                <span class="annual-kyc-next-icon"><i data-lucide="calendar-check-2" aria-hidden="true"></i></span>
+                <div class="annual-kyc-next-copy">
+                    <strong id="annual-kyc-next-title">What happens next?</strong>
+                    <p>Online renewal will be available during the configured warning period before your due date.</p>
+                </div>
+            </section>
         {% endif %}
+
         <p class="annual-kyc-status" id="annual-kyc-status" aria-live="polite"></p>
         {% if annual_kyc_payment and annual_kyc_otp and annual_kyc_otp.status == 'sent' %}
-            <div class="annual-kyc-otp is-visible" id="annual-kyc-otp-panel">
+            <section class="annual-kyc-panel annual-kyc-otp is-visible" id="annual-kyc-otp-panel" aria-labelledby="annual-kyc-otp-title">
         {% else %}
-            <div class="annual-kyc-otp" id="annual-kyc-otp-panel">
+            <section class="annual-kyc-panel annual-kyc-otp" id="annual-kyc-otp-panel" aria-labelledby="annual-kyc-otp-title">
         {% endif %}
-            <label for="annual-kyc-otp">Enter the OTP sent to your registered mobile number</label>
-            <div class="annual-kyc-actions">
-                <input id="annual-kyc-otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Annual KYC OTP">
-                <button class="annual-kyc-button" id="annual-verify-otp" type="button">Verify OTP</button>
-                <button class="annual-kyc-button secondary" id="annual-resend-otp" type="button">Resend OTP</button>
+            <div class="annual-kyc-otp-inner">
+                <div>
+                    <label id="annual-kyc-otp-title" for="annual-kyc-otp">Enter the OTP sent to your registered mobile number</label>
+                    <input id="annual-kyc-otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Annual KYC OTP">
+                </div>
+                <div class="annual-kyc-actions">
+                    <button class="annual-kyc-button" id="annual-verify-otp" type="button">Verify OTP</button>
+                    <button class="annual-kyc-button secondary" id="annual-resend-otp" type="button">Resend OTP</button>
+                </div>
             </div>
-        </div>
-    </section>
-</div>
+        </section>
+    </div>
+</main>
 
 {% if annual_kyc.state == 'due' or annual_kyc.state == 'grace' %}
 <div class="annual-kyc-overlay" role="dialog" aria-modal="true" aria-labelledby="annual-kyc-dialog-title">
