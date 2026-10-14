@@ -236,7 +236,17 @@ class AnnualKYCTestCase(TestCase):
         self.assertContains(response, "Annual Centre")
         detail = client.get(reverse("web:annual_kyc_centre", kwargs={"pk": self.centre.pk}))
         self.assertEqual(detail.status_code, 200)
-        self.assertContains(detail, "Audit timeline")
+        self.assertContains(detail, "group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu")
+        self.assertContains(detail, "pt-[calc(theme('spacing.header')_*_1)]")
+        self.assertContains(detail, "Centre Controls")
+        self.assertContains(detail, "Last verified")
+        self.assertContains(detail, "Next due")
+        self.assertContains(detail, "Current fee")
+        self.assertContains(detail, "Payment History")
+        self.assertContains(detail, "Audit History")
+        self.assertContains(detail, 'name="fee_override"')
+        self.assertContains(detail, 'name="manual_due_date"')
+        self.assertContains(detail, "Mark as Verified")
 
     def test_annual_kyc_and_reactivation_restrictions_remain_independent(self):
         self.centre.is_active = False

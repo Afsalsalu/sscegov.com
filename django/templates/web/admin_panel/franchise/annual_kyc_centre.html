@@ -3,62 +3,152 @@
 
 {% block content %}
 <style>
-    .annual-centre-admin { padding: 22px; }
-    .annual-centre-admin h1 { margin: 0 0 4px; color: #14213d; font-size: 24px; font-weight: 800; }
-    .annual-centre-admin .muted { color: #6c7a90; }
-    .annual-centre-card { margin-top: 16px; padding: 17px; border: 1px solid #e5ebf3; border-radius: 12px; background: #fff; }
-    .annual-centre-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
-    .annual-centre-stats div { padding: 9px; border-radius: 8px; background: #f7faff; }
-    .annual-centre-stats small { display: block; color: #7b8aa1; font-size: 11px; }
-    .annual-centre-stats strong { display: block; margin-top: 2px; color: #203454; font-size: 14px; }
-    .annual-centre-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
-    .annual-centre-form label { display: block; margin-bottom: 4px; color: #324867; font-size: 12px; font-weight: 750; }
-    .annual-centre-form input, .annual-centre-form textarea { width: 100%; padding: 8px 9px; border: 1px solid #d5dfec; border-radius: 7px; }
-    .annual-centre-form textarea { min-height: 68px; }
+    .annual-centre-admin { padding: 18px 0 24px; color: #203454; }
+    .annual-centre-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+    .annual-centre-admin h1 { margin: 0 0 4px; color: #14213d; font-size: 22px; font-weight: 800; line-height: 1.25; }
+    .annual-centre-admin .muted { margin: 0; color: #6c7a90; font-size: 13px; line-height: 1.5; }
+    .annual-centre-state { display: inline-flex; align-items: center; min-height: 28px; padding: 5px 9px; border: 1px solid #dce6f4; border-radius: 999px; background: #f7faff; color: #476181; font-size: 11px; font-weight: 750; text-transform: capitalize; white-space: nowrap; }
+    .annual-centre-card { margin-bottom: 14px; padding: 15px 16px; border: 1px solid #e5ebf3; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(20, 33, 61, .03); }
+    .annual-centre-card-header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
+    .annual-centre-card-header h2 { margin: 0; color: #203454; font-size: 15px; font-weight: 800; line-height: 1.35; }
+    .annual-centre-card-header p { margin: 0; color: #8290a5; font-size: 11px; }
+    .annual-centre-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .annual-centre-stat { min-width: 0; padding: 10px 11px; border: 1px solid #edf1f6; border-radius: 8px; background: #f7faff; }
+    .annual-centre-stat small { display: block; color: #7b8aa1; font-size: 10px; line-height: 1.35; }
+    .annual-centre-stat strong { display: block; margin-top: 3px; color: #203454; font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
+    .annual-centre-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px 16px; }
+    .annual-centre-field { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
     .annual-centre-full { grid-column: 1 / -1; }
-    .annual-centre-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .annual-centre-actions button { padding: 8px 12px; border: 0; border-radius: 7px; background: #1f5eea; color: white; font-weight: 750; cursor: pointer; }
-    .annual-centre-actions button.secondary { background: #667892; }
-    .annual-centre-errors { color: #a32b36; font-size: 12px; }
-    .annual-centre-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    .annual-centre-table th, .annual-centre-table td { padding: 8px; border-bottom: 1px solid #edf1f6; text-align: left; vertical-align: top; }
-    .annual-centre-table th { color: #5d718d; font-size: 11px; text-transform: uppercase; }
-    @media (max-width: 760px) { .annual-centre-stats, .annual-centre-form { grid-template-columns: 1fr 1fr; } .annual-centre-table-wrap { overflow-x: auto; } .annual-centre-table { min-width: 620px; } }
-    @media (max-width: 500px) { .annual-centre-admin { padding: 12px; } .annual-centre-stats, .annual-centre-form { grid-template-columns: 1fr; } .annual-centre-full { grid-column: auto; } }
+    .annual-centre-field label { color: #324867; font-size: 11px; font-weight: 750; line-height: 1.35; }
+    .annual-centre-field input, .annual-centre-field textarea, .annual-centre-field select { box-sizing: border-box; width: 100%; min-height: 36px; padding: 7px 9px; border: 1px solid #d5dfec; border-radius: 7px; color: #203454; background: #fff; font-size: 13px; line-height: 1.35; }
+    .annual-centre-field textarea { min-height: 70px; resize: vertical; line-height: 1.45; }
+    .annual-centre-toggle-control { display: flex; align-items: center; gap: 8px; min-height: 36px; color: #5d718d; font-size: 12px; }
+    .annual-centre-toggle-control input { width: 16px; height: 16px; min-height: 16px; margin: 0; accent-color: #1f5eea; }
+    .annual-centre-help { margin: 0; color: #8290a5; font-size: 11px; line-height: 1.35; }
+    .annual-centre-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 13px; padding-top: 12px; border-top: 1px solid #edf1f6; }
+    .annual-centre-button { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 8px 13px; border: 0; border-radius: 7px; color: #fff; font-size: 12px; font-weight: 750; cursor: pointer; }
+    .annual-centre-errors { color: #a32b36; font-size: 11px; line-height: 1.35; }
+    .annual-centre-table-wrap { overflow-x: auto; }
+    .annual-centre-table { width: 100%; min-width: 700px; border-collapse: collapse; font-size: 12px; }
+    .annual-centre-table th, .annual-centre-table td { padding: 8px 7px; border-bottom: 1px solid #edf1f6; text-align: left; vertical-align: top; }
+    .annual-centre-table th { color: #5d718d; font-size: 10px; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+    .annual-centre-table td { color: #324867; line-height: 1.4; }
+    .annual-centre-table td:nth-child(2), .annual-centre-table td:nth-child(3) { white-space: nowrap; }
+    @media (max-width: 900px) {
+        .annual-centre-form { grid-template-columns: 1fr; }
+        .annual-centre-full { grid-column: auto; }
+    }
+    @media (max-width: 640px) {
+        .annual-centre-admin { padding: 14px 0 20px; }
+        .annual-centre-header { display: block; }
+        .annual-centre-state { margin-top: 8px; }
+        .annual-centre-card { padding: 13px; }
+        .annual-centre-card-header { display: block; }
+        .annual-centre-card-header p { margin-top: 3px; }
+        .annual-centre-stats { grid-template-columns: 1fr; }
+        .annual-centre-actions { justify-content: stretch; }
+        .annual-centre-button { flex: 1 1 100%; }
+    }
 </style>
-<div class="annual-centre-admin">
-    <h1>{{ centre.centre_name|default:centre.owner_centre }}</h1>
-    <p class="muted">Centre ID {{ centre.formatted_id }} · Annual KYC control and audit history</p>
-    <section class="annual-centre-card">
-        <div class="annual-centre-stats">
-            <div><small>Current state</small><strong>{{ annual_kyc.state }}</strong></div>
-            <div><small>Last verified</small><strong>{{ status.last_kyc_verified_at|date:"d M Y H:i"|default:"—" }}</strong></div>
-            <div><small>Next due</small><strong>{{ annual_kyc.due_date|date:"d M Y"|default:"—" }}</strong></div>
-            <div><small>Current fee</small><strong>₹{{ annual_kyc_amount|floatformat:2 }}</strong></div>
-        </div>
-    </section>
-    <section class="annual-centre-card">
-        <h2 style="margin:0 0 12px;font-size:17px;color:#203454;">Centre controls</h2>
-        <form method="post">
-            {% csrf_token %}
-            {% if form.non_field_errors %}<div class="annual-centre-errors">{{ form.non_field_errors }}</div>{% endif %}
-            <div class="annual-centre-form">
-                {% for field in form %}
-                    <div class="{% if field.name == 'manual_block_reason' or field.name == 'manual_verify_reason' %}annual-centre-full{% endif %}">
-                        {{ field.label_tag }}{{ field }}{% for error in field.errors %}<div class="annual-centre-errors">{{ error }}</div>{% endfor %}
+
+<div class="relative min-h-screen group-data-[sidebar-size=sm]:min-h-sm">
+    <div class="group-data-[sidebar-size=lg]:ltr:md:ml-vertical-menu group-data-[sidebar-size=lg]:rtl:md:mr-vertical-menu group-data-[sidebar-size=md]:ltr:ml-vertical-menu-md group-data-[sidebar-size=md]:rtl:md:mr-vertical-menu-md group-data-[sidebar-size=sm]:ltr:ml-vertical-menu-sm group-data-[sidebar-size=sm]:rtl:mr-vertical-menu-sm pt-[calc(theme('spacing.header')_*_1)] pb-[calc(theme('spacing.header')_*_0.8)] px-4 group-data-[navbar=bordered]:pt-[calc(theme('spacing.header')_*_1.3)] group-data-[navbar=hidden]:pt-0 group-data-[layout=horizontal]:mx-auto group-data-[layout=horizontal]:max-w-screen-2xl group-data-[layout=horizontal]:px-0 group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:ltr:md:ml-auto group-data-[layout=horizontal]:group-data-[sidebar-size=lg]:rtl:mr-auto group-data-[layout=horizontal]:md:pt-[calc(theme('spacing.header')_*_1.6)] group-data-[layout=horizontal]:px-3 group-data-[layout=horizontal]:group-data-[navbar=hidden]:pt-[calc(theme('spacing.header')_*_0.9)]">
+        <div class="container-fluid group-data-[content=boxed]:max-w-boxed mx-auto">
+            <div class="annual-centre-admin">
+                <header class="annual-centre-header">
+                    <div>
+                        <h1>{{ centre.centre_name|default:centre.owner_centre }}</h1>
+                        <p class="muted">Centre ID {{ centre.formatted_id }} &middot; Annual KYC control and audit history</p>
                     </div>
-                {% endfor %}
+                    <span class="annual-centre-state">{{ annual_kyc.state }}</span>
+                </header>
+
+                <section class="annual-centre-card">
+                    <div class="annual-centre-stats">
+                        <div class="annual-centre-stat"><small>Last verified</small><strong>{{ status.last_kyc_verified_at|date:"d M Y H:i"|default:"&mdash;" }}</strong></div>
+                        <div class="annual-centre-stat"><small>Next due</small><strong>{{ annual_kyc.due_date|date:"d M Y"|default:"&mdash;" }}</strong></div>
+                        <div class="annual-centre-stat"><small>Current fee</small><strong>&#8377;{{ annual_kyc_amount|floatformat:2 }}</strong></div>
+                    </div>
+                </section>
+
+                <section class="annual-centre-card">
+                    <div class="annual-centre-card-header">
+                        <h2>Centre Controls</h2>
+                        <p>Update administrative controls for this centre.</p>
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}<div class="annual-centre-errors">{{ form.non_field_errors }}</div>{% endif %}
+                        <div class="annual-centre-form">
+                            <div class="annual-centre-field">
+                                <label for="{{ form.fee_override.id_for_label }}">{{ form.fee_override.label }}</label>
+                                {{ form.fee_override }}
+                                {% for error in form.fee_override.errors %}<span class="annual-centre-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-centre-field">
+                                <label for="{{ form.manual_due_date.id_for_label }}">{{ form.manual_due_date.label }}</label>
+                                {{ form.manual_due_date }}
+                                {% for error in form.manual_due_date.errors %}<span class="annual-centre-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-centre-field">
+                                <label for="{{ form.manual_blocked.id_for_label }}">{{ form.manual_blocked.label }}</label>
+                                <div class="annual-centre-toggle-control">{{ form.manual_blocked }}<span>Restrict normal centre access</span></div>
+                                {% for error in form.manual_blocked.errors %}<span class="annual-centre-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-centre-field annual-centre-full">
+                                <label for="{{ form.manual_block_reason.id_for_label }}">{{ form.manual_block_reason.label }}</label>
+                                {{ form.manual_block_reason }}
+                                {% for error in form.manual_block_reason.errors %}<span class="annual-centre-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                            <div class="annual-centre-field annual-centre-full">
+                                <label for="{{ form.manual_verify_reason.id_for_label }}">{{ form.manual_verify_reason.label }}</label>
+                                {{ form.manual_verify_reason }}
+                                {% if form.manual_verify_reason.help_text %}<p class="annual-centre-help">{{ form.manual_verify_reason.help_text }}</p>{% endif %}
+                                {% for error in form.manual_verify_reason.errors %}<span class="annual-centre-errors">{{ error }}</span>{% endfor %}
+                            </div>
+                        </div>
+                        <div class="annual-centre-actions">
+                            <button class="annual-centre-button text-white transition-all duration-200 ease-linear btn bg-custom-500 border-custom-500 hover:text-white hover:bg-custom-600 hover:border-custom-600 focus:text-white focus:bg-custom-600 focus:border-custom-600 focus:ring focus:ring-custom-100 active:text-white active:bg-custom-600 active:border-custom-600 active:ring active:ring-custom-100 dark:ring-custom-400/20" name="action" value="save_controls" type="submit">Save Controls</button>
+                            <button class="annual-centre-button text-white transition-all duration-200 ease-linear btn bg-slate-500 border-slate-500 hover:text-white hover:bg-slate-600 hover:border-slate-600 focus:text-white focus:bg-slate-600 focus:border-slate-600 focus:ring focus:ring-slate-100 active:text-white active:bg-slate-600 active:border-slate-600 active:ring active:ring-slate-100 dark:ring-slate-400/20" name="action" value="manual_verify" type="submit">Mark as Verified</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="annual-centre-card">
+                    <div class="annual-centre-card-header">
+                        <h2>Payment History</h2>
+                        <p>Annual KYC payment activity for this centre.</p>
+                    </div>
+                    <div class="annual-centre-table-wrap">
+                        <table class="annual-centre-table">
+                            <thead><tr><th>Created</th><th>Amount</th><th>Status</th><th>Razorpay Order</th><th>Paid</th></tr></thead>
+                            <tbody>
+                            {% for payment in payments %}
+                                <tr><td>{{ payment.created_at|date:"d M Y H:i" }}</td><td>&#8377;{{ payment.amount|floatformat:2 }}</td><td>{{ payment.get_status_display }}</td><td>{{ payment.razorpay_order_id|default:"&mdash;" }}</td><td>{{ payment.paid_at|date:"d M Y H:i"|default:"&mdash;" }}</td></tr>
+                            {% empty %}<tr><td colspan="5">No annual KYC payments recorded.</td></tr>{% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="annual-centre-card">
+                    <div class="annual-centre-card-header">
+                        <h2>Audit History</h2>
+                        <p>Administrative and renewal events for this centre.</p>
+                    </div>
+                    <div class="annual-centre-table-wrap">
+                        <table class="annual-centre-table">
+                            <thead><tr><th>Time</th><th>Event</th><th>Actor</th><th>Details</th></tr></thead>
+                            <tbody>
+                            {% for audit in audits %}
+                                <tr><td>{{ audit.created_at|date:"d M Y H:i" }}</td><td>{{ audit.get_event_display }}</td><td>{{ audit.actor.username|default:"System" }}</td><td>{{ audit.details }}</td></tr>
+                            {% empty %}<tr><td colspan="4">No annual KYC audit events recorded.</td></tr>{% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
-            <div class="annual-centre-actions"><button name="action" value="save_controls" type="submit">Save controls</button><button name="action" value="manual_verify" type="submit" class="secondary">Manual mark as verified</button></div>
-        </form>
-    </section>
-    <section class="annual-centre-card">
-        <h2 style="margin:0 0 12px;font-size:17px;color:#203454;">Payment history</h2>
-        <div class="annual-centre-table-wrap"><table class="annual-centre-table"><thead><tr><th>Created</th><th>Amount</th><th>Status</th><th>Razorpay order</th><th>Paid</th></tr></thead><tbody>{% for payment in payments %}<tr><td>{{ payment.created_at|date:"d M Y H:i" }}</td><td>₹{{ payment.amount|floatformat:2 }}</td><td>{{ payment.get_status_display }}</td><td>{{ payment.razorpay_order_id|default:"—" }}</td><td>{{ payment.paid_at|date:"d M Y H:i"|default:"—" }}</td></tr>{% empty %}<tr><td colspan="5">No annual KYC payments recorded.</td></tr>{% endfor %}</tbody></table></div>
-    </section>
-    <section class="annual-centre-card">
-        <h2 style="margin:0 0 12px;font-size:17px;color:#203454;">Audit timeline</h2>
-        <div class="annual-centre-table-wrap"><table class="annual-centre-table"><thead><tr><th>Time</th><th>Event</th><th>Actor</th><th>Details</th></tr></thead><tbody>{% for audit in audits %}<tr><td>{{ audit.created_at|date:"d M Y H:i" }}</td><td>{{ audit.get_event_display }}</td><td>{{ audit.actor.username|default:"System" }}</td><td>{{ audit.details }}</td></tr>{% empty %}<tr><td colspan="4">No annual KYC audit events recorded.</td></tr>{% endfor %}</tbody></table></div>
-    </section>
+        </div>
+    </div>
 </div>
 {% endblock content %}
