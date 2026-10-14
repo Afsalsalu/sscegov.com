@@ -63,8 +63,6 @@ class AnnualKYCRenewalView(FranchiseAuthenticatedMixin, View):
         if centre.inactive_due_to_inactivity or centre.manual_disabled:
             return redirect("web:centre_reactivation")
         snapshot = annual_kyc_snapshot(centre)
-        if snapshot["state"] in {"disabled", "not_due"}:
-            return redirect("web:centre_dashboard")
         payment = snapshot["latest_payment"]
         otp = snapshot["latest_otp"]
         if payment and payment.status != CentreAnnualKYCPayment.Status.SUCCESS:
@@ -72,6 +70,9 @@ class AnnualKYCRenewalView(FranchiseAuthenticatedMixin, View):
             otp = None
         if payment and otp:
             request.session["annual_kyc_payment_id"] = payment.pk
+        days_overdue = 0
+        if snapshot["state"] in {"due", "grace", "expired"} and snapshot.get("due_date"):
+            days_overdue = max(0, (timezone.localdate() - snapshot["due_date"]).days)
         return render(
             request,
             self.template_name,
@@ -82,6 +83,7 @@ class AnnualKYCRenewalView(FranchiseAuthenticatedMixin, View):
                 "annual_kyc_amount": calculate_annual_kyc_amount(centre, snapshot["settings"]),
                 "annual_kyc_payment": payment,
                 "annual_kyc_otp": otp,
+                "annual_kyc_days_overdue": days_overdue,
                 "annual_kyc_whatsapp_url": annual_kyc_whatsapp_url(centre, snapshot["settings"]),
                 "razorpay_key_id": settings.RAZORPAY_KEY_ID,
                 "annual_kyc_flow": True,

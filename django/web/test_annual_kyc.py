@@ -107,6 +107,24 @@ class AnnualKYCTestCase(TestCase):
         self.assertEqual(renewal.status_code, 200)
         self.assertNotEqual(renewal.url if hasattr(renewal, "url") else "", reverse("web:annual_kyc"))
 
+    def test_not_due_centre_can_open_kyc_page_and_sidebar_link_is_reversed(self):
+        self.status.next_kyc_due_at = self.at(2027, 1, 1, 0)
+        self.status.save(update_fields=("next_kyc_due_at", "updated_at"))
+        client = Client()
+        client.force_login(self.user)
+
+        response = client.get(reverse("web:annual_kyc"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Annual Centre KYC Renewal")
+        self.assertContains(response, "Your annual KYC renewal is not due yet.")
+        self.assertContains(response, "Last verified")
+        self.assertContains(response, "days remaining")
+        self.assertContains(response, "Current renewal fee")
+        self.assertContains(response, "Annual KYC Renewal")
+        self.assertContains(response, f'href="{reverse("web:annual_kyc")}"')
+        self.assertNotContains(response, "Pay &amp; Get OTP")
+
     def test_expired_page_is_whatsapp_only_and_contains_centre_identity(self):
         client = Client()
         self.settings.whatsapp_support_number = "919876543210"

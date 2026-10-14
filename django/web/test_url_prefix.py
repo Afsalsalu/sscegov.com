@@ -43,6 +43,14 @@ class URLPrefixConfigurationTests(SimpleTestCase):
                 "/test/franchise-dashboard/dashboard/",
             )
             self.assertEqual(
+                reverse("web:annual_kyc"),
+                "/test/franchise-dashboard/annual-kyc/",
+            )
+            self.assertEqual(
+                reverse("web:annual_kyc_order"),
+                "/test/franchise-dashboard/annual-kyc/order/",
+            )
+            self.assertEqual(
                 static("web/css/site.css"),
                 "/test/static/web/css/site.css",
             )
