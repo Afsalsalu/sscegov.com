@@ -1,0 +1,123 @@
+{% extends "web/franchise/base.html" %}
+{% load static i18n %}
+
+{% block content %}
+<style>
+    .annual-kyc-page { max-width: 920px; margin: 0 auto; padding: 14px 10px 34px; }
+    .annual-kyc-panel { border: 1px solid #e4ebf5; border-radius: 12px; background: #fff; padding: 18px; box-shadow: 0 8px 22px rgba(22, 51, 92, .05); }
+    .annual-kyc-panel h1 { margin: 0 0 6px; color: #14213d; font-size: 22px; font-weight: 800; }
+    .annual-kyc-copy { margin: 0 0 14px; color: #62728b; line-height: 1.5; }
+    .annual-kyc-meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0 16px; }
+    .annual-kyc-meta div { padding: 9px 10px; border: 1px solid #edf1f7; border-radius: 8px; background: #f8fbff; }
+    .annual-kyc-meta small { display: block; color: #7b8aa1; font-size: 11px; }
+    .annual-kyc-meta strong { display: block; margin-top: 2px; color: #203454; font-size: 14px; }
+    .annual-kyc-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .annual-kyc-button, .annual-kyc-whatsapp { display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 8px 14px; border: 0; border-radius: 8px; background: #1f5eea; color: #fff; font-weight: 750; text-decoration: none; cursor: pointer; }
+    .annual-kyc-button:hover, .annual-kyc-whatsapp:hover { background: #164dc5; color: #fff; }
+    .annual-kyc-button.secondary { border: 1px solid #dce5f1; background: #f5f8fd; color: #315174; }
+    .annual-kyc-button:disabled { cursor: wait; opacity: .65; }
+    .annual-kyc-status { min-height: 20px; margin: 10px 0 0; color: #536782; font-size: 13px; }
+    .annual-kyc-status.error { color: #a32b36; }
+    .annual-kyc-otp { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid #edf1f7; }
+    .annual-kyc-otp.is-visible { display: block; }
+    .annual-kyc-otp label { display: block; margin-bottom: 5px; color: #314767; font-size: 13px; font-weight: 700; }
+    .annual-kyc-otp input { width: 170px; padding: 9px 10px; border: 1px solid #ccd8e8; border-radius: 7px; letter-spacing: .22em; }
+    .annual-kyc-overlay { position: fixed; inset: 0; z-index: 1100; display: grid; place-items: center; padding: 18px; background: rgba(19, 36, 66, .56); }
+    .annual-kyc-dialog { width: min(480px, 100%); padding: 22px; border-radius: 14px; background: #fff; box-shadow: 0 24px 80px rgba(8, 26, 58, .3); }
+    .annual-kyc-dialog h2 { margin: 0 0 8px; color: #14213d; font-size: 20px; font-weight: 800; }
+    .annual-kyc-dialog p { margin: 0 0 14px; color: #5d6d84; line-height: 1.5; }
+    @media (max-width: 620px) { .annual-kyc-meta { grid-template-columns: 1fr; } .annual-kyc-panel { padding: 14px; } }
+</style>
+
+<div class="annual-kyc-page">
+    <section class="annual-kyc-panel" aria-labelledby="annual-kyc-title">
+        <h1 id="annual-kyc-title">Annual Centre KYC Renewal</h1>
+        <p class="annual-kyc-copy">{{ annual_kyc.message|default:annual_kyc_settings.due_date_popup_message }}</p>
+        <div class="annual-kyc-meta">
+            <div><small>Centre</small><strong>{{ annual_kyc.centre_name }}</strong></div>
+            <div><small>Centre ID</small><strong>{{ annual_kyc.centre_id }}</strong></div>
+            <div><small>Next due date</small><strong>{{ annual_kyc.due_date|date:"d M Y" }}</strong></div>
+        </div>
+
+        {% if annual_kyc.state == 'expired' or annual_kyc.state == 'blocked' %}
+            <p class="annual-kyc-copy">{{ annual_kyc_settings.expired_message }}</p>
+            {% if annual_kyc_whatsapp_url %}<a class="annual-kyc-whatsapp" href="{{ annual_kyc_whatsapp_url }}" target="_blank" rel="noopener noreferrer">Contact us on WhatsApp</a>{% endif %}
+        {% else %}
+            <div class="annual-kyc-actions">
+                {% if annual_kyc.online_allowed %}<button class="annual-kyc-button" id="annual-pay-button" type="button">Pay &amp; Get OTP · ₹{{ annual_kyc_amount|floatformat:2 }}</button>{% endif %}
+                {% if annual_kyc_whatsapp_url %}<a class="annual-kyc-button secondary" href="{{ annual_kyc_whatsapp_url }}" target="_blank" rel="noopener noreferrer">Contact support</a>{% endif %}
+            </div>
+        {% endif %}
+        <p class="annual-kyc-status" id="annual-kyc-status" aria-live="polite"></p>
+        {% if annual_kyc_payment and annual_kyc_otp %}
+            <div class="annual-kyc-otp is-visible" id="annual-kyc-otp-panel">
+        {% else %}
+            <div class="annual-kyc-otp" id="annual-kyc-otp-panel">
+        {% endif %}
+            <label for="annual-kyc-otp">Enter the OTP sent to your registered mobile number</label>
+            <div class="annual-kyc-actions">
+                <input id="annual-kyc-otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" aria-label="Annual KYC OTP">
+                <button class="annual-kyc-button" id="annual-verify-otp" type="button">Verify OTP</button>
+                <button class="annual-kyc-button secondary" id="annual-resend-otp" type="button">Resend OTP</button>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% if annual_kyc.state == 'due' or annual_kyc.state == 'grace' %}
+<div class="annual-kyc-overlay" role="dialog" aria-modal="true" aria-labelledby="annual-kyc-dialog-title">
+    <div class="annual-kyc-dialog">
+        <h2 id="annual-kyc-dialog-title">{{ annual_kyc.popup_title }}</h2>
+        <p>{{ annual_kyc.popup_message }}</p>
+        {% if annual_kyc.state == 'due' %}<p><strong>Online renewal is available only for the next {{ annual_kyc_settings.grace_period_days }} days.</strong></p>{% else %}<p><strong>Online renewal is available for {{ annual_kyc.grace_days }} more days.</strong></p>{% endif %}
+        <div class="annual-kyc-actions">
+            {% if annual_kyc.online_allowed %}<button class="annual-kyc-button" id="annual-pay-button-overlay" type="button">Pay &amp; Get OTP</button>{% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+(() => {
+    const csrf = document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '{{ csrf_token }}';
+    const statusEl = document.getElementById('annual-kyc-status');
+    const otpPanel = document.getElementById('annual-kyc-otp-panel');
+    const setStatus = (text, error = false) => { statusEl.textContent = text || ''; statusEl.classList.toggle('error', error); };
+    const post = async (url, data) => {
+        const response = await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'}, body: JSON.stringify(data || {})});
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok && !body.message) throw new Error('This action is temporarily unavailable. Please try again.');
+        return body;
+    };
+    const showOtp = (message) => { otpPanel?.classList.add('is-visible'); if (message) setStatus(message); };
+    const startPayment = async () => {
+        const buttons = [document.getElementById('annual-pay-button'), document.getElementById('annual-pay-button-overlay')].filter(Boolean);
+        buttons.forEach(button => { button.disabled = true; });
+        setStatus('Preparing secure payment…');
+        try {
+            const order = await post('{% url "web:annual_kyc_order" %}');
+            if (!order.success) throw new Error(order.message || 'Unable to start payment.');
+            if (!window.Razorpay || !'{{ razorpay_key_id|escapejs }}') throw new Error('Online payment is not configured. Please contact Head Office.');
+            const checkout = new Razorpay({key: '{{ razorpay_key_id|escapejs }}', amount: order.amount, currency: order.currency, order_id: order.razorpay_order_id, name: 'SSCEGOV', description: 'Annual Centre KYC Renewal', handler: async (response) => {
+                try {
+                    const result = await post('{% url "web:annual_kyc_callback" %}', response);
+                    if (!result.success) throw new Error(result.message || 'Payment verification failed.');
+                    showOtp(result.message); buttons.forEach(button => button.remove());
+                } catch (error) { setStatus(error.message, true); }
+            }, modal: {ondismiss: () => { buttons.forEach(button => { button.disabled = false; }); setStatus('Payment window closed.'); }} });
+            checkout.on('payment.failed', (response) => { post('{% url "web:annual_kyc_status" %}', {razorpay_order_id: order.razorpay_order_id, status: 'failed', razorpay_payment_id: response.error?.metadata?.payment_id || '', error_code: response.error?.code || ''}).catch(() => {}); setStatus('Payment was not completed. You can try again.', true); buttons.forEach(button => { button.disabled = false; }); });
+            checkout.open();
+        } catch (error) { setStatus(error.message, true); buttons.forEach(button => { button.disabled = false; }); }
+    };
+    document.getElementById('annual-pay-button')?.addEventListener('click', startPayment);
+    document.getElementById('annual-pay-button-overlay')?.addEventListener('click', startPayment);
+    document.getElementById('annual-verify-otp')?.addEventListener('click', async () => {
+        try { const result = await post('{% url "web:annual_kyc_verify_otp" %}', {otp: document.getElementById('annual-kyc-otp').value}); if (!result.success) throw new Error(result.message || 'OTP verification failed.'); setStatus(result.message); window.location.href = result.redirect_url; } catch (error) { setStatus(error.message, true); }
+    });
+    document.getElementById('annual-resend-otp')?.addEventListener('click', async () => {
+        try { const result = await post('{% url "web:annual_kyc_resend_otp" %}'); if (!result.success) throw new Error(result.message || 'OTP could not be resent.'); setStatus(result.message); } catch (error) { setStatus(error.message, true); }
+    });
+})();
+</script>
+{% endblock content %}

@@ -27,6 +27,17 @@ from .reactivation_views import (
     CentreReactivationView,
     CentreReactivationWebhookView,
 )
+from .annual_kyc_views import (
+    AnnualKYCCallbackView,
+    AnnualKYCCentreDetailView,
+    AnnualKYCOrderView,
+    AnnualKYCResendOTPView,
+    AnnualKYCSettingsView,
+    AnnualKYCStatusView,
+    AnnualKYCRenewalView,
+    AnnualKYCVerifyOTPView,
+    AnnualKYCWebhookView,
+)
 from .views import (AddCentreUserAdminView, logout_view,
                     AddDownloadFormView, AddEmployeeView, AddHeadOfficeView,
                     AddKeralaSubCentreView, AddOnlineClassView,
@@ -90,7 +101,7 @@ from .views import (AddCentreUserAdminView, logout_view,
 
 
 def redirect_to_home(request):
-    return redirect("/")
+    return redirect("web:index")
 
 
 app_name = "web"
@@ -174,6 +185,16 @@ urlpatterns = [
         "head-office/franchise/reactivation-settings/",
         CentreReactivationSettingsView.as_view(),
         name="centre_reactivation_settings",
+    ),
+    path(
+        "head-office/franchise/annual-kyc/",
+        AnnualKYCSettingsView.as_view(),
+        name="annual_kyc_settings",
+    ),
+    path(
+        "head-office/franchise/annual-kyc/<int:pk>/",
+        AnnualKYCCentreDetailView.as_view(),
+        name="annual_kyc_centre",
     ),
     path(
         "head-office/franchise/profile/<int:pk>/disable/",
@@ -465,6 +486,41 @@ path(
         "franchise-dashboard/reactivation/webhook/",
         CentreReactivationWebhookView.as_view(),
         name="centre_reactivation_webhook",
+    ),
+    path(
+        "franchise-dashboard/annual-kyc/",
+        AnnualKYCRenewalView.as_view(),
+        name="annual_kyc",
+    ),
+    path(
+        "franchise-dashboard/annual-kyc/order/",
+        AnnualKYCOrderView.as_view(),
+        name="annual_kyc_order",
+    ),
+    path(
+        "franchise-dashboard/annual-kyc/callback/",
+        AnnualKYCCallbackView.as_view(),
+        name="annual_kyc_callback",
+    ),
+    path(
+        "franchise-dashboard/annual-kyc/status/",
+        AnnualKYCStatusView.as_view(),
+        name="annual_kyc_status",
+    ),
+    path(
+        "franchise-dashboard/annual-kyc/resend-otp/",
+        AnnualKYCResendOTPView.as_view(),
+        name="annual_kyc_resend_otp",
+    ),
+    path(
+        "franchise-dashboard/annual-kyc/verify-otp/",
+        AnnualKYCVerifyOTPView.as_view(),
+        name="annual_kyc_verify_otp",
+    ),
+    path(
+        "franchise-dashboard/annual-kyc/webhook/",
+        AnnualKYCWebhookView.as_view(),
+        name="annual_kyc_webhook",
     ),
     path(
         "franchise-dashboard/reactivation/enquiry/",

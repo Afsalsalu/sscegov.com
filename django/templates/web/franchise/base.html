@@ -158,11 +158,14 @@
         </header>
 
         <div class="franchise-page-shell">
+            {% if annual_kyc and annual_kyc_warning and request.resolver_match.url_name != 'annual_kyc' %}
+                {% include "web/franchise/includes/annual_kyc_banner.html" %}
+            {% endif %}
             {% block content %}
             {% endblock %}
         </div>
 
-        {% if request.resolver_match.url_name != 'centre_reactivation' %}
+        {% if request.resolver_match.url_name != 'centre_reactivation' and request.resolver_match.url_name != 'annual_kyc' %}
             {% include "web/franchise/includes/support_floats.html" %}
         {% endif %}
 

@@ -18,6 +18,12 @@
                 </a>
             </li>
             <li>
+                <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'annual_kyc' %} is-active{% endif %}"
+                    href="{% url 'web:annual_kyc' %}"{% if request.resolver_match.url_name == 'annual_kyc' %} aria-current="page"{% endif %}>
+                    <i data-lucide="badge-check" aria-hidden="true"></i><span>{% translate "Annual KYC Renewal" %}</span>
+                </a>
+            </li>
+            <li>
                 <a class="dashboard-sidebar-link{% if request.resolver_match.url_name == 'state_list' or request.resolver_match.url_name == 'state_detail' or request.resolver_match.url_name == 'service_detail' %} is-active{% endif %}"
                     href="{{ franchise_service_url }}"{% if request.resolver_match.url_name == 'state_list' or request.resolver_match.url_name == 'state_detail' or request.resolver_match.url_name == 'service_detail' %} aria-current="page"{% endif %}>
                     <i data-lucide="grid-2x2" aria-hidden="true"></i><span>{% translate "Service" %}</span>

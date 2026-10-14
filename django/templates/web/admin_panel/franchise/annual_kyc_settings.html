@@ -1,0 +1,66 @@
+{% extends "web/admin_panel/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<style>
+    .annual-admin { padding: 22px; }
+    .annual-admin h1 { margin: 0 0 6px; color: #14213d; font-size: 24px; font-weight: 800; }
+    .annual-admin .intro { margin: 0 0 18px; color: #6c7a90; }
+    .annual-admin-card { margin-bottom: 18px; padding: 18px; border: 1px solid #e5ebf3; border-radius: 12px; background: #fff; }
+    .annual-admin-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .annual-admin-field { display: flex; flex-direction: column; gap: 4px; }
+    .annual-admin-field label { color: #324867; font-size: 12px; font-weight: 750; }
+    .annual-admin-field input, .annual-admin-field textarea, .annual-admin-field select { width: 100%; padding: 8px 9px; border: 1px solid #d5dfec; border-radius: 7px; }
+    .annual-admin-field textarea { min-height: 62px; }
+    .annual-admin-check { display: flex; align-items: center; gap: 8px; min-height: 38px; }
+    .annual-admin-check label { color: #324867; font-size: 13px; font-weight: 750; }
+    .annual-admin-button { display: inline-block; margin-top: 14px; padding: 8px 13px; border: 0; border-radius: 7px; background: #1f5eea; color: white; font-weight: 750; cursor: pointer; }
+    .annual-admin-errors { color: #a32b36; font-size: 12px; }
+    .annual-admin-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .annual-admin-table th, .annual-admin-table td { padding: 9px 8px; border-bottom: 1px solid #edf1f6; text-align: left; vertical-align: top; }
+    .annual-admin-table th { color: #5d718d; font-size: 11px; text-transform: uppercase; }
+    .annual-admin-table a { color: #1f5eea; font-weight: 750; text-decoration: none; }
+    .annual-admin-table .status { font-weight: 800; text-transform: capitalize; }
+    @media (max-width: 900px) { .annual-admin-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .annual-admin-table { min-width: 800px; } .annual-admin-table-wrap { overflow-x: auto; } }
+    @media (max-width: 560px) { .annual-admin { padding: 12px; } .annual-admin-grid { grid-template-columns: 1fr; } }
+</style>
+<div class="annual-admin">
+    <h1>Annual Centre KYC Renewal</h1>
+    <p class="intro">Configure the annual KYC cycle and review every centre’s current payment and OTP state. This is separate from 3-month reactivation.</p>
+    <section class="annual-admin-card">
+        <h2 style="margin:0 0 12px;font-size:17px;color:#203454;">Global settings</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}<div class="annual-admin-errors">{{ form.non_field_errors }}</div>{% endif %}
+            <div class="annual-admin-grid">
+                <div class="annual-admin-check">{{ form.enabled }}{{ form.enabled.label_tag }}</div>
+                <div class="annual-admin-check">{{ form.payment_enabled }}{{ form.payment_enabled.label_tag }}</div>
+                {% for field in form %}{% if field.name not in 'enabled payment_enabled' %}<div class="annual-admin-field">{{ field.label_tag }}{{ field }}{% for error in field.errors %}<span class="annual-admin-errors">{{ error }}</span>{% endfor %}</div>{% endif %}{% endfor %}
+            </div>
+            <button class="annual-admin-button" type="submit">Save annual KYC settings</button>
+        </form>
+    </section>
+    <section class="annual-admin-card">
+        <h2 style="margin:0 0 12px;font-size:17px;color:#203454;">Centre status</h2>
+        <div class="annual-admin-table-wrap">
+            <table class="annual-admin-table">
+                <thead><tr><th>Centre</th><th>Status</th><th>Last verified</th><th>Next due</th><th>Days</th><th>Payment</th><th>OTP</th><th></th></tr></thead>
+                <tbody>
+                {% for row in centre_rows %}
+                    <tr>
+                        <td><strong>{{ row.snapshot.centre_name }}</strong><br><small>{{ row.snapshot.centre_id }}</small></td>
+                        <td class="status">{{ row.snapshot.state }}</td>
+                        <td>{{ row.status.last_kyc_verified_at|date:"d M Y H:i"|default:"—" }}</td>
+                        <td>{{ row.snapshot.due_date|date:"d M Y"|default:"—" }}</td>
+                        <td>{% if row.snapshot.state == 'warning' %}{{ row.snapshot.days_to_due }} remaining{% elif row.snapshot.state == 'grace' or row.snapshot.state == 'due' %}{{ row.snapshot.grace_days }} grace{% elif row.snapshot.state == 'expired' %}overdue{% else %}—{% endif %}</td>
+                        <td>{{ row.payment.get_status_display|default:"—" }}</td>
+                        <td>{{ row.otp.get_status_display|default:"—" }}</td>
+                        <td><a href="{% url 'web:annual_kyc_centre' pk=row.centre.pk %}">Manage</a></td>
+                    </tr>
+                {% empty %}<tr><td colspan="8">No centre accounts found.</td></tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock content %}

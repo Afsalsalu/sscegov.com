@@ -73,6 +73,7 @@ from .models import (AboutBlog, AboutPage, AddState, Career, CareerForm,
 		     Table_Journal_Entry,Table_Contra_Entry,Ledger,
 		     Table_Voucher)
 from .reactivation_services import calculate_reactivation_amount, mark_centre_inactive_if_due
+from .annual_kyc_services import annual_kyc_access_restricted
 
 from datetime import datetime
 
@@ -91,7 +92,7 @@ def safe_redirect(request):
     allowed_hosts = ["test.sscegov.com", "sscegov.com"]
 
     if redirect_target not in allowed_hosts:
-        return redirect("/")
+        return redirect("web:index")
 
     return redirect(redirect_target)
 
@@ -112,7 +113,7 @@ def logout_view(request):
         logout(request)
     except Exception as e:
         print("Logout error:", e)
-    response = redirect("/")
+    response = redirect("web:index")
 
     return response
 
@@ -190,6 +191,8 @@ def login_view(request):
                             centre.inactive_due_to_inactivity or centre.manual_disabled
                         ):
                             return redirect("web:centre_reactivation")
+                        if centre and annual_kyc_access_restricted(centre):
+                            return redirect("web:annual_kyc")
                         return redirect("web:centre_dashboard")
                     elif user.usertype == "Employee":
                         return redirect("web:employee_dashboard")
@@ -1700,6 +1703,8 @@ class FranchiseAccessMixin(FranchiseAuthenticatedMixin):
             return super().dispatch(request, *args, **kwargs)
         if centre.inactive_due_to_inactivity or centre.manual_disabled:
             return redirect("web:centre_reactivation")
+        if annual_kyc_access_restricted(centre):
+            return redirect("web:annual_kyc")
         if not centre.is_active:
             messages.error(
                 request,

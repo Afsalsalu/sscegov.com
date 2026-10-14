@@ -676,6 +676,233 @@ class CentreReactivationAuditLog(models.Model):
         return f"Centre {self.centre_id}: {self.get_event_display()}"
 
 
+class AnnualKYCSettings(models.Model):
+    """Singleton configuration for the independent annual KYC workflow."""
+
+    enabled = models.BooleanField(default=True)
+    renewal_interval_months = models.PositiveIntegerField(
+        default=12, validators=[MinValueValidator(1)]
+    )
+    warning_period_days = models.PositiveIntegerField(
+        default=30, validators=[MinValueValidator(0)]
+    )
+    grace_period_days = models.PositiveIntegerField(
+        default=30, validators=[MinValueValidator(0)]
+    )
+    default_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("100.00"),
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
+    otp_expiry_minutes = models.PositiveIntegerField(
+        default=10, validators=[MinValueValidator(1)]
+    )
+    otp_resend_cooldown_seconds = models.PositiveIntegerField(
+        default=60, validators=[MinValueValidator(1)]
+    )
+    max_otp_verification_attempts = models.PositiveIntegerField(
+        default=5, validators=[MinValueValidator(1)]
+    )
+    dashboard_warning_text = models.TextField(
+        default="Your annual KYC renewal is due in {days} days."
+    )
+    due_date_popup_title = models.CharField(
+        max_length=180, default="Annual KYC renewal required"
+    )
+    due_date_popup_message = models.TextField(
+        default=(
+            "Your centre account KYC renewal is due. Complete payment and phone OTP "
+            "verification to continue."
+        )
+    )
+    grace_period_warning_text = models.TextField(
+        default="Your annual KYC renewal is overdue. Online renewal is available for {days} more days."
+    )
+    expired_message = models.TextField(
+        default=(
+            "Online KYC renewal is no longer available. Please contact Head Office "
+            "to renew your centre account."
+        )
+    )
+    payment_enabled = models.BooleanField(default=True)
+    whatsapp_support_number = models.CharField(max_length=20, blank=True, default="")
+    whatsapp_message_template = models.TextField(
+        default=(
+            "Hello Head Office, I need annual KYC renewal support for centre "
+            "{centre_name} (ID: {centre_id})."
+        )
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Annual KYC Setting"
+        verbose_name_plural = "Annual KYC Settings"
+
+    @classmethod
+    def get_solo(cls):
+        settings_obj, _ = cls.objects.get_or_create(pk=1)
+        return settings_obj
+
+
+class CentreAnnualKYCStatus(models.Model):
+    """The current annual KYC cycle for one centre."""
+
+    centre = models.OneToOneField(
+        CentreUserAccount,
+        on_delete=models.CASCADE,
+        related_name="annual_kyc_status",
+    )
+    last_kyc_verified_at = models.DateTimeField(null=True, blank=True)
+    next_kyc_due_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    manual_due_date = models.DateField(null=True, blank=True)
+    fee_override = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
+    manual_blocked = models.BooleanField(default=False, db_index=True)
+    manual_block_reason = models.TextField(blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Centre annual KYC status"
+        verbose_name_plural = "Centre annual KYC statuses"
+
+    def __str__(self):
+        return f"Annual KYC for centre {self.centre_id}"
+
+
+class CentreAnnualKYCPayment(models.Model):
+    class Status(models.TextChoices):
+        CREATED = "created", "Created"
+        PENDING = "pending", "Pending"
+        SUCCESS = "success", "Success"
+        FAILED = "failed", "Failed"
+        CANCELLED = "cancelled", "Cancelled"
+
+    centre = models.ForeignKey(
+        CentreUserAccount,
+        on_delete=models.CASCADE,
+        related_name="annual_kyc_payments",
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3, default="INR")
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.CREATED,
+        db_index=True,
+    )
+    razorpay_order_id = models.CharField(
+        max_length=80, unique=True, null=True, blank=True
+    )
+    razorpay_payment_id = models.CharField(
+        max_length=80, unique=True, null=True, blank=True
+    )
+    razorpay_signature = models.CharField(max_length=256, blank=True, default="")
+    failure_code = models.CharField(max_length=100, blank=True, default="")
+    failure_description = models.TextField(blank=True, default="")
+    idempotency_key = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("-created_at", "-pk")
+
+    def __str__(self):
+        return f"Centre {self.centre_id} annual KYC payment {self.pk}"
+
+
+class CentreAnnualKYCOTPVerification(models.Model):
+    class Status(models.TextChoices):
+        SENT = "sent", "Sent"
+        VERIFIED = "verified", "Verified"
+        FAILED = "failed", "Failed"
+        EXPIRED = "expired", "Expired"
+        SEND_FAILED = "send_failed", "Send failed"
+
+    centre = models.ForeignKey(
+        CentreUserAccount,
+        on_delete=models.CASCADE,
+        related_name="annual_kyc_otps",
+    )
+    payment = models.ForeignKey(
+        CentreAnnualKYCPayment,
+        on_delete=models.CASCADE,
+        related_name="otp_verifications",
+    )
+    otp_hash = models.CharField(max_length=256)
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.SENT, db_index=True
+    )
+    sent_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    resend_available_at = models.DateTimeField()
+    attempt_count = models.PositiveIntegerField(default=0)
+    last_attempt_at = models.DateTimeField(null=True, blank=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
+    last_ip = models.GenericIPAddressField(null=True, blank=True)
+    failure_reason = models.CharField(max_length=120, blank=True, default="")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("-sent_at", "-pk")
+
+    def __str__(self):
+        return f"Annual KYC OTP for centre {self.centre_id}"
+
+
+class CentreAnnualKYCAuditLog(models.Model):
+    class Event(models.TextChoices):
+        WARNING_SHOWN = "warning_shown", "Warning shown"
+        PAYMENT_INITIATED = "payment_initiated", "Payment initiated"
+        PAYMENT_VERIFIED = "payment_verified", "Payment verified"
+        PAYMENT_FAILED = "payment_failed", "Payment failed"
+        OTP_SENT = "otp_sent", "OTP sent"
+        OTP_RESENT = "otp_resent", "OTP resent"
+        OTP_VERIFIED = "otp_verified", "OTP verified"
+        OTP_FAILED = "otp_failed", "OTP failed"
+        OTP_EXPIRED = "otp_expired", "OTP expired"
+        KYC_COMPLETED = "kyc_completed", "KYC completed"
+        ACCESS_RESTRICTED = "access_restricted", "Access restricted"
+        SETTINGS_UPDATED = "settings_updated", "Settings updated"
+        FEE_OVERRIDE_UPDATED = "fee_override_updated", "Fee override updated"
+        DUE_DATE_EXTENDED = "due_date_extended", "Due date extended"
+        MANUAL_VERIFIED = "manual_verified", "Manually verified"
+        MANUAL_BLOCKED = "manual_blocked", "Manually blocked"
+        MANUAL_UNBLOCKED = "manual_unblocked", "Manually unblocked"
+
+    centre = models.ForeignKey(
+        CentreUserAccount,
+        on_delete=models.CASCADE,
+        related_name="annual_kyc_audit_logs",
+        null=True,
+        blank=True,
+    )
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="annual_kyc_audit_events",
+    )
+    event = models.CharField(max_length=32, choices=Event.choices)
+    details = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-created_at", "-pk")
+
+    def __str__(self):
+        target = self.centre_id or "global"
+        return f"Annual KYC {target}: {self.get_event_display()}"
+
+
 class KeralaSubCentre(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="Subcentre", null=True

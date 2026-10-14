@@ -1,5 +1,3 @@
-
-
 """
 Django settings for ssc project.
 
@@ -19,8 +17,46 @@ import os
 from dotenv import load_dotenv
 from web.language import SUPPORTED_LANGUAGES
 
+# Load .env values before reading settings through os.getenv (including the
+# optional Brevo configuration below).
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def _normalise_script_prefix(value):
+    """Return a canonical mount prefix, or an empty string for root hosting."""
+    value = str(value or "").strip()
+    if not value or value == "/":
+        return ""
+    return "/" + value.strip("/")
+
+
+def _normalise_url(value, default):
+    value = str(value or default).strip() or default
+    if not value.startswith("/"):
+        value = "/" + value
+    return value.rstrip("/") + "/"
+
+
+def _with_script_prefix(path, prefix):
+    path = str(path or "/").strip()
+    if not path.startswith("/"):
+        path = "/" + path
+    if not prefix:
+        return path
+    if path == prefix or path.startswith(prefix + "/"):
+        return path
+    return prefix + path
+
+
+# The application is served at the domain root locally and under a configured
+# subpath in production. Keep the prefix out of tracked URLs and derive it
+# from env.
+SCRIPT_URL_PREFIX = _normalise_script_prefix(
+    os.getenv("DJANGO_FORCE_SCRIPT_NAME", "")
+)
+FORCE_SCRIPT_NAME = SCRIPT_URL_PREFIX or None
 
 
 # Quick-start development settings - unsuitable for production
@@ -30,7 +66,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-o8h523dr=hub@2=g#9kpdijqx3m%s*j5wbsik)j6^#i8ctatt^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = str(config("DEBUG", default="False")).strip().lower() in {"1", "true", "yes", "on", "debug"}
 
 # ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 ALLOWED_HOSTS = ['*', 'sscegov.com']
@@ -45,7 +81,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'web',
+    'web.apps.WebConfig',
     'registration',
     'crispy_forms',
     'crispy_bootstrap5',
@@ -70,12 +106,13 @@ MIDDLEWARE = [
     # 'web.middleware.NoCacheMiddleware',
     # 'web.middleware.SingleSessionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'web.language_middleware.UserLanguageMiddleware',
+    'web.annual_kyc_middleware.CentreAnnualKYCMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     #  'web.middleware.ContentSecurityPolicyMiddleware',
     # 'axes.middleware.AxesMiddleware',
-    'web.language_middleware.UserLanguageMiddleware',
-
 ]
 
 # MIDDLEWARE += [
@@ -97,11 +134,12 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'web.context_processors.franchise_service_navigation',
-                'web.context_processors.language_preferences',
-
+            'django.contrib.auth.context_processors.auth',
+            'django.contrib.messages.context_processors.messages',
+            'django.template.context_processors.i18n',
+            'web.context_processors.franchise_service_navigation',
+            'web.context_processors.annual_kyc_context',
+            'web.context_processors.language_preferences',
             ],
         },
     },
@@ -162,13 +200,8 @@ DATABASES = {
 #     },
 # ]
 
-ANYMAIL = {
-    "BREVO": {
-        "API_KEY": os.getenv("BREVO_API_KEY", "your-brevo-api-key"),
-    }
-}
-EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
-DEFAULT_FROM_EMAIL = "samatwaservicecenter.gov.in@gmail.com"
+BREVO_API_KEY = config("BREVO_API_KEY", default="")
+ANYMAIL = {"BREVO": {"API_KEY": BREVO_API_KEY}}
 
 
 
@@ -193,7 +226,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Whitenoise settings
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -203,10 +235,14 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-STATIC_URL = '/test/static/'
-MEDIA_URL = '/test/media/'
-FORCE_SCRIPT_NAME = '/test/'
-
+STATIC_URL = _normalise_url(
+    os.getenv("STATIC_URL", ""),
+    f"{SCRIPT_URL_PREFIX}/static/" if SCRIPT_URL_PREFIX else "/static/",
+)
+MEDIA_URL = _normalise_url(
+    os.getenv("MEDIA_URL", ""),
+    f"{SCRIPT_URL_PREFIX}/media/" if SCRIPT_URL_PREFIX else "/media/",
+)
 MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATICFILES_DIRS = [BASE_DIR / 'static']  # This is where your static files are located
@@ -228,31 +264,72 @@ SEND_ACTIVATION_EMAIL = True
 REGISTRATION_EMAIL_SUBJECT_PREFIX = ''
 
 REGISTRATION_OPEN = True
-LOGIN_URL = '/custom_login'
-LOGOUT_URL = '/accounts/logout/'
-LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/'
-# For email   
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp-relay.brevo.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = '79f983002@smtp-brevo.com'
-# EMAIL_HOST_PASSWORD = '9YLzAk1PNcDMfQqI'
-EMAIL_BACKEND = config("EMAIL_BACKEND")
-EMAIL_HOST = config("EMAIL_HOST")
-EMAIL_PORT = config("EMAIL_PORT")
-EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+LOGIN_URL = _with_script_prefix(
+    os.getenv("LOGIN_URL", "/custom_login"), SCRIPT_URL_PREFIX
+)
+LOGOUT_URL = _with_script_prefix(
+    os.getenv("LOGOUT_URL", "/accounts/logout/"), SCRIPT_URL_PREFIX
+)
+LOGIN_REDIRECT_URL = _with_script_prefix(
+    os.getenv("LOGIN_REDIRECT_URL", "/dashboard/"), SCRIPT_URL_PREFIX
+)
+LOGOUT_REDIRECT_URL = _with_script_prefix(
+    os.getenv("LOGOUT_REDIRECT_URL", "/"), SCRIPT_URL_PREFIX
+)
+configured_email_backend = config("EMAIL_BACKEND", default="").strip()
+EMAIL_HOST = config("EMAIL_HOST", default="")
+EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+EMAIL_USE_SSL = config("EMAIL_USE_SSL", default=False, cast=bool)
+DEFAULT_FROM_EMAIL = config(
+    "DEFAULT_FROM_EMAIL",
+    default=EMAIL_HOST_USER or "samatwaservicecenter.gov.in@gmail.com",
+)
 
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+smtp_is_configured = bool(
+    EMAIL_HOST and EMAIL_PORT and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD
+)
+brevo_is_configured = bool(os.getenv("BREVO_API_KEY", ""))
+if configured_email_backend:
+    EMAIL_BACKEND = configured_email_backend
+elif smtp_is_configured:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+elif brevo_is_configured:
+    EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+# Local installations sometimes inherit Django's console/locmem backend from
+# development configuration. Prefer an already-configured real provider when
+# its credentials are present so enquiry notifications can be delivered.
+if DEBUG and EMAIL_BACKEND in {
+    "django.core.mail.backends.console.EmailBackend",
+    "django.core.mail.backends.locmem.EmailBackend",
+}:
+    if smtp_is_configured:
+        EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    elif brevo_is_configured:
+        EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'web.User'
 
-load_dotenv()
+# Franchise enquiry delivery uses this single server-side recipient setting.
+ENQUIRY_ADMIN_EMAIL = config(
+    "ENQUIRY_ADMIN_EMAIL", default="samatwaservicecenter.gov.in@gmail.com"
+)
+
+# Optional support number in international format (country code included).
+SUPPORT_WHATSAPP_NUMBER = os.getenv("SUPPORT_WHATSAPP_NUMBER", "")
+
+# Enquiry attachments must not be served from the public MEDIA_URL directory.
+PRIVATE_MEDIA_ROOT = Path(
+    os.getenv("PRIVATE_MEDIA_ROOT", str(BASE_DIR / "private_media"))
+)
 
 
 TIME_ZONE = 'Asia/Kolkata'
@@ -260,16 +337,26 @@ USE_TZ = True
 
 
 # Razorpay API
-RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "rzp_live_nSEm6ZJdnKS1Ov")
-RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "54bep8rW085LCIk6rySSDcr2")
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
+RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET", "")
+
+# Annual KYC OTP delivery is provider-neutral. Configure either a dotted
+# callable backend or the generic HTTP gateway settings when enabling SMS.
+ANNUAL_KYC_SMS_BACKEND = os.getenv("ANNUAL_KYC_SMS_BACKEND", "")
+ANNUAL_KYC_SMS_API_URL = os.getenv("ANNUAL_KYC_SMS_API_URL", "")
+ANNUAL_KYC_SMS_API_KEY = os.getenv("ANNUAL_KYC_SMS_API_KEY", "")
+ANNUAL_KYC_SMS_SENDER_ID = os.getenv("ANNUAL_KYC_SMS_SENDER_ID", "SSCEGV")
 
 
 # PSPDFKit API key
 PSPDFKIT_API_KEY = os.getenv("PSPDFKIT_API_KEY", "")
 
 # reCAPTCHA keys
-RECAPTCHA_SITE_KEY = os.getenv("RECAPTCHA_SITE_KEY", "6LfhACgqAAAAAH6BOnzNkIfbY-yRgk_XCNKWTH8i")
-RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY", "6LfhACgqAAAAAFqwP-iG32CZyREH66J6u43F-I8D")
+RECAPTCHA_SITE_KEY = os.getenv("RECAPTCHA_SITE_KEY", "")
+RECAPTCHA_SECRET_KEY = os.getenv("RECAPTCHA_SECRET_KEY", "")
+
+MAPBOX_PUBLIC_TOKEN = os.getenv("MAPBOX_PUBLIC_TOKEN", "")
 
 
 # Secure Proxy Header

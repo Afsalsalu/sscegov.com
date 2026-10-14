@@ -6,6 +6,7 @@ from .language import SUPPORTED_LANGUAGES, user_language
 from .enquiry_utils import get_permitted_franchise_services
 from .models import AddState, StateService
 from .whatsapp_utils import get_support_whatsapp_url
+from .annual_kyc_services import annual_kyc_snapshot, annual_kyc_whatsapp_url
 
 
 def franchise_service_navigation(request):
@@ -86,4 +87,30 @@ def language_preferences(request):
         "supported_languages": SUPPORTED_LANGUAGES,
         "current_language": user_language(user, getattr(request, "session", None)),
         "language_switch_url": reverse("web:set_language"),
+    }
+
+
+def annual_kyc_context(request):
+    """Expose the live annual KYC banner state to every franchise template."""
+
+    empty = {
+        "annual_kyc": None,
+        "annual_kyc_warning": False,
+        "annual_kyc_whatsapp_url": "",
+    }
+    user = getattr(request, "user", None)
+    if not getattr(user, "is_authenticated", False) or getattr(user, "usertype", None) != "centre":
+        return empty
+    try:
+        centre = user.centre
+    except (AttributeError, ObjectDoesNotExist):
+        return empty
+    if not centre.is_active:
+        return empty
+    snapshot = annual_kyc_snapshot(centre)
+    snapshot["whatsapp_url"] = annual_kyc_whatsapp_url(centre, snapshot["settings"])
+    return {
+        "annual_kyc": snapshot,
+        "annual_kyc_warning": snapshot["state"] == "warning",
+        "annual_kyc_whatsapp_url": snapshot["whatsapp_url"],
     }

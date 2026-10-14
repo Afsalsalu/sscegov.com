@@ -1,0 +1,4 @@
+<div class="annual-kyc-banner" role="status">
+    <span class="annual-kyc-banner-copy">{{ annual_kyc.message }}</span>
+    {% if annual_kyc.online_allowed %}<a class="annual-kyc-banner-button" href="{% url 'web:annual_kyc' %}">Pay &amp; Get OTP</a>{% endif %}
+</div>
