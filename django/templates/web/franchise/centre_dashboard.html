@@ -7,6 +7,10 @@
         <main aria-labelledby="franchise-dashboard-title">
             <h1 id="franchise-dashboard-title" class="sr-only">{% translate "Franchise dashboard" %}</h1>
 
+            {% if annual_kyc and annual_kyc.state == 'warning' %}
+                {% include "web/franchise/includes/annual_kyc_banner.html" %}
+            {% endif %}
+
             <section class="franchise-dashboard-hero" aria-label="{% translate 'Dashboard banners' %}">
                 <div class="franchise-banner-carousel" data-banner-carousel tabindex="0">
                     <div class="franchise-banner-slides">

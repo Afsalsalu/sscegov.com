@@ -73,7 +73,7 @@ from .models import (AboutBlog, AboutPage, AddState, Career, CareerForm,
 		     Table_Journal_Entry,Table_Contra_Entry,Ledger,
 		     Table_Voucher)
 from .reactivation_services import calculate_reactivation_amount, mark_centre_inactive_if_due
-from .annual_kyc_services import annual_kyc_access_restricted
+from .annual_kyc_services import annual_kyc_access_restricted, annual_kyc_snapshot
 
 from datetime import datetime
 
@@ -1786,6 +1786,8 @@ class DistrictDashboardView(KeralaRequiredMixin, TemplateView):
         except ObjectDoesNotExist:
             raise Http404("User has no associated centre.")
 
+        annual_kyc = annual_kyc_snapshot(district_detail)
+
         popular_services = StateService.objects.filter(
             is_popular=True, is_active=True
         ).select_related("state").order_by("-updated_at", "-created_at", "pk")
@@ -1845,6 +1847,8 @@ class DistrictDashboardView(KeralaRequiredMixin, TemplateView):
                 "wallet_total": wallet_total,
                 "wallet_transaction_count": wallet_transaction_count,
                 "banners": banners,
+                "annual_kyc": annual_kyc,
+                "annual_kyc_warning": annual_kyc["state"] == "warning",
             }
         )
 

@@ -158,9 +158,6 @@
         </header>
 
         <div class="franchise-page-shell">
-            {% if annual_kyc and annual_kyc_warning and request.resolver_match.url_name != 'annual_kyc' %}
-                {% include "web/franchise/includes/annual_kyc_banner.html" %}
-            {% endif %}
             {% block content %}
             {% endblock %}
         </div>

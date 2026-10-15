@@ -160,9 +160,15 @@ class AnnualKYCTestCase(TestCase):
         self.assertContains(response, "Your annual KYC renewal is due in 17 days.")
         self.assertContains(response, f'href="{reverse("web:annual_kyc")}"')
         self.assertContains(response, "Pay &amp; Get OTP")
+        self.assertTrue(
+            any(
+                template.name == "web/franchise/centre_dashboard.html"
+                for template in response.templates
+            )
+        )
         self.assertLess(
             body.index('class="annual-kyc-banner"'),
-            body.index('class="franchise-dashboard-content"'),
+            body.index('class="franchise-banner-carousel"'),
         )
 
     def test_non_warning_statuses_do_not_render_dashboard_annual_kyc_banner(self):
