@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timedelta
 from decimal import Decimal
 from unittest.mock import Mock, patch
+from urllib.parse import parse_qs, urlparse
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
@@ -112,6 +113,7 @@ class AnnualKYCTestCase(TestCase):
         self.assertEqual(response.url, reverse("web:annual_kyc"))
         renewal = client.get(response.url)
         self.assertEqual(renewal.status_code, 200)
+        self.assertContains(renewal, "Annual KYC renewal expired")
         self.assertNotEqual(renewal.url if hasattr(renewal, "url") else "", reverse("web:annual_kyc"))
 
     def test_not_due_centre_can_open_kyc_page_and_sidebar_link_is_reversed(self):
@@ -190,24 +192,70 @@ class AnnualKYCTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Renewal due")
         self.assertContains(response, "Pay &amp; Get OTP")
+        self.assertContains(response, "Online renewal is available only for the next 30 days.")
+        self.assertContains(response, 'class="annual-kyc-overlay"')
+        self.assertContains(response, 'id="annual-pay-button-overlay"')
         self.assertNotContains(response, "Not_due")
 
     def test_expired_page_is_whatsapp_only_and_contains_centre_identity(self):
         client = Client()
         self.settings.whatsapp_support_number = "919876543210"
-        self.settings.save(update_fields=("whatsapp_support_number", "updated_at"))
+        self.settings.whatsapp_message_template = "Configured annual KYC message for {centre_name} ({centre_id})"
+        self.settings.expired_message = "Configured expired annual KYC message."
+        self.settings.save(
+            update_fields=(
+                "whatsapp_support_number",
+                "whatsapp_message_template",
+                "expired_message",
+                "updated_at",
+            )
+        )
         self.status.next_kyc_due_at = self.at(2025, 1, 1, 0)
         self.status.save(update_fields=("next_kyc_due_at", "updated_at"))
         client.force_login(self.user)
         response = client.get(reverse("web:annual_kyc"))
         body = response.content.decode()
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Online KYC renewal is no longer available", body)
+        self.assertIn("Annual KYC renewal expired", body)
+        self.assertIn("Configured expired annual KYC message.", body)
+        self.assertIn("Online renewal is no longer available. Please contact Head Office for assistance.", body)
+        self.assertIn('id="annual-kyc-expired-whatsapp"', body)
+        self.assertIn("Contact on WhatsApp", body)
         self.assertIn("Contact us on WhatsApp", body)
         self.assertIn("Online renewal expired", body)
         self.assertNotIn("Pay &amp; Get OTP", body)
+        self.assertNotIn('id="annual-pay-button-overlay"', body)
+        self.assertNotIn('id="annual-pay-button"', body)
+        self.assertNotIn('id="annual-kyc-otp-panel"', body)
+        self.assertNotIn('id="annual-verify-otp"', body)
+        self.assertNotIn('id="annual-resend-otp"', body)
+        self.assertNotIn("checkout.razorpay.com", body)
+        whatsapp_url = response.context["annual_kyc_whatsapp_url"]
+        self.assertEqual(urlparse(whatsapp_url).netloc, "wa.me")
+        self.assertEqual(urlparse(whatsapp_url).path, "/919876543210")
+        self.assertEqual(
+            parse_qs(urlparse(whatsapp_url).query)["text"][0],
+            f"Configured annual KYC message for {self.centre.centre_name} ({self.centre.formatted_id})",
+        )
         self.assertIn("Annual+Centre", body)
         self.assertIn(self.centre.formatted_id, body)
+
+    def test_expired_popup_without_whatsapp_number_shows_support_message(self):
+        self.settings.whatsapp_support_number = ""
+        self.settings.save(update_fields=("whatsapp_support_number", "updated_at"))
+        self.status.next_kyc_due_at = self.at(2025, 1, 1, 0)
+        self.status.save(update_fields=("next_kyc_due_at", "updated_at"))
+        client = Client()
+        client.force_login(self.user)
+
+        with override_settings(SUPPORT_WHATSAPP_NUMBER=""):
+            response = client.get(reverse("web:annual_kyc"))
+
+        body = response.content.decode()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Annual KYC renewal expired")
+        self.assertContains(response, "Please contact Head Office for assistance.")
+        self.assertNotIn('id="annual-kyc-expired-whatsapp"', body)
 
     def test_expired_cycle_disables_payment_and_otp_endpoints(self):
         self.settings.whatsapp_support_number = "919876543210"
@@ -262,6 +310,9 @@ class AnnualKYCTestCase(TestCase):
         self.assertEqual(page.status_code, 200)
         self.assertContains(page, "Grace period active")
         self.assertContains(page, "Pay &amp; Get OTP")
+        self.assertContains(page, "Online renewal is available for 29 more days.")
+        self.assertContains(page, 'class="annual-kyc-overlay"')
+        self.assertContains(page, 'id="annual-pay-button-overlay"')
         self.assertEqual(order.status_code, 200)
         self.assertEqual(order.json()["razorpay_order_id"], "order_grace")
 
