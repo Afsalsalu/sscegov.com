@@ -126,6 +126,14 @@ class AnnualKYCCallbackView(FranchiseAuthenticatedMixin, View):
             centre__user=request.user,
             razorpay_order_id=order_id,
         )
+        if not annual_kyc_snapshot(payment.centre)["online_allowed"]:
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "Online annual KYC payment is no longer available. Please contact Head Office.",
+                },
+                status=403,
+            )
         if not order_id or not payment_id_value or not signature:
             return JsonResponse({"success": False, "message": "Incomplete payment verification data."}, status=400)
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
@@ -210,6 +218,14 @@ class AnnualKYCStatusView(FranchiseAuthenticatedMixin, View):
             centre__user=request.user,
             razorpay_order_id=payload.get("razorpay_order_id", ""),
         )
+        if not annual_kyc_snapshot(payment.centre)["online_allowed"]:
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "Online annual KYC payment is no longer available. Please contact Head Office.",
+                },
+                status=403,
+            )
         status_value = payload.get("status", "")
         payment_status = (
             CentreAnnualKYCPayment.Status.FAILED
@@ -232,6 +248,14 @@ class AnnualKYCStatusView(FranchiseAuthenticatedMixin, View):
 class AnnualKYCResendOTPView(FranchiseAuthenticatedMixin, View):
     def post(self, request, *args, **kwargs):
         centre = _centre_for_request(request)
+        if not annual_kyc_snapshot(centre)["online_allowed"]:
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "Online annual KYC renewal is no longer available. Please contact Head Office.",
+                },
+                status=403,
+            )
         payment_id = request.session.get("annual_kyc_payment_id")
         payment = get_object_or_404(
             CentreAnnualKYCPayment,
@@ -262,6 +286,14 @@ class AnnualKYCVerifyOTPView(FranchiseAuthenticatedMixin, View):
         if payload is None:
             return JsonResponse({"success": False, "message": "Invalid request."}, status=400)
         centre = _centre_for_request(request)
+        if not annual_kyc_snapshot(centre)["online_allowed"]:
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "Online annual KYC renewal is no longer available. Please contact Head Office.",
+                },
+                status=403,
+            )
         payment = get_object_or_404(
             CentreAnnualKYCPayment,
             pk=request.session.get("annual_kyc_payment_id"),

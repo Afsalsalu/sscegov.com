@@ -158,7 +158,7 @@
         {% endif %}
 
         <p class="annual-kyc-status" id="annual-kyc-status" aria-live="polite"></p>
-        {% if annual_kyc_payment and annual_kyc_otp and annual_kyc_otp.status == 'sent' %}
+        {% if annual_kyc.online_allowed and annual_kyc_payment and annual_kyc_otp and annual_kyc_otp.status == 'sent' %}
             <section class="annual-kyc-panel annual-kyc-otp is-visible" id="annual-kyc-otp-panel" aria-labelledby="annual-kyc-otp-title">
         {% else %}
             <section class="annual-kyc-panel annual-kyc-otp" id="annual-kyc-otp-panel" aria-labelledby="annual-kyc-otp-title">

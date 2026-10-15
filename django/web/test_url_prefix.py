@@ -1,6 +1,6 @@
 from django.core.files.storage import FileSystemStorage
 from django.templatetags.static import static
-from django.test import SimpleTestCase, override_settings
+from django.test import Client, SimpleTestCase, override_settings
 from django.urls import clear_url_caches, get_script_prefix, reverse, set_script_prefix
 
 
@@ -57,4 +57,17 @@ class URLPrefixConfigurationTests(SimpleTestCase):
             self.assertEqual(
                 FileSystemStorage().url("uploads/document.pdf"),
                 "/test/media/uploads/document.pdf",
+            )
+
+    def test_prefixed_client_request_keeps_login_redirect_under_test_prefix(self):
+        with override_settings(FORCE_SCRIPT_NAME="/test"):
+            set_script_prefix("/test/")
+            clear_url_caches()
+
+            response = Client().get("/franchise-dashboard/dashboard/")
+
+            self.assertEqual(response.status_code, 302)
+            self.assertIn(
+                "next=/test/franchise-dashboard/dashboard/",
+                response.url,
             )

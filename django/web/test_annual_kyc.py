@@ -1,10 +1,11 @@
 import json
 from datetime import datetime, timedelta
+from decimal import Decimal
 from unittest.mock import Mock, patch
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -64,6 +65,12 @@ class AnnualKYCTestCase(TestCase):
     def at(self, year, month, day, hour=12):
         return timezone.make_aware(datetime(year, month, day, hour, 0, 0))
 
+    def set_due_date(self, due_date):
+        self.status.next_kyc_due_at = timezone.make_aware(
+            datetime.combine(due_date, datetime.min.time())
+        )
+        self.status.save(update_fields=("next_kyc_due_at", "updated_at"))
+
     def make_payment(self, *, status=CentreAnnualKYCPayment.Status.SUCCESS):
         return CentreAnnualKYCPayment.objects.create(
             centre=self.centre,
@@ -117,6 +124,10 @@ class AnnualKYCTestCase(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Annual KYC Renewal")
+        self.assertEqual(
+            response.context["annual_kyc"]["due_date"],
+            timezone.localtime(self.status.next_kyc_due_at).date(),
+        )
         self.assertContains(response, "Review your centre verification status and renewal details.")
         self.assertContains(response, "Not due yet")
         self.assertContains(response, "Your annual KYC renewal is not due yet.")
@@ -127,6 +138,47 @@ class AnnualKYCTestCase(TestCase):
         self.assertContains(response, f'href="{reverse("web:annual_kyc")}"')
         self.assertNotContains(response, "Not_due")
         self.assertNotContains(response, "Pay &amp; Get OTP")
+
+        dashboard = client.get(reverse("web:centre_dashboard"))
+        self.assertEqual(dashboard.status_code, 200)
+        self.assertContains(dashboard, f'href="{reverse("web:annual_kyc")}"')
+        self.assertNotContains(dashboard, "Pay &amp; Get OTP")
+
+    def test_warning_banner_on_dashboard_shows_remaining_days_and_payment_action(self):
+        self.set_due_date(timezone.localdate() + timedelta(days=30))
+        client = Client()
+        client.force_login(self.user)
+
+        response = client.get(reverse("web:centre_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Your annual KYC renewal is due in 30 days.")
+        self.assertContains(response, f'href="{reverse("web:annual_kyc")}"')
+        self.assertContains(response, "Pay &amp; Get OTP")
+
+    @patch("web.annual_kyc_services._razorpay_client")
+    def test_order_creation_uses_configured_annual_fee(self, mock_razorpay_client):
+        self.set_due_date(timezone.localdate() + timedelta(days=10))
+        self.settings.default_amount = Decimal("175.50")
+        self.settings.save(update_fields=("default_amount", "updated_at"))
+        mock_razorpay_client.return_value.order.create.return_value = {
+            "id": "order_annual_fee"
+        }
+        client = Client()
+        client.force_login(self.user)
+
+        response = client.post(reverse("web:annual_kyc_order"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["amount"], 17550)
+        order_data = mock_razorpay_client.return_value.order.create.call_args.kwargs[
+            "data"
+        ]
+        self.assertEqual(order_data["amount"], 17550)
+        payment = CentreAnnualKYCPayment.objects.get(
+            razorpay_order_id="order_annual_fee"
+        )
+        self.assertEqual(payment.amount, Decimal("175.50"))
 
     def test_due_page_uses_friendly_status_label_and_keeps_payment_action(self):
         self.status.next_kyc_due_at = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -156,6 +208,109 @@ class AnnualKYCTestCase(TestCase):
         self.assertNotIn("Pay &amp; Get OTP", body)
         self.assertIn("Annual+Centre", body)
         self.assertIn(self.centre.formatted_id, body)
+
+    def test_expired_cycle_disables_payment_and_otp_endpoints(self):
+        self.settings.whatsapp_support_number = "919876543210"
+        self.settings.save(update_fields=("whatsapp_support_number", "updated_at"))
+        self.status.next_kyc_due_at = self.at(2025, 1, 1, 0)
+        self.status.save(update_fields=("next_kyc_due_at", "updated_at"))
+        payment = self.make_payment(status=CentreAnnualKYCPayment.Status.SUCCESS)
+        otp = CentreAnnualKYCOTPVerification.objects.create(
+            centre=self.centre,
+            payment=payment,
+            otp_hash=make_password("123456"),
+            expires_at=timezone.now() + timedelta(minutes=10),
+            resend_available_at=timezone.now(),
+        )
+        client = Client()
+        client.force_login(self.user)
+        session = client.session
+        session["annual_kyc_payment_id"] = payment.pk
+        session.save()
+
+        page = client.get(reverse("web:annual_kyc"))
+        self.assertEqual(page.status_code, 200)
+        self.assertNotIn("annual-kyc-otp is-visible", page.content.decode())
+        dashboard = client.get(reverse("web:centre_dashboard"))
+        self.assertEqual(dashboard.status_code, 302)
+        self.assertEqual(dashboard.url, reverse("web:annual_kyc"))
+
+        resend = client.post(reverse("web:annual_kyc_resend_otp"))
+        verify = client.post(
+            reverse("web:annual_kyc_verify_otp"), {"otp": "123456"}
+        )
+
+        self.assertEqual(resend.status_code, 403)
+        self.assertEqual(verify.status_code, 403)
+        self.status.refresh_from_db()
+        otp.refresh_from_db()
+        self.assertIsNone(self.status.last_kyc_verified_at)
+        self.assertEqual(otp.status, CentreAnnualKYCOTPVerification.Status.SENT)
+
+    @patch("web.annual_kyc_services._razorpay_client")
+    def test_grace_period_keeps_payment_available(self, mock_razorpay_client):
+        self.set_due_date(timezone.localdate() - timedelta(days=1))
+        mock_razorpay_client.return_value.order.create.return_value = {
+            "id": "order_grace"
+        }
+        client = Client()
+        client.force_login(self.user)
+
+        page = client.get(reverse("web:annual_kyc"))
+        order = client.post(reverse("web:annual_kyc_order"))
+
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(page, "Grace period active")
+        self.assertContains(page, "Pay &amp; Get OTP")
+        self.assertEqual(order.status_code, 200)
+        self.assertEqual(order.json()["razorpay_order_id"], "order_grace")
+
+    def test_completed_cycle_does_not_offer_payment_again(self):
+        payment = self.make_payment()
+        otp = CentreAnnualKYCOTPVerification.objects.create(
+            centre=self.centre,
+            payment=payment,
+            otp_hash=make_password("123456"),
+            expires_at=timezone.now() + timedelta(minutes=10),
+            resend_available_at=timezone.now(),
+        )
+        verify_annual_kyc_otp(payment, "123456")
+        client = Client()
+        client.force_login(self.user)
+
+        response = client.get(reverse("web:annual_kyc"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Not due yet")
+        self.status.refresh_from_db()
+        self.assertEqual(
+            response.context["annual_kyc"]["due_date"],
+            timezone.localtime(self.status.next_kyc_due_at).date(),
+        )
+        self.assertNotContains(response, "Pay &amp; Get OTP")
+        otp.refresh_from_db()
+        self.assertEqual(otp.status, CentreAnnualKYCOTPVerification.Status.VERIFIED)
+
+    def test_verified_payment_uses_configured_sms_backend(self):
+        payment = self.make_payment(status=CentreAnnualKYCPayment.Status.CREATED)
+        sms_backend = Mock(return_value=True)
+        with override_settings(ANNUAL_KYC_SMS_BACKEND="tests.sms_backend"):
+            with patch(
+                "web.annual_kyc_services.import_string", return_value=sms_backend
+            ):
+                completed, otp, _ = complete_annual_kyc_payment(
+                    payment.pk,
+                    payment_id_value="pay_sms_backend",
+                    signature="verified_signature",
+                )
+
+        self.assertEqual(completed.status, CentreAnnualKYCPayment.Status.SUCCESS)
+        self.assertEqual(otp.status, CentreAnnualKYCOTPVerification.Status.SENT)
+        sms_backend.assert_called_once()
+        recipient, message = sms_backend.call_args.args[:2]
+        self.assertEqual(recipient, str(self.centre.mobile))
+        self.assertRegex(message, r"\b\d{6}\b")
+        self.assertEqual(sms_backend.call_args.kwargs["centre"], self.centre)
 
     def test_payment_stays_unverified_until_server_side_verification_and_otp(self):
         self.status.next_kyc_due_at = self.at(2025, 12, 31, 0)
@@ -294,8 +449,7 @@ class AnnualKYCTestCase(TestCase):
         self.assertEqual(response.url, reverse("web:centre_reactivation"))
 
     def test_server_verified_callback_does_not_complete_kyc_before_otp(self):
-        self.status.next_kyc_due_at = self.at(2025, 12, 31, 0)
-        self.status.save(update_fields=("next_kyc_due_at", "updated_at"))
+        self.set_due_date(timezone.localdate() + timedelta(days=10))
         payment = self.make_payment(status=CentreAnnualKYCPayment.Status.CREATED)
         client = Client()
         client.force_login(self.user)
@@ -324,3 +478,47 @@ class AnnualKYCTestCase(TestCase):
         self.status.refresh_from_db()
         self.assertEqual(payment.status, CentreAnnualKYCPayment.Status.SUCCESS)
         self.assertIsNone(self.status.last_kyc_verified_at)
+
+    def test_verified_webhook_marks_payment_success_but_waits_for_otp(self):
+        self.set_due_date(timezone.localdate() + timedelta(days=10))
+        payment = self.make_payment(status=CentreAnnualKYCPayment.Status.CREATED)
+        payload = {
+            "event": "payment.captured",
+            "payload": {
+                "payment": {
+                    "entity": {
+                        "id": "pay_webhook",
+                        "order_id": payment.razorpay_order_id,
+                        "amount": int(payment.amount * Decimal("100")),
+                        "status": "captured",
+                    }
+                }
+            },
+        }
+        razorpay_client = Mock()
+        with override_settings(RAZORPAY_WEBHOOK_SECRET="webhook_secret"), patch(
+            "web.annual_kyc_views.razorpay.Client", return_value=razorpay_client
+        ) as client_factory, patch(
+            "web.annual_kyc_services._send_annual_kyc_sms", return_value=True
+        ):
+            client = Client()
+            response = client.post(
+                reverse("web:annual_kyc_webhook"),
+                data=json.dumps(payload),
+                content_type="application/json",
+                HTTP_X_RAZORPAY_SIGNATURE="webhook_signature",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        client_factory.assert_called_once()
+        razorpay_client.utility.verify_webhook_signature.assert_called_once_with(
+            json.dumps(payload), "webhook_signature", "webhook_secret"
+        )
+        payment.refresh_from_db()
+        self.status.refresh_from_db()
+        self.assertEqual(payment.status, CentreAnnualKYCPayment.Status.SUCCESS)
+        self.assertIsNone(self.status.last_kyc_verified_at)
+        self.assertEqual(
+            payment.otp_verifications.latest("sent_at").status,
+            CentreAnnualKYCOTPVerification.Status.SENT,
+        )
