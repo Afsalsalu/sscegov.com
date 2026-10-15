@@ -147,16 +147,44 @@ class AnnualKYCTestCase(TestCase):
         self.assertNotContains(dashboard, "Pay &amp; Get OTP")
 
     def test_warning_banner_on_dashboard_shows_remaining_days_and_payment_action(self):
-        self.set_due_date(timezone.localdate() + timedelta(days=30))
+        self.set_due_date(timezone.localdate() + timedelta(days=17))
         client = Client()
         client.force_login(self.user)
 
         response = client.get(reverse("web:centre_dashboard"))
+        body = response.content.decode()
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Your annual KYC renewal is due in 30 days.")
+        self.assertContains(response, 'class="annual-kyc-banner"')
+        self.assertContains(response, "Renewal due soon")
+        self.assertContains(response, "Your annual KYC renewal is due in 17 days.")
         self.assertContains(response, f'href="{reverse("web:annual_kyc")}"')
         self.assertContains(response, "Pay &amp; Get OTP")
+        self.assertLess(
+            body.index('class="annual-kyc-banner"'),
+            body.index('class="franchise-dashboard-content"'),
+        )
+
+    def test_non_warning_statuses_do_not_render_dashboard_annual_kyc_banner(self):
+        client = Client()
+        client.force_login(self.user)
+
+        cases = (
+            ("not_due", timezone.localdate() + timedelta(days=60)),
+            ("due", timezone.localdate()),
+            ("grace", timezone.localdate() - timedelta(days=1)),
+            ("expired", timezone.localdate() - timedelta(days=31)),
+        )
+        for state, due_date in cases:
+            with self.subTest(state=state):
+                self.set_due_date(due_date)
+                response = client.get(reverse("web:centre_dashboard"))
+                self.assertNotIn('class="annual-kyc-banner"', response.content.decode())
+
+        self.settings.enabled = False
+        self.settings.save(update_fields=("enabled", "updated_at"))
+        response = client.get(reverse("web:centre_dashboard"))
+        self.assertNotIn('class="annual-kyc-banner"', response.content.decode())
 
     @patch("web.annual_kyc_services._razorpay_client")
     def test_order_creation_uses_configured_annual_fee(self, mock_razorpay_client):

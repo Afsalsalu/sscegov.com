@@ -13,7 +13,9 @@ body.franchise-app-page {
 
 body.franchise-app-page > div { min-width: 0; overflow-x: hidden; }
 body.franchise-app-page .annual-kyc-banner { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; margin: 0 0 8px; padding: 7px 10px; border: 1px solid #f2d58b; border-radius: 8px; background: #fff8e7; color: #6d4a09; font-size: 12px; line-height: 1.35; }
-body.franchise-app-page .annual-kyc-banner-copy { min-width: 0; }
+body.franchise-app-page .annual-kyc-banner-copy { display: flex; min-width: 0; flex-direction: column; gap: 1px; }
+body.franchise-app-page .annual-kyc-banner-title { color: #5a3b06; font-size: 12px; font-weight: 850; line-height: 1.25; }
+body.franchise-app-page .annual-kyc-banner-message { color: #6d4a09; font-size: 11px; line-height: 1.3; }
 body.franchise-app-page .annual-kyc-banner-button { flex: 0 0 auto; padding: 5px 9px; border-radius: 6px; background: #c98b13; color: #fff; font-size: 11px; font-weight: 800; text-decoration: none; white-space: nowrap; }
 body.franchise-app-page .annual-kyc-banner-button:hover { background: #a96e05; color: #fff; }
 @media (max-width: 560px) { body.franchise-app-page .annual-kyc-banner { align-items: flex-start; flex-direction: column; } }

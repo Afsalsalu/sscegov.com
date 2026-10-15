@@ -1,4 +1,7 @@
 <div class="annual-kyc-banner" role="status">
-    <span class="annual-kyc-banner-copy">{{ annual_kyc.message }}</span>
+    <div class="annual-kyc-banner-copy">
+        <strong class="annual-kyc-banner-title">Renewal due soon</strong>
+        <span class="annual-kyc-banner-message">Your annual KYC renewal is due in {{ annual_kyc.days_to_due }} days.</span>
+    </div>
     {% if annual_kyc.online_allowed %}<a class="annual-kyc-banner-button" href="{% url 'web:annual_kyc' %}">Pay &amp; Get OTP</a>{% endif %}
 </div>
