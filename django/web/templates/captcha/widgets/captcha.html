@@ -1,0 +1,22 @@
+{% load i18n %}
+{% spaceless %}
+<span class="captcha-widget" data-refresh-url="{% url 'captcha-refresh' %}">
+    <span class="captcha-image-row">
+        {% if audio %}
+            <a title="{% trans 'Play CAPTCHA as audio file' %}" href="{{ audio }}">
+        {% endif %}
+        <img src="{{ image }}" alt="{% trans 'CAPTCHA challenge' %}" class="captcha js-captcha-image" />
+        {% if audio %}</a>{% endif %}
+        <button type="button" class="captcha-refresh js-captcha-refresh" title="{% trans 'Get a new CAPTCHA' %}" aria-label="{% trans 'Get a new CAPTCHA' %}">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" role="img">
+                <path d="M20 11a8.1 8.1 0 0 0-14.7-3.9L3 9.5M3 4v5.5h5.5M4 13a8.1 8.1 0 0 0 14.7 3.9L21 14.5M21 20v-5.5h-5.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+            </svg>
+            <span class="visually-hidden">{% trans 'Refresh CAPTCHA' %}</span>
+        </button>
+    </span>
+    <span class="captcha-fields">
+        {% for widget in widget.subwidgets %}{% include widget.template_name %}{% endfor %}
+    </span>
+    <span class="captcha-refresh-error" role="alert" aria-live="polite" hidden></span>
+</span>
+{% endspaceless %}
